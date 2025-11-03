@@ -1,7 +1,7 @@
 /* src/components/GerenteSidebar.css */
 
 .gerente-sidebar {
-  width: 230px;
+  width: 288px;
   background: #122548;
   height: 100vh;
   position: fixed;
@@ -13,40 +13,93 @@
   z-index: 1000;
 }
 
-.sidebar-header {
-  padding: 1.5rem 1rem;
+.gerente-sidebar.collapsed {
+  width: 80px;
 }
 
-/* Contenedor del logo dentro del sidebar */
 .sidebar-header {
   padding: 1.2rem 1rem;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Contenedor interno del logo */
-.logo-container {
+.hamburger-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
-  text-align: center;
-  gap: 0.5rem;
+  border-radius: 8px;
+  transition: background 0.2s;
+  align-self: flex-start;
 }
 
-/* Imagen del logo */
-.logo-container img {
-  width: 200px; /* ajusta según el tamaño de tu imagen */
-  height: auto;
+.hamburger-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.hamburger-btn img {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) invert(1);
+}
+
+/* Logo section */
+.logo-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+}
+
+.panel-title {
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+  animation: fadeIn 0.3s ease;
+}
+
+.logo-collapsed {
+  width: 40px;
+  height: 40px;
   object-fit: contain;
-  filter: brightness(0) invert(1); /* mantiene el logo blanco sobre fondo oscuro */
+  filter: brightness(0) invert(1);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .sidebar-nav {
   flex: 1;
   padding: 1rem 0;
   overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sidebar-nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
 }
 
 .nav-item {
@@ -65,6 +118,11 @@
   position: relative;
 }
 
+.gerente-sidebar.collapsed .nav-item {
+  justify-content: center;
+  padding: 0.9rem;
+}
+
 .nav-item:hover {
   background: rgba(255, 255, 255, 0.1);
   color: white;
@@ -75,6 +133,12 @@
   color: white;
   border-left: 4px solid #60a5fa;
 }
+
+.gerente-sidebar.collapsed .nav-item.active {
+  border-left: none;
+  border-right: 4px solid #60a5fa;
+}
+
 /* Ajustar tamaño y alineación de iconos */
 .nav-item img {
   width: 22px;
@@ -83,41 +147,32 @@
   flex-shrink: 0;
 }
 
-.subnav-item img {
-  width: 18px;
-  height: 18px;
-  object-fit: contain;
-  margin-right: 0.5rem;
+.nav-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Ajuste específico para el icono del triángulo (flecha desplegable) */
-.nav-group > .nav-item img:last-child {
+.gerente-sidebar.collapsed .nav-text {
+  display: none;
+}
+
+.expand-icon {
   width: 14px;
   height: 14px;
   margin-left: auto;
   transition: transform 0.3s ease;
-}
-
-.nav-item.open img:last-child {
-  transform: rotate(90deg);
-}
-
-.nav-icon {
-  font-size: 1.2rem;
+  filter: brightness(0) invert(1);
   flex-shrink: 0;
 }
 
-.nav-text {
-  flex: 1;
+.expand-icon.expanded {
+  transform: rotate(180deg);
 }
 
-.nav-arrow {
-  font-size: 0.7rem;
-  transition: transform 0.3s ease;
-}
-
-.nav-item.open .nav-arrow {
-  transform: rotate(90deg);
+.gerente-sidebar.collapsed .expand-icon {
+  display: none;
 }
 
 .nav-group {
@@ -186,4 +241,34 @@
 .logout-btn:hover {
   background: rgba(239, 68, 68, 0.3);
   transform: translateY(-2px);
+}
+
+.logout-icon {
+  flex-shrink: 0;
+}
+
+.gerente-sidebar.collapsed .logout-btn span {
+  display: none;
+}
+
+/* Fallback para hamburger icon */
+.fallbackHamburger {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 20px;
+  height: 16px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .gerente-sidebar {
+    width: 288px;
+    transform: translateX(-100%);
+  }
+
+  .gerente-sidebar.collapsed {
+    transform: translateX(0);
+    width: 80px;
+  }
 }

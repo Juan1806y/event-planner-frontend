@@ -19,6 +19,8 @@ import AfiliacionesAprobadas from './pages/empresa/afiliacionesAprobadas';
 import AfiliacionesPendientes from './pages/empresa/afiliacionesPendientes';
 import AfiliacionesRechazadas from './pages/empresa/afiliacionesRechazadas';
 import CrearOrganizador from './pages/gerente/CrearOrganizadorPage';
+import Ubicaciones from './pages/gerente/ubicaciones';
+import Lugares from './pages/gerente/lugares';
 
 function App() {
   return (
@@ -43,6 +45,8 @@ function App() {
         {/* Rutas de Gerente */}
         <Route path="/gerente" element={<GerenteDashboard />} />
         <Route path="/gerente/actualizar-empresa" element={<ActualizarEmpresa />} />
+        <Route path="/gerente/ubicaciones" element={<Ubicaciones />} />
+        <Route path="/gerente/lugares" element={<Lugares />} />
         {/*<Route path="/gerente/solicitudes" element={<GerenteSolicitudes />} />
         <Route path="/gerente/configuracion" element={<GerenteConfiguracion />} />*/}
         <Route path="/gerente/crear-organizador" element={<CrearOrganizador />} />
@@ -81,10 +85,12 @@ function App() {
           path="/asistente"
           element={
             <AsistenteRoute>
-              <Asistente />
+              <Asistente/>
             </AsistenteRoute>
           }
         />
+
+        
 
         {/*Ruta para gestión de empresa*/}
         <Route

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { isAdmin, isAsistente, getRoleName } from '../../utils/roleUtils';
+import { isAdmin, isAsistente, getRoleName, isGerente } from '../../utils/roleUtils';
 import headerStyles from './header.module.css';
 import notificationsIcon from '../../assets/notifications.png';
 import logoIcon from '../../assets/evento-remove.png';
@@ -16,6 +16,7 @@ const Header = ({ isMenuCollapsed }) => {
   let displayRole = 'Invitado';
   if (isAdmin(user)) displayRole = 'Administrador';
   else if (isAsistente(user)) displayRole = 'Asistente';
+  else if (isGerente(user)) displayRole = 'Gerente';
   else if (user) displayRole = getRoleName(user) || 'Usuario';
 
   const nameSource = (email).toString();

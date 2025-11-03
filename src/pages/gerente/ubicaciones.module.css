@@ -1,0 +1,519 @@
+.appContainer {
+  min-height: 100vh;
+  background-color: #F2E6CF;
+}
+
+.mainLayout {
+  display: flex;
+  min-height: calc(100vh - 80px);
+}
+
+.mainContent {
+  flex: 1;
+  transition: all 0.3s ease;
+  padding: 2rem;
+}
+
+/* Cuando el sidebar está expandido */
+.sidebarExpanded {
+  margin-left: 300px;
+  width: calc(100% - 250px);
+}
+
+/* Cuando el sidebar está contraído */
+.sidebarCollapsed {
+  margin-left: 80px;
+  width: calc(100% - 80px);
+}
+
+.ubicacionesContainer {
+  background-color: #F2E6CF;
+  min-height: 100%;
+}
+
+.ubicacionesHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.ubicacionesHeader h1 {
+  font-size: 42px;
+  color: #2C5F7C;
+  font-weight: 600;
+  margin: 0;
+}
+
+.btnCreate {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #67A6F9;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btnCreate:hover {
+  background-color: #357ABD;
+}
+
+.ubicacionesContent {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ubicacionesContent h2 {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 1.5rem;
+  margin-top: 0;
+}
+
+.filtersRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.searchBox {
+  position: relative;
+  flex: 1;
+  max-width: 500px;
+  min-width: 250px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  pointer-events: none;
+}
+
+.searchBox input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 3rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.searchBox input:focus {
+  outline: none;
+  border-color: #4A90E2;
+}
+
+.filterGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.filterGroup label {
+  color: #666;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.filterGroup select {
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  min-width: 200px;
+  transition: border-color 0.2s;
+}
+
+.filterGroup select:focus {
+  outline: none;
+  border-color: #4A90E2;
+}
+
+.tableContainer {
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+
+.ubicacionesTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ubicacionesTable thead {
+  background-color: #B8E6F5;
+}
+
+.ubicacionesTable th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #ddd;
+  white-space: nowrap;
+}
+
+.ubicacionesTable td {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+  color: #666;
+}
+
+.ubicacionesTable tbody tr {
+  transition: background-color 0.2s;
+}
+
+.ubicacionesTable tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+.actionsCell {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.btnIcon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #999;
+  padding: 0.35rem;
+  border-radius: 4px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btnIcon:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.noData {
+  text-align: center;
+  padding: 2rem;
+  color: #999;
+  font-style: italic;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+/* Modal Styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modalContent {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #eee;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 1;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.btnClose {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #999;
+  padding: 0.25rem;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+.btnClose:hover {
+  color: #333;
+  background-color: #f0f0f0;
+}
+
+.ubicacionForm {
+  padding: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup.fullWidth {
+  grid-column: 1 / -1;
+}
+
+.formGroup label {
+  margin-bottom: 0.5rem;
+  color: #333;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.formGroup input,
+.formGroup select,
+.formGroup textarea {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.formGroup input:focus,
+.formGroup select:focus,
+.formGroup textarea:focus {
+  outline: none;
+  border-color: #4A90E2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+.formGroup textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.formGroup input::placeholder,
+.formGroup textarea::placeholder {
+  color: #999;
+}
+
+.formActions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.btnCancel {
+  padding: 0.75rem 1.5rem;
+  border: 1px solid #ddd;
+  background: white;
+  color: #666;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.btnCancel:hover {
+  background-color: #f5f5f5;
+  border-color: #bbb;
+}
+
+.btnSubmit {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  background-color: #4A90E2;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+  font-weight: 500;
+}
+
+.btnSubmit:hover {
+  background-color: #357ABD;
+}
+
+.btnSubmit:active {
+  transform: scale(0.98);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .sidebarExpanded {
+    margin-left: 220px;
+    width: calc(100% - 220px);
+  }
+  
+  .sidebarCollapsed {
+    margin-left: 70px;
+    width: calc(100% - 70px);
+  }
+
+  .mainContent {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .mainLayout {
+    flex-direction: column;
+  }
+
+  .sidebarExpanded,
+  .sidebarCollapsed {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .mainContent {
+    padding: 1rem;
+  }
+
+  .ubicacionesHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .ubicacionesHeader h1 {
+    font-size: 1.5rem;
+  }
+
+  .btnCreate {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .filtersRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .searchBox {
+    max-width: 100%;
+  }
+
+  .filterGroup {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filterGroup select {
+    min-width: auto;
+    width: 100%;
+  }
+
+  .tableContainer {
+    overflow-x: scroll;
+  }
+
+  .ubicacionesTable {
+    min-width: 900px;
+  }
+
+  .ubicacionForm {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+
+  .modalContent {
+    width: 95%;
+    max-height: 85vh;
+  }
+
+  .modalHeader {
+    padding: 1rem;
+  }
+
+  .formActions {
+    flex-direction: column-reverse;
+  }
+
+  .btnCancel,
+  .btnSubmit {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .ubicacionesHeader h1 {
+    font-size: 1.25rem;
+  }
+
+  .ubicacionesContent {
+    padding: 1rem;
+  }
+
+  .ubicacionesContent h2 {
+    font-size: 1.25rem;
+  }
+
+  .btnCreate {
+    padding: 0.65rem 1.25rem;
+    font-size: 0.9rem;
+  }
+}
