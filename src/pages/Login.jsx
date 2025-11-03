@@ -32,17 +32,19 @@ export default function Login() {
 
   const roles = [
     { id: 'asistente', name: 'Asistente', subtitle: 'Participante', icon: User },
-    { id: 'gerente', name: 'Gerente', subtitle: 'Organizador', icon: Briefcase },
-    { id: 'ponente', name: 'Ponente', subtitle: 'Expositor', icon: Mic }
+    { id: 'gerente', name: 'Gerente', subtitle: 'Gerente', icon: Briefcase },
+    { id: 'ponente', name: 'Ponente', subtitle: 'Expositor', icon: Mic },
+    { id: 'organizador', name: 'Organizador', subtitle: 'Organizador', icon: User }
+
   ];
 
   // Handler mejorado que incluye el rol
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Guardar el rol seleccionado antes de hacer login
     localStorage.setItem('selected_role', selectedRole);
-    
+
     // Validación básica
     if (!email.trim() || !password) {
       return;
@@ -75,7 +77,7 @@ export default function Login() {
                 onClick={() => setSelectedRole(role.id)}
                 role="button"
                 tabIndex={0}
-                onKeyDown={(ev) => { 
+                onKeyDown={(ev) => {
                   if (ev.key === 'Enter' || ev.key === ' ') {
                     ev.preventDefault();
                     setSelectedRole(role.id);
@@ -125,9 +127,9 @@ export default function Login() {
               disabled={loading}
               required
             />
-            <button 
-              type="button" 
-              className="toggle-pass" 
+            <button
+              type="button"
+              className="toggle-pass"
               onClick={togglePasswordVisibility}
               disabled={loading}
             >
@@ -136,9 +138,9 @@ export default function Login() {
           </div>
 
           <div className="form-options">
-            <a 
-              href="#" 
-              className="forgot" 
+            <a
+              href="#"
+              className="forgot"
               onClick={(e) => {
                 e.preventDefault();
                 handleNavigateToForgotPassword();
@@ -156,8 +158,8 @@ export default function Login() {
         {/* Registro */}
         <p className="register-text">
           ¿No tienes cuenta?{' '}
-          <a 
-            href="#" 
+          <a
+            href="#"
             onClick={(e) => {
               e.preventDefault();
               handleNavigateToRegister();

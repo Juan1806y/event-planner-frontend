@@ -103,6 +103,9 @@ const Admin = () => {
         auditoriaData = result.data;
       }
 
+      // Ordenar por ID, más reciente primero (ID más alto primero)
+      auditoriaData.sort((a, b) => b.id - a.id);
+
       setAuditoriaRegistros(auditoriaData);
       return true;
     }

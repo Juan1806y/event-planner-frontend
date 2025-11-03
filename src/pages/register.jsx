@@ -186,7 +186,6 @@ export default function Register() {
                 value={formData.nombre}
                 onChange={handleInputChange}
                 className="form-input"
-                placeholder="Tu nombre completo"
               />
             </div>
           </div>
@@ -201,7 +200,6 @@ export default function Register() {
                 value={formData.cedula}
                 onChange={handleInputChange}
                 className="form-input"
-                placeholder="Número de cédula"
               />
             </div>
           </div>
@@ -218,7 +216,6 @@ export default function Register() {
                 value={formData.telefono}
                 onChange={handleInputChange}
                 className="form-input"
-                placeholder="Tu número de teléfono"
               />
             </div>
           </div>
@@ -233,7 +230,6 @@ export default function Register() {
                 value={formData.correo}
                 onChange={handleInputChange}
                 className="form-input"
-                placeholder="tu@correo.com"
               />
             </div>
           </div>
@@ -265,7 +261,6 @@ export default function Register() {
                 value={formData.contraseña}
                 onChange={handleInputChange}
                 className="form-input"
-                placeholder="••••••••"
               />
               <button
                 type="button"
@@ -287,7 +282,6 @@ export default function Register() {
                 value={formData.confirmarContraseña}
                 onChange={handleInputChange}
                 className="form-input"
-                placeholder="••••••••"
               />
               <button
                 type="button"
