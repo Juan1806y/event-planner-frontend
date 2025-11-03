@@ -55,11 +55,9 @@ export const useOrganizerDashboard = () => {
     }, [navigate]);
     // --- Menú lateral ---
     const menuItems = [
-        { id: 'inicio', label: 'Inicio', icon: Home },
+        { id: 'inicio', label: 'Dashboard', icon: Home },
         { id: 'eventos', label: 'Eventos', icon: Calendar },
-        { id: 'participantes', label: 'Participantes', icon: Users },
-        { id: 'reportes', label: 'Reportes', icon: FileText },
-        { id: 'configuracion', label: 'Configuración', icon: Settings }
+        { id: 'configuracion', label: 'Configuración', icon: Settings },
     ];
 
     // --- Datos de ejemplo ---
@@ -180,8 +178,22 @@ export const useOrganizerDashboard = () => {
         setPasswordSuccess('');
     };
 
-    // 🔍 Debug
-    console.log('👤 Usuario actual:', user);
+    const onLogout = () => {
+        console.log('🚪 Cerrando sesión...');
+
+        // Eliminar datos del usuario y tokens
+        localStorage.removeItem('user');
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('token');
+
+        // (Opcional) limpiar todo localStorage
+        // localStorage.clear();
+
+        // Redirigir al login
+        navigate('/login');
+    };
+
 
     return {
         activeSection,
@@ -202,6 +214,7 @@ export const useOrganizerDashboard = () => {
         closePasswordModal,
         handlePasswordChange,
         togglePasswordVisibility,
-        handleSubmitPassword
+        handleSubmitPassword,
+        onLogout
     };
 };

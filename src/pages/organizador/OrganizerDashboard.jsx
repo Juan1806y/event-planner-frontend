@@ -29,7 +29,8 @@ export default function OrganizerDashboard() {
         closePasswordModal,
         handlePasswordChange,
         togglePasswordVisibility,
-        handleSubmitPassword
+        handleSubmitPassword,
+        onLogout
     } = useOrganizerDashboard();
 
     return (
@@ -41,6 +42,7 @@ export default function OrganizerDashboard() {
                 activeSection={activeSection}
                 onMenuClick={handleMenuClick}
                 onOpenPasswordModal={openPasswordModal}
+                onLogout={onLogout}
             />
 
             <div className="dashboard-main">

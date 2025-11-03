@@ -2,6 +2,7 @@
 import React from 'react';
 import { Lock, X, Eye, EyeOff, Menu } from 'lucide-react';
 import './OrganizerDashboard.css';
+import { LogOut } from 'lucide-react';
 
 export const PasswordModal = ({
     isOpen,
@@ -124,15 +125,14 @@ export const PasswordModal = ({
 };
 
 // Sidebar
-export const Sidebar = ({ isOpen, user, menuItems, activeSection, onMenuClick, onOpenPasswordModal }) => (
+export const Sidebar = ({ isOpen, user, menuItems, activeSection, onMenuClick, onOpenPasswordModal, onLogout }) => (
     <div className={`sidebar ${isOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
         <div className="sidebar-header">
             <div className="user-info">
                 <div className="user-avatar">0</div>
                 <div className="user-details">
-                    <h3 className="user-name">{user?.nombre}</h3>
-                    <p className="user-role">{user?.rol}</p>
-                    <p className="user-correo">{user?.correo}</p>
+                    <h3 className="user-name">Organizador</h3>
+                    <p className="user-role">{user?.correo}</p>
                 </div>
             </div>
         </div>
@@ -158,7 +158,13 @@ export const Sidebar = ({ isOpen, user, menuItems, activeSection, onMenuClick, o
                 <Lock size={20} />
                 <span>Cambiar Contraseña</span>
             </button>
+
+            <button onClick={onLogout} className="nav-item text-red-500 hover:text-red-600">
+                <LogOut size={20} />
+                <span>Cerrar Sesión</span>
+            </button>
         </div>
+
     </div>
 );
 

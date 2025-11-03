@@ -15,7 +15,7 @@
 
 /* ========== HEADER ========== */
 .header {
-    background-color: white;
+    background-color: #F2E6CF;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     padding: 1rem;
     display: flex;
@@ -45,7 +45,7 @@
 /* ========== SIDEBAR ========== */
 .sidebar {
     transition: width 0.3s ease;
-    background-color: #111827;
+    background-color: #1A2332;
     color: white;
     display: flex;
     flex-direction: column;
@@ -53,7 +53,7 @@
 }
 
 .sidebar-open {
-    width: 16rem;
+    width: 20rem;
 }
 
 .sidebar-closed {
@@ -119,8 +119,8 @@
 }
 
 .nav-item-active {
-    background-color: #2563eb;
-    color: white;
+    background-color: #FFFFFF;
+    color: #1A2332;
 }
 
 .sidebar-footer {
@@ -132,7 +132,7 @@
 .main-content {
     flex: 1;
     padding: 2rem;
-    background-color: #f9fafb;
+    background-color: #F2E6CF;
     overflow-y: auto;
 }
 

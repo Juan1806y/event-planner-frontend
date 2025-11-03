@@ -9,7 +9,8 @@ const API_BASE_URL = 'http://localhost:3000';
 const ROLE_MAPPING = {
   'asistente': ['asistente', 'participante', 'attendee'],
   'gerente': ['gerente', 'organizador', 'manager', 'organizer'],
-  'ponente': ['ponente', 'expositor', 'speaker', 'presenter']
+  'ponente': ['ponente', 'expositor', 'speaker', 'presenter'],
+  'organizador': ['organizador']
 };
 
 export const useLogin = () => {
@@ -35,7 +36,7 @@ export const useLogin = () => {
       // Enviar con los nombres de campos que espera el backend
       const payload = { correo: email, contraseña: password };
       console.log('Enviando al backend:', payload);
-      
+
       const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
@@ -73,14 +74,14 @@ export const useLogin = () => {
         // Caso 4: Objeto con mensajes de validación
         else if (typeof data === 'object' && data !== null) {
           const errorMessages = [];
-          
+
           // Buscar mensajes en el objeto
           Object.entries(data).forEach(([key, value]) => {
             // Saltar propiedades que no son errores
             if (key === 'data' || key === 'status' || key === 'statusCode') {
               return;
             }
-            
+
             if (Array.isArray(value)) {
               errorMessages.push(...value);
             } else if (typeof value === 'string') {
@@ -89,7 +90,7 @@ export const useLogin = () => {
               errorMessages.push(value.message);
             }
           });
-          
+
           if (errorMessages.length > 0) {
             errorMessage = errorMessages.join(', ');
           }
@@ -118,10 +119,10 @@ export const useLogin = () => {
         // VALIDACIÓN DE ROL: Verificar que el rol del usuario coincida con el seleccionado
         const userRole = usuario?.rol?.toLowerCase();
         console.log('Rol del usuario en backend:', userRole);
-        
+
         // Obtener los roles válidos para la opción seleccionada
         const validRoles = ROLE_MAPPING[selectedRole] || [selectedRole];
-        
+
         // Verificar si el rol del usuario está en los roles válidos
         if (!validRoles.includes(userRole)) {
           throw new Error(`El rol ${selectedRole} no corresponde a tu cuenta. Por favor, elige el rol correcto para continuar.`);
@@ -136,22 +137,22 @@ export const useLogin = () => {
         if (usuario) {
           localStorage.setItem('user', JSON.stringify(usuario));
         }
-        
+
         console.log('Login exitoso!');
-        
+
         // Obtener la ruta de redirección según el rol del usuario
         const redirectPath = getRedirectPath(usuario);
         console.log('Redirigiendo a:', redirectPath);
-        
+
         // Redirigir según el rol del usuario
         navigate(redirectPath);
       } else {
         throw new Error('No se recibió el token de acceso');
       }
-      
+
     } catch (err) {
       console.error('Error durante el inicio de sesión:', err);
-      
+
       // Manejo de errores de red
       if (err.name === 'TypeError' && err.message.includes('fetch')) {
         setError('No se pudo conectar con el servidor. Verifica tu conexión a internet.');
@@ -184,11 +185,11 @@ export const useLogin = () => {
     showPassword,
     error,
     loading,
-    
+
     // Funciones para actualizar estados
     setEmail,
     setPassword,
-    
+
     // Funciones de acción
     handleLogin,
     togglePasswordVisibility,
