@@ -39,7 +39,7 @@ export const PasswordModal = ({
                             value={passwordData.correo}
                             onChange={(e) => onPasswordChange('correo', e.target.value)}
                             className="form-input"
-                            placeholder="Ej: usuario@ejemplo.com"
+                            placeholder={"Ej: usuario@ejemplo.com"}
                         />
                     </div>
 
@@ -128,10 +128,11 @@ export const Sidebar = ({ isOpen, user, menuItems, activeSection, onMenuClick, o
     <div className={`sidebar ${isOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
         <div className="sidebar-header">
             <div className="user-info">
-                <div className="user-avatar">{user.avatar}</div>
+                <div className="user-avatar">0</div>
                 <div className="user-details">
-                    <h3 className="user-name">{user.name}</h3>
-                    <p className="user-role">{user.role}</p>
+                    <h3 className="user-name">{user?.nombre}</h3>
+                    <p className="user-role">{user?.rol}</p>
+                    <p className="user-correo">{user?.correo}</p>
                 </div>
             </div>
         </div>

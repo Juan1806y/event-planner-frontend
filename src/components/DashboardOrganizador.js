@@ -1,17 +1,33 @@
 // hooks/useOrganizerDashboard.js
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Home, Calendar, Users, FileText, Settings } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export const useOrganizerDashboard = () => {
+    const navigate = useNavigate();
+    //const user = JSON.parse(localStorage.getItem('user') || '{}');
+    //console.log(user);
+
+    // Estados generales
     const [activeSection, setActiveSection] = useState('inicio');
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [user, setUser] = useState(null);
+
+    // Estados para el modal de contraseña
     const [showPasswordModal, setShowPasswordModal] = useState(false);
     const [passwordData, setPasswordData] = useState({
-        correo: '',
+        correo: user?.correo,
         contraseñaActual: '',
         contraseñaNueva: '',
         confirmarContraseña: ''
     });
+
+    useEffect(() => {
+        if (user && user.correo) {
+            setPasswordData((prev) => ({ ...prev, correo: user.correo }));
+        }
+    }, [user]);
+
     const [showPasswords, setShowPasswords] = useState({
         actual: false,
         nueva: false,
@@ -21,12 +37,23 @@ export const useOrganizerDashboard = () => {
     const [passwordSuccess, setPasswordSuccess] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    const user = {
-        name: 'Organizador',
-        role: 'Administrador',
-        avatar: 'O'
-    };
+    // ✅ Obtener el usuario logueado desde localStorage (MEJORADO)
+    useEffect(() => {
+        const userData = localStorage.getItem('user');
+        const token = localStorage.getItem('access_token'); // CAMBIO AQUÍ
 
+        console.log('User Data:', userData);
+
+        if (!userData || !token) {
+            console.log('No hay token o usuario, redirigiendo al login');
+            navigate('/login');
+            return;
+        }
+
+        const parsedUser = JSON.parse(userData);
+        setUser(parsedUser);
+    }, [navigate]);
+    // --- Menú lateral ---
     const menuItems = [
         { id: 'inicio', label: 'Inicio', icon: Home },
         { id: 'eventos', label: 'Eventos', icon: Calendar },
@@ -35,6 +62,7 @@ export const useOrganizerDashboard = () => {
         { id: 'configuracion', label: 'Configuración', icon: Settings }
     ];
 
+    // --- Datos de ejemplo ---
     const stats = [
         { label: 'Eventos Activos', value: '12', color: 'bg-blue-500' },
         { label: 'Participantes', value: '248', color: 'bg-green-500' },
@@ -48,6 +76,7 @@ export const useOrganizerDashboard = () => {
         { name: 'Reunión de Equipo', date: '10 Nov 2025', status: 'Completado' }
     ];
 
+    // --- Validación de contraseña ---
     const validatePassword = (password) => {
         const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
         if (!passwordRegex.test(password)) {
@@ -56,6 +85,7 @@ export const useOrganizerDashboard = () => {
         return null;
     };
 
+    // --- Manejadores ---
     const handlePasswordChange = (field, value) => {
         setPasswordData(prev => ({ ...prev, [field]: value }));
         setPasswordError('');
@@ -70,8 +100,12 @@ export const useOrganizerDashboard = () => {
         setPasswordError('');
         setPasswordSuccess('');
 
-        // Validar campos requeridos
-        if (!passwordData.correo || !passwordData.contraseñaNueva || !passwordData.confirmarContraseña) {
+        if (!passwordData.correo && !user?.correo) {
+            setPasswordError('Debes ingresar o tener registrado un correo válido');
+            return;
+        }
+
+        if (!passwordData.contraseñaNueva || !passwordData.confirmarContraseña) {
             setPasswordError('Todos los campos son obligatorios');
             return;
         }
@@ -91,7 +125,7 @@ export const useOrganizerDashboard = () => {
 
         try {
             const payload = {
-                correo: passwordData.correo,
+                correo: passwordData.correo || user?.correo,
                 contraseña: passwordData.contraseñaNueva
             };
 
@@ -122,15 +156,17 @@ export const useOrganizerDashboard = () => {
                 setPasswordError(data.message || 'Error al cambiar la contraseña');
             }
         } catch (error) {
-            console.error('Error:', error);
+            console.error('❌ Error en la solicitud:', error);
             setPasswordError('Error de conexión. Intenta nuevamente');
         } finally {
             setIsLoading(false);
         }
     };
 
+    // --- Control UI ---
     const handleMenuClick = (itemId) => setActiveSection(itemId);
     const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
     const openPasswordModal = () => setShowPasswordModal(true);
     const closePasswordModal = () => {
         setShowPasswordModal(false);
@@ -143,6 +179,9 @@ export const useOrganizerDashboard = () => {
         setPasswordError('');
         setPasswordSuccess('');
     };
+
+    // 🔍 Debug
+    console.log('👤 Usuario actual:', user);
 
     return {
         activeSection,
