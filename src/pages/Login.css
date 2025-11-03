@@ -15,10 +15,11 @@
   border-radius: 1.5rem;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
   width: 100%;
-  max-width: 500px;
+  max-width: 600px;
   padding: 2.5rem;
   text-align: center;
-  overflow: hidden; /* evita desbordes */
+  overflow: hidden;
+  /* evita desbordes */
 }
 
 /* Encabezado */
@@ -30,15 +31,20 @@
   margin-bottom: 1rem;
 
   /* 🔽 nuevo */
-  overflow: hidden;    /* evita que se salga del borde */
-  max-width: 100%;     /* no más ancho que el contenedor */
+  overflow: hidden;
+  /* evita que se salga del borde */
+  max-width: 100%;
+  /* no más ancho que el contenedor */
 }
 
 .login-header .logo-box img {
-  width: 200px;        /* ajusta a gusto: 80px, 100px, etc. */
+  width: 200px;
+  /* ajusta a gusto: 80px, 100px, etc. */
   height: auto;
-  object-fit: contain; /* mantiene proporción */
-  max-width: 100%;     /* se adapta a pantallas pequeñas */
+  object-fit: contain;
+  /* mantiene proporción */
+  max-width: 100%;
+  /* se adapta a pantallas pequeñas */
 }
 
 
@@ -67,7 +73,7 @@
 /* Roles */
 .role-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 0.8rem;
   margin-bottom: 1.5rem;
 }
@@ -173,7 +179,8 @@ label {
   transition: 0.3s;
   font-size: 0.95rem;
   background-color: #fff;
-  box-sizing: border-box; /* ✅ evita que sobresalga */
+  box-sizing: border-box;
+  /* ✅ evita que sobresalga */
 }
 
 .input-group input:focus {
@@ -309,6 +316,7 @@ label {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -331,6 +339,7 @@ label {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

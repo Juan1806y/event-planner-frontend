@@ -19,7 +19,7 @@ import AfiliacionesAprobadas from './pages/empresa/afiliacionesAprobadas';
 import AfiliacionesPendientes from './pages/empresa/afiliacionesPendientes';
 import AfiliacionesRechazadas from './pages/empresa/afiliacionesRechazadas';
 import CrearOrganizador from './pages/gerente/CrearOrganizadorPage';
-
+import OrganizerDashboard from './pages/organizador/OrganizerDashboard';
 function App() {
   return (
     <BrowserRouter>
@@ -99,29 +99,38 @@ function App() {
         {/*Rutas para gestión de afiliaciones*/}
         <Route
           path="/empresa/afiliaciones-aprobadas"
-          element={   
-          <PrivateRoute>
-            <AfiliacionesAprobadas />
-          </PrivateRoute>
+          element={
+            <PrivateRoute>
+              <AfiliacionesAprobadas />
+            </PrivateRoute>
           }
         />
         <Route
           path="/empresa/afiliaciones-pendientes"
-          element={   
-          <PrivateRoute>
-            <AfiliacionesPendientes />
-          </PrivateRoute> 
+          element={
+            <PrivateRoute>
+              <AfiliacionesPendientes />
+            </PrivateRoute>
           }
         />
         <Route
           path="/empresa/afiliaciones-rechazadas"
-          element={   
-          <PrivateRoute>
-            <AfiliacionesRechazadas />
-          </PrivateRoute> 
+          element={
+            <PrivateRoute>
+              <AfiliacionesRechazadas />
+            </PrivateRoute>
           }
         />
 
+        {/*Rutas Organizador)*/}
+        <Route
+          path="/organizador"
+          element={
+            <PrivateRoute>
+              <OrganizerDashboard />
+            </PrivateRoute>
+          }
+        />
         {/*Gestion de roles (subruta de asistente)*/}
 
         <Route
@@ -130,6 +139,7 @@ function App() {
         />
       </Routes>
     </BrowserRouter>
+
   );
 }
 
