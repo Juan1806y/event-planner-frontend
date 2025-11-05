@@ -2,7 +2,7 @@
 
 .crear-evento-page {
     min-height: 100vh;
-    background: #f5f5f5;
+    background: #F2E6CF;
     padding: 2rem;
 }
 
@@ -21,7 +21,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 1.5rem 2rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1E3A5F 0%, #2C5282 100%);
     color: white;
 }
 
@@ -342,7 +342,7 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem 2rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1E3A5F 0%, #2C5282 100%);
     border: none;
     color: white;
     border-radius: 8px;

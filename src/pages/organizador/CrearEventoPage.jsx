@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-    Calendar, Clock, Users, FileText, MapPin, Building2,
+    Calendar, Users, Building2,
     CheckCircle, AlertCircle, ArrowLeft, Plus, Trash2, Save
 } from 'lucide-react';
 import { crearEvento, obtenerPerfil } from '../../components/eventosService';
@@ -316,7 +316,7 @@ const CrearEventoPage = () => {
                         )}
                         <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
                             <button
-                                onClick={() => navigate('/eventos')}
+                                onClick={() => navigate('/organizador')}
                                 className="btn-cancelar-crear"
                             >
                                 Volver a Eventos
@@ -339,7 +339,7 @@ const CrearEventoPage = () => {
             <div className="crear-evento-container">
                 {/* Header */}
                 <div className="page-header-crear">
-                    <button onClick={() => navigate('/eventos')} className="btn-back">
+                    <button onClick={() => navigate('/organizador')} className="btn-back">
                         <ArrowLeft size={20} />
                     </button>
                     <div className="header-content-crear">

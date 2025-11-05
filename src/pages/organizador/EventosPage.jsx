@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Clock, Users, FileText, MapPin, Building2, CheckCircle, AlertCircle, X, Plus, Search, Edit, Eye, Trash2 } from 'lucide-react';
+import { Calendar, Plus, Search, Edit, Eye, Trash2 } from 'lucide-react';
 import {
     obtenerEventos,
     eliminarEvento,
