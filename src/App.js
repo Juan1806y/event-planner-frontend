@@ -20,6 +20,7 @@ import AfiliacionesPendientes from './pages/empresa/afiliacionesPendientes';
 import AfiliacionesRechazadas from './pages/empresa/afiliacionesRechazadas';
 import CrearOrganizador from './pages/gerente/CrearOrganizadorPage';
 import OrganizerDashboard from './pages/organizador/OrganizerDashboard';
+import CrearEventoPage from './pages/organizador/CrearEventoPage';
 function App() {
   return (
     <BrowserRouter>
@@ -131,6 +132,8 @@ function App() {
             </PrivateRoute>
           }
         />
+        <Route path="/eventos/crear" element={<CrearEventoPage />} />
+
         {/*Gestion de roles (subruta de asistente)*/}
 
         <Route
