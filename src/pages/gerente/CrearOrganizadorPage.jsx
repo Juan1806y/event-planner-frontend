@@ -5,10 +5,11 @@ import { crearOrganizador, validarDatosOrganizador } from '../../components/orga
 import empresaService from '../../components/empresaService';
 import GerenteSidebar from '../gerente/GerenteSidebar';
 import './CrearOrganizadorModal.css';
+import Header from '../../layouts/Header/header';
 
 const CrearOrganizadorPage = () => {
   const navigate = useNavigate();
-  
+
   const [formData, setFormData] = useState({
     nombre: '',
     cedula: '',
@@ -62,7 +63,7 @@ const CrearOrganizadorPage = () => {
       ...prev,
       [name]: value
     }));
-    
+
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -74,7 +75,7 @@ const CrearOrganizadorPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!empresaInfo || !empresaInfo.id) {
       setApiError('No se pudo determinar la empresa. Por favor, verifica tu sesión.');
       return;
@@ -110,7 +111,7 @@ const CrearOrganizadorPage = () => {
       console.log('Respuesta del servidor:', resultado);
 
       setSuccess(resultado.message || '¡Organizador creado exitosamente!');
-      
+
       // Limpiar formulario
       setFormData({
         nombre: '',
@@ -125,7 +126,7 @@ const CrearOrganizadorPage = () => {
       setTimeout(() => {
         navigate('/gerente'); // o la ruta que corresponda
       }, 2000);
-      
+
     } catch (err) {
       console.error('Error al crear organizador:', err);
       setApiError(err.message);
@@ -159,7 +160,7 @@ const CrearOrganizadorPage = () => {
             <span>⚠️</span>
             {apiError || 'No se pudo cargar la información de la empresa'}
           </div>
-          <button 
+          <button
             className="btn btn-primary"
             onClick={() => navigate(-1)}
             style={{ marginTop: '1rem' }}
@@ -173,17 +174,9 @@ const CrearOrganizadorPage = () => {
 
   return (
     <div className="crear-organizador-page">
-            <GerenteSidebar />
+      <GerenteSidebar />
       <div className="page-container">
-        <div className="page-header">
-          <button 
-            className="back-button"
-            onClick={handleCancel}
-            disabled={loading}
-          >
-            ← Volver
-          </button>
-        </div>
+          <Header />
 
         <div className="form-container">
           {apiError && (

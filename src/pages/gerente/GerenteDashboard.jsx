@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import GerenteSidebar from '../gerente/GerenteSidebar';
 import './GerenteDashboard.css';
+import Header from '../../layouts/Header/header';
 
 const GerenteDashboard = () => {
   const navigate = useNavigate();
@@ -102,13 +103,7 @@ const GerenteDashboard = () => {
       <GerenteSidebar />
       
       <div className="gerente-content">
-        <header className="gerente-header">
-          <div className="user-badge">
-            <span className="user-role">Gerente</span>
-            <span className="user-email">{user?.correo}</span>
-            <div className="user-avatar">GE</div>
-          </div>
-        </header>
+        <Header />
 
         <main className="gerente-main">
           <div className="welcome-card">

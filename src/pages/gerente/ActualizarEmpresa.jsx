@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import GerenteSidebar from '../gerente/GerenteSidebar';
 import empresaService from '../../components/empresaService';
 import './ActualizarEmpresa.css';
+import Header from '../../layouts/Header/header';
 
 const ActualizarEmpresa = () => {
     const navigate = useNavigate();
@@ -340,13 +341,7 @@ const ActualizarEmpresa = () => {
             <GerenteSidebar />
 
             <div className="gerente-content">
-                <header className="gerente-header">
-                    <div className="user-badge">
-                        <span className="user-role">Gerente</span>
-                        <span className="user-email">{user?.email || 'gerente@event.com'}</span>
-                        <div className="user-avatar">GE</div>
-                    </div>
-                </header>
+                <Header />
 
                 <main className="gerente-main">
                     <div className="form-container">
