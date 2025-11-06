@@ -4,7 +4,7 @@ import {
     Calendar, Users, Building2,
     CheckCircle, AlertCircle, ArrowLeft, Plus, Trash2, Save
 } from 'lucide-react';
-import { crearEvento, obtenerPerfil } from '../../components/eventosService';
+import { crearEvento, obtenerPerfil, crearActividad } from '../../components/eventosService';
 import './CrearEventoPage.css';
 
 const CrearEventoPage = () => {
@@ -27,19 +27,14 @@ const CrearEventoPage = () => {
         // id_ponente: '', // PENDIENTE: Campo de ponente
         // id_especialidad: '', // PENDIENTE: Campo de especialidad
 
-        // Ubicación
         modalidad: 'Presencial',
         id_lugar: '',
-
-        // Agenda
         actividades: [
             { nombre: '', fecha_inicio: '', hora_inicio: '', fecha_fin: '', hora_fin: '', descripcion: '' }
         ],
-
-        // Información Adicional
         cupos: '',
         descripcion_adicional: '',
-        hora: '' // Hora general del evento
+        hora: ''
     });
 
     useEffect(() => {
@@ -162,7 +157,7 @@ const CrearEventoPage = () => {
 
             // Si tu backend devuelve { success: true, data: [...] }
             const lugares = data.data || data;
-
+            console.log(lugares)
             setLugares(lugares);
         } catch (error) {
             console.error('❌ Error al cargar lugares:', error);
@@ -255,16 +250,43 @@ const CrearEventoPage = () => {
                 actividades: formData.actividades.filter(act => act.nombre.trim() !== '') // Solo enviar actividades con nombre
             };
 
-            console.log('📤 Datos a enviar:', eventoData);
-            console.log('🔑 Token disponible:', !!token);
-            console.log('🏢 ID Empresa:', empresa.id);
-
             await crearEvento(eventoData);
             setMensaje({ tipo: 'exito', texto: 'Evento creado exitosamente' });
+            const eventoCreado = await crearEvento(eventoData);
 
+            const eventoId =
+                eventoCreado?.data?.id ||
+                eventoCreado?.id ||
+                eventoCreado?.evento?.id;
+
+            if (!eventoId) {
+                throw new Error('No se pudo obtener el ID del evento recién creado.');
+            }
             setTimeout(() => {
                 navigate('/organizador');
             }, 1500);
+
+            const actividadesValidas = formData.actividades.filter(
+                act => act.nombre.trim() !== ''
+            );
+
+            for (const actividad of actividadesValidas) {
+                const actividadData = {
+                    titulo: actividad.nombre,
+                    descripcion: actividad.descripcion || '',
+                    fecha_actividad: actividad.fecha_inicio || formData.fecha_inicio,
+                    hora_inicio: actividad.hora_inicio || '00:00',
+                    hora_fin: actividad.hora_fin || '00:00',
+                    lugares: formData.id_lugar ? [parseInt(formData.id_lugar)] : []
+                };
+
+                console.log(`🧩 Creando actividad:`, actividadData);
+
+                await crearActividad(eventoId, actividadData);
+            }
+
+            console.log('🎉 Todas las actividades fueron creadas correctamente.');
+
         } catch (error) {
             console.error('❌ Error completo al crear evento:', error);
 
@@ -517,11 +539,19 @@ const CrearEventoPage = () => {
                                     className="form-select-crear"
                                 >
                                     <option value="">-- Seleccione un lugar --</option>
-                                    {lugares.map(lugar => (
-                                        <option key={lugar.id} value={lugar.id}>
-                                            {lugar.nombre} - {lugar.direccion}
+                                    {Array.isArray(lugares) ? (
+                                        lugares.map((lugar) => (
+                                            <option key={lugar.id} value={lugar.id}>
+                                                {lugar.nombre} — {lugar.ubicacion?.direccion}
+                                            </option>
+                                        ))
+                                    ) : (
+                                        <option key={lugares.id} value={lugares.id}>
+                                            {lugares.nombre} — {lugares.ubicacion?.direccion}
                                         </option>
-                                    ))}
+                                    )}
+
+
                                 </select>
                                 <p className="form-hint">Los lugares registrados incluyen capacidad y dirección</p>
                                 {lugares.length === 0 && (
@@ -564,7 +594,7 @@ const CrearEventoPage = () => {
 
                                 <div className="form-row-crear">
                                     <div className="form-group-crear">
-                                        <label className="form-label-crear">Fecha de Inicio</label>
+                                        <label className="form-label-crear">Fecha:</label>
                                         <input
                                             type="date"
                                             value={actividad.fecha_inicio}
@@ -584,15 +614,6 @@ const CrearEventoPage = () => {
                                 </div>
 
                                 <div className="form-row-crear">
-                                    <div className="form-group-crear">
-                                        <label className="form-label-crear">Fecha de Fin</label>
-                                        <input
-                                            type="date"
-                                            value={actividad.fecha_fin}
-                                            onChange={(e) => handleActividadChange(index, 'fecha_fin', e.target.value)}
-                                            className="form-input-crear"
-                                        />
-                                    </div>
                                     <div className="form-group-crear">
                                         <label className="form-label-crear">Hora de Fin</label>
                                         <input

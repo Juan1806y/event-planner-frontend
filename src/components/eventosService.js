@@ -172,3 +172,25 @@ export const obtenerLugares = async (idEmpresa) => {
         throw error.response?.data || error;
     }
 };
+
+// 🎯 Crear una nueva actividad dentro de un evento
+export const crearActividad = async (eventoId, actividadData) => {
+    try {
+        if (!eventoId) throw new Error("Se requiere el ID del evento para crear una actividad.");
+        console.log(`📅 Creando actividad para evento ${eventoId}:`, actividadData);
+
+        const response = await axios.post(
+            `${API_URL}/${eventoId}/actividades`,
+            actividadData,
+            getHeaders()
+        );
+
+        console.log('✅ Actividad creada:', response.data);
+        return response.data;
+    } catch (error) {
+        console.error("❌ Error al crear actividad:", error);
+        console.error("📋 Detalles:", error.response?.data);
+        throw error.response?.data || error;
+    }
+};
+
