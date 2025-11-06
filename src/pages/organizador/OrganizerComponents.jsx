@@ -197,20 +197,17 @@ export const EventRow = ({ event }) => (
 // Contenido principal
 export const MainContent = ({ activeSection, stats, recentEvents }) => (
     <div className="main-content">
-        {activeSection !== 'eventos' && (
-            <h1 className="page-title">
-                {activeSection.charAt(0).toUpperCase() + activeSection.slice(1)}
-            </h1>
-        )}
 
         {activeSection === 'inicio' && (
             <div>
+                {/* Estadísticas */}
                 <div className="stats-grid">
                     {stats.map((stat, index) => (
                         <StatCard key={index} {...stat} />
                     ))}
                 </div>
 
+                {/* Eventos recientes */}
                 <div className="events-container">
                     <h2 className="events-title">Eventos Recientes</h2>
                     <div>
@@ -222,9 +219,7 @@ export const MainContent = ({ activeSection, stats, recentEvents }) => (
             </div>
         )}
 
-        {activeSection === 'eventos' && (
-            <EventosPage />
-        )}
+        {activeSection === 'eventos' && <EventosPage />}
 
         {activeSection !== 'inicio' && activeSection !== 'eventos' && (
             <div className="placeholder-content">

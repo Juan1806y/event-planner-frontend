@@ -208,7 +208,7 @@ const EventosPage = () => {
                                                     title="Eliminar"
                                                 >
                                                     <Trash2 size={16} />
-                                                    Eliminar
+                                                    Cancelar
                                                 </button>
                                             </div>
                                         </td>

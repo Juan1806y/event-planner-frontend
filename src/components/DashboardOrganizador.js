@@ -5,6 +5,7 @@ import { Calendar, Users, FileText, Settings } from 'lucide-react';
 
 export const useOrganizerDashboard = () => {
     const navigate = useNavigate();
+
     const [activeSection, setActiveSection] = useState('inicio');
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [user, setUser] = useState(null);
@@ -24,25 +25,17 @@ export const useOrganizerDashboard = () => {
         confirmar: false
     });
 
+    // 🔹 Estados para los eventos dinámicos
+    const [stats, setStats] = useState([]);
+    const [recentEvents, setRecentEvents] = useState([]);
+
     const menuItems = [
-        { id: 'inicio', label: 'Inicio', icon: FileText },
         { id: 'eventos', label: 'Eventos', icon: Calendar },
         { id: 'asistentes', label: 'Asistentes', icon: Users },
         { id: 'configuracion', label: 'Configuración', icon: Settings }
     ];
 
-    const stats = [
-        { label: 'Eventos Activos', value: '12', color: 'bg-blue' },
-        { label: 'Total Asistentes', value: '1,234', color: 'bg-green' },
-        { label: 'Eventos del Mes', value: '8', color: 'bg-purple' }
-    ];
-
-    const recentEvents = [
-        { name: 'Conferencia Tech 2024', date: '15 Nov 2024', status: 'Activo' },
-        { name: 'Workshop de React', date: '20 Nov 2024', status: 'Próximo' },
-        { name: 'Networking Event', date: '10 Nov 2024', status: 'Finalizado' }
-    ];
-
+    // 🔹 Cargar usuario del localStorage
     useEffect(() => {
         const userData = JSON.parse(localStorage.getItem('user'));
         if (userData) {
@@ -51,14 +44,69 @@ export const useOrganizerDashboard = () => {
         }
     }, []);
 
-    const handleMenuClick = (section) => {
-        setActiveSection(section);
+    // Mueve fetchEventos fuera del useEffect
+    const fetchEventos = async () => {
+        try {
+            const token = localStorage.getItem('access_token');
+            const response = await fetch('http://localhost:3000/api/eventos/', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!response.ok) throw new Error('Error al obtener los eventos');
+
+            const data = await response.json();
+
+            // Accedemos correctamente al array de eventos
+            const eventos = Array.isArray(data.data) ? data.data : [];
+
+            // Filtramos los eventos publicados (estado = 1)
+            const eventosPublicados = eventos.filter(ev => ev.estado === 1);
+
+            // Eventos del mes actual
+            const now = new Date();
+            const mesActual = now.getMonth();
+            const anioActual = now.getFullYear();
+
+            const eventosMes = eventos.filter(ev => {
+                if (!ev.fecha_inicio) return false; // Evita errores si la fecha es null o undefined
+                const fecha = new Date(ev.fecha_inicio);
+
+                const mes = fecha.getUTCMonth();      // 0-11
+                const anio = fecha.getUTCFullYear();  // Año completo
+
+                return mes === mesActual && anio === anioActual;
+            });
+
+
+            // Últimos 5 eventos
+            const eventosRecientes = [...eventosPublicados]
+                .sort((a, b) => new Date(b.fecha_inicio) - new Date(a.fecha_inicio))
+                .slice(0, 5);
+            console.log(eventosRecientes)
+            // Actualizamos el estado
+            setStats([
+                { label: 'Eventos Activos', value: eventosPublicados.length, color: 'bg-blue' },
+                { label: 'Eventos del Mes', value: eventosMes.length, color: 'bg-purple' }
+            ]);
+
+            setRecentEvents(eventosRecientes.map(ev => ({
+                name: ev.nombre || ev.titulo,
+                date: new Date(ev.fecha_inicio).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' }),
+                status: ev.estado === 1 ? 'Publicado' : 'Borrador'
+            })));
+
+        } catch (error) {
+            console.error('Error al cargar los eventos:', error);
+        }
     };
 
-    const toggleSidebar = () => {
-        setIsSidebarOpen(!isSidebarOpen);
-    };
+    // Llamada automática al montar
+    useEffect(() => {
+        fetchEventos();
+    }, []);
 
+
+    // ---------------- CONTRASEÑA ----------------
     const openPasswordModal = () => {
         setShowPasswordModal(true);
         setPasswordError('');
@@ -90,7 +138,6 @@ export const useOrganizerDashboard = () => {
         setPasswordError('');
         setPasswordSuccess('');
 
-        // Validaciones
         if (!passwordData.correo) {
             setPasswordError('El correo es requerido');
             return;
@@ -139,6 +186,7 @@ export const useOrganizerDashboard = () => {
         }
     };
 
+    // ---------------- LOGOUT ----------------
     const onLogout = () => {
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
@@ -159,13 +207,14 @@ export const useOrganizerDashboard = () => {
         passwordError,
         passwordSuccess,
         isLoading,
-        handleMenuClick,
-        toggleSidebar,
+        handleMenuClick: setActiveSection,
+        toggleSidebar: () => setIsSidebarOpen(!isSidebarOpen),
         openPasswordModal,
         closePasswordModal,
         handlePasswordChange,
         togglePasswordVisibility,
         handleSubmitPassword,
-        onLogout
+        onLogout,
+        fetchEventos
     };
 };
