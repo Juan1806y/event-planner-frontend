@@ -21,6 +21,7 @@ import AfiliacionesRechazadas from './pages/empresa/afiliacionesRechazadas';
 import CrearOrganizador from './pages/gerente/CrearOrganizadorPage';
 import Ubicaciones from './pages/gerente/ubicaciones';
 import Lugares from './pages/gerente/lugares';
+import Eventos from './pages/organizador/eventos';
 
 import OrganizerDashboard from './pages/organizador/OrganizerDashboard';
 function App() {
@@ -135,6 +136,16 @@ function App() {
           element={
             <PrivateRoute>
               <OrganizerDashboard />
+            </PrivateRoute>
+          }
+        />
+
+        {/*Ruta para gestión de eventos (subruta de organizador)*/}
+        <Route
+          path="/organizador/eventos"
+          element={
+            <PrivateRoute>
+              <Eventos />
             </PrivateRoute>
           }
         />

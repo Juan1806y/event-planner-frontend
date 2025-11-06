@@ -3,11 +3,11 @@ import React from 'react';
 import { useOrganizerDashboard } from '../../components/DashboardOrganizador';
 import {
     Sidebar,
-    Header,
     MainContent,
     PasswordModal
 } from './OrganizerComponents';
 import './OrganizerDashboard.css';
+import Header from '../../layouts/Header/header';
 
 export default function OrganizerDashboard() {
     const {
