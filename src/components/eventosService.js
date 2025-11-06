@@ -84,10 +84,19 @@ export const actualizarEvento = async (id, datosActualizados) => {
 // ❌ Eliminar (cancelar) un evento
 export const eliminarEvento = async (id) => {
     try {
+        console.log(`🗑️ Intentando eliminar evento ${id}...`);
+
         const response = await axios.delete(`${API_URL}/${id}`, getHeaders());
+
+        console.log('✅ Evento eliminado correctamente:', response.data);
         return response.data;
     } catch (error) {
-        console.error("Error al eliminar evento:", error);
+        console.error("❌ Error al eliminar evento:", error);
+        console.error("📋 Detalles del error:", {
+            status: error.response?.status,
+            data: error.response?.data,
+            message: error.message
+        });
         throw error.response?.data || error;
     }
 };
