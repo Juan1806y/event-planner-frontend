@@ -4,6 +4,7 @@ import { Calendar, Plus, Search, Edit, Eye, Trash2 } from 'lucide-react';
 import {
     obtenerEventos,
     eliminarEvento,
+    actualizarEvento,
 } from "../../components/eventosService";
 import './EventosPage.css';
 
@@ -135,7 +136,11 @@ const EventosPage = () => {
 
                                         <td>
                                             <div className="action-buttons">
-                                                <button className="btn-action btn-editar" title="Editar">
+                                                <button
+                                                    onClick={() => navigate(`/eventos/editar/${evento.id}`)}
+                                                    className="btn-action btn-editar"
+                                                    title="Editar"
+                                                >
                                                     <Edit size={16} />
                                                     Editar
                                                 </button>

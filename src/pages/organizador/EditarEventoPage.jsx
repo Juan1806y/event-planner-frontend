@@ -1,197 +1,194 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+// src/pages/EventosPage/EditarEventoPage.jsx
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Calendar, ArrowLeft, Save, AlertCircle, Building2, Users, CheckCircle, Trash2, Plus } from 'lucide-react';
 import {
-    Calendar, Users, Building2,
-    CheckCircle, AlertCircle, ArrowLeft, Plus, Trash2, Save
-} from 'lucide-react';
-import { crearEvento, obtenerPerfil, crearActividad } from '../../components/eventosService';
+    obtenerEventoPorId,
+    actualizarEvento,
+    obtenerPerfil,
+    obtenerLugares,
+    obtenerActividadesEvento,
+    crearActividad,
+    actualizarActividad,
+    eliminarActividad
+} from '../../components/eventosService';
 import './CrearEventoPage.css';
 
-const CrearEventoPage = () => {
+const ESTADOS = [
+    { value: 0, label: 'Borrador' },
+    { value: 1, label: 'Publicado' },
+    { value: 2, label: 'Cancelado' },
+    { value: 3, label: 'Finalizado' }
+];
+
+const EditarEventoPage = () => {
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(true);
-    const [enviando, setEnviando] = useState(false);
+    const { id } = useParams();
+    const [cargando, setCargando] = useState(true);
+    const [guardando, setGuardando] = useState(false);
+    const [error, setError] = useState(null);
     const [empresa, setEmpresa] = useState(null);
     const [mensaje, setMensaje] = useState({ tipo: '', texto: '' });
     const [mostrarModalExito, setMostrarModalExito] = useState(false);
 
-    // Listas desplegables
-    // const [ponentes, setPonentes] = useState([]); // PENDIENTE: Funcionalidad de ponentes
-    // const [especialidades, setEspecialidades] = useState([]); // PENDIENTE: Funcionalidad de especialidades
-    const [lugares, setLugares] = useState([]);
-
+    // Estado del formulario
     const [formData, setFormData] = useState({
-        // Información Básica
         titulo: '',
+        descripcion: '',
         fecha_inicio: '',
         fecha_fin: '',
-        // id_ponente: '', // PENDIENTE: Campo de ponente
-        // id_especialidad: '', // PENDIENTE: Campo de especialidad
-
-        modalidad: 'Presencial',
-        id_lugar: '',
-        actividades: [
-            { nombre: '', fecha_inicio: '', hora_inicio: '', fecha_fin: '', hora_fin: '', descripcion: '' }
-        ],
         cupos: '',
-        descripcion_adicional: '',
-        hora: ''
+        modalidad: 'Presencial',
+        estado: 0,
+        id_lugar: '',
+        url_virtual: ''
     });
 
+    // Catálogos
+    const [lugares, setLugares] = useState([]);
+    const [actividades, setActividades] = useState([]);
+    const [actividadesEliminadas, setActividadesEliminadas] = useState([]);
+
     useEffect(() => {
-        cargarDatosIniciales();
-    }, []);
+        cargarDatos();
+    }, [id]);
 
-    const cargarDatosIniciales = async () => {
+    const cargarDatos = async () => {
         try {
-            // Verificar token primero
-            const token = localStorage.getItem('access_token');
-            if (!token) {
-                throw new Error('No se encontró token de autenticación');
-            }
-            const resp = await obtenerPerfil();
+            setCargando(true);
+            setError(null);
 
-            const userData =
-                resp?.data?.usuario ||
-                resp?.data ||
-                resp;
+            // 1. Obtener perfil para id_empresa
+            const perfil = await obtenerPerfil();
+            const empresaId = perfil.data?.usuario?.rolData?.id_empresa;
 
-
-            if (!userData) {
-                throw new Error('No se recibieron datos del usuario');
+            if (!empresaId) {
+                console.error('❌ Estructura del perfil:', perfil);
+                throw new Error('No se pudo obtener el ID de la empresa');
             }
 
-            const idEmpresa =
-                userData.rolData?.id_empresa ?? // userData.id_empresa
-                userData.empresa?.id ?? // userData.empresa.id
-                userData.empresa_id ?? // otros nombres posibles
-                userData.empresa?.id_empresa; // por si hay otra estructura
+            console.log('✅ ID Empresa obtenido:', empresaId);
 
-            if (!idEmpresa) {
-                throw new Error('El usuario no tiene una empresa asociada. Verifica tu perfil.');
-            }
+            // Obtener nombre de la empresa
+            const nombreEmpresa = perfil.data?.usuario?.rolData?.empresa?.nombre || 'Mi Empresa';
+            setEmpresa({ id: empresaId, nombre: nombreEmpresa });
 
-            setEmpresa({
-                id: idEmpresa,
-                nombre:
-                    userData.rolData?.empresa?.nombre ||
-                    userData.empresa?.nombre ||
-                    userData.empresa_nombre ||
-                    'Mi Empresa'
+            const eventoResponse = await obtenerEventoPorId(id);
+            const evento = eventoResponse.data;
+
+            const formatearFecha = (fecha) => {
+                if (!fecha) return '';
+                const date = new Date(fecha);
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            };
+
+            // 4. Cargar datos en el formulario
+            setFormData({
+                titulo: evento.titulo || '',
+                descripcion: evento.descripcion || '',
+                fecha_inicio: formatearFecha(evento.fecha_inicio),
+                fecha_fin: formatearFecha(evento.fecha_fin),
+                cupos: evento.cupos || '',
+                modalidad: evento.modalidad || 'Presencial',
+                estado: evento.estado ?? 0,
+                id_lugar: evento.id_lugar || '',
+                url_virtual: evento.url_virtual || ''
             });
 
-            await Promise.all([
-                // cargarPonentes(idEmpresa),
-                // cargarEspecialidades(),
-                cargarLugares(idEmpresa),
+            // 4. Obtener actividades del evento
+            try {
+                const actividadesResponse = await obtenerActividadesEvento(id);
+                const actividadesData = actividadesResponse.data || [];
+
+                // Formatear actividades existentes
+                const actividadesFormateadas = actividadesData.map(act => ({
+                    id: act.id, // ID existente
+                    titulo: act.titulo || '',
+                    descripcion: act.descripcion || '',
+                    fecha_actividad: formatearFecha(act.fecha_actividad),
+                    hora_inicio: act.hora_inicio || '',
+                    hora_fin: act.hora_fin || '',
+                    esExistente: true // Marca que ya existe en BD
+                }));
+
+                setActividades(actividadesFormateadas.length > 0 ? actividadesFormateadas : [
+                    { titulo: '', descripcion: '', fecha_actividad: '', hora_inicio: '', hora_fin: '', esExistente: false }
+                ]);
+            } catch (error) {
+                console.warn('No se pudieron cargar las actividades:', error);
+                setActividades([
+                    { titulo: '', descripcion: '', fecha_actividad: '', hora_inicio: '', hora_fin: '', esExistente: false }
+                ]);
+            }
+
+            // 5. Cargar catálogos
+            const [lugaresRes] = await Promise.all([
+                obtenerLugares(empresaId)
             ]);
 
+            setLugares(lugaresRes.data || []);
 
         } catch (error) {
-            setMensaje({
-                tipo: 'error',
-                texto: error.message || 'No se pudo cargar la información necesaria'
-            });
-
-            if (error.message?.toLowerCase().includes('token') || error.message?.toLowerCase().includes('autenticación')) {
-                navigate('/login');
-            }
+            console.error('❌ Error al cargar datos:', error);
+            setError(error.message || 'Error al cargar el evento');
+            setMensaje({ tipo: 'error', texto: error.message || 'Error al cargar el evento' });
         } finally {
-            setLoading(false);
-        }
-    };
-
-    // PENDIENTE: Función para obtener ponentes de la empresa
-    /*
-    const cargarPonentes = async (idEmpresa) => {
-        try {
-            const token = localStorage.getItem('access_token');
-            const response = await fetch(`http://localhost:3000/api/ponentes?id_empresa=${idEmpresa}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setPonentes(data.data || data);
-            }
-        } catch (error) {
-            console.error('Error al cargar ponentes:', error);
-        }
-    };
-    */
-
-    // PENDIENTE: Función para obtener especialidades
-    /*
-    const cargarEspecialidades = async () => {
-        try {
-            const token = localStorage.getItem('access_token');
-            const response = await fetch('http://localhost:3000/api/especialidades', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setEspecialidades(data.data || data);
-            }
-        } catch (error) {
-            console.error('Error al cargar especialidades:', error);
-        }
-    };
-    */
-
-    // Función para obtener lugares físicos de la empresa
-    const cargarLugares = async (idEmpresa) => {
-        try {
-            const token = localStorage.getItem('access_token');
-            const response = await fetch(`http://localhost:3000/api/lugares/${idEmpresa}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`Error HTTP: ${response.status}`);
-            }
-
-            const data = await response.json();
-
-            // Si tu backend devuelve { success: true, data: [...] }
-            const lugares = data.data || data;
-            console.log(lugares)
-            setLugares(lugares);
-        } catch (error) {
-            console.error('❌ Error al cargar lugares:', error);
+            setCargando(false);
         }
     };
 
     const handleInputChange = (field, value) => {
         setFormData(prev => ({ ...prev, [field]: value }));
-    };
 
+        // Limpiar campos según modalidad
+        if (field === 'modalidad') {
+            if (value === 'Virtual') {
+                setFormData(prev => ({ ...prev, id_lugar: '' }));
+            } else if (value === 'Presencial') {
+                setFormData(prev => ({ ...prev, url_virtual: '' }));
+            }
+        }
+    };
     const handleActividadChange = (index, field, value) => {
-        const nuevasActividades = [...formData.actividades];
+        const nuevasActividades = [...actividades];
         nuevasActividades[index][field] = value;
-        setFormData(prev => ({ ...prev, actividades: nuevasActividades }));
+        setActividades(nuevasActividades);
     };
 
     const agregarActividad = () => {
-        setFormData(prev => ({
+        setActividades(prev => [
             ...prev,
-            actividades: [
-                ...prev.actividades,
-                { nombre: '', fecha_inicio: '', hora_inicio: '', fecha_fin: '', hora_fin: '', descripcion: '' }
-            ]
-        }));
+            { titulo: '', descripcion: '', fecha_actividad: '', hora_inicio: '', hora_fin: '', esExistente: false }
+        ]);
     };
 
-    const eliminarActividad = (index) => {
-        if (formData.actividades.length > 1) {
-            const nuevasActividades = formData.actividades.filter((_, i) => i !== index);
-            setFormData(prev => ({ ...prev, actividades: nuevasActividades }));
+    const eliminarActividadLocal = async (index) => {
+        const actividad = actividades[index];
+
+        if (actividad.esExistente && actividad.id) {
+            // Si la actividad ya existe en BD, la marcamos para eliminar
+            if (window.confirm('¿Estás seguro de eliminar esta actividad? Esta acción no se puede deshacer.')) {
+                try {
+                    await eliminarActividad(actividad.id);
+                    setActividadesEliminadas(prev => [...prev, actividad.id]);
+                    setActividades(prev => prev.filter((_, i) => i !== index));
+                    setMensaje({ tipo: 'exito', texto: 'Actividad eliminada exitosamente' });
+                    setTimeout(() => setMensaje({ tipo: '', texto: '' }), 3000);
+                } catch (error) {
+                    console.error('Error al eliminar actividad:', error);
+                    setMensaje({ tipo: 'error', texto: 'Error al eliminar la actividad' });
+                }
+            }
+        } else {
+            // Si es nueva (no existe en BD), solo la quitamos del estado
+            if (actividades.length > 1) {
+                setActividades(prev => prev.filter((_, i) => i !== index));
+            }
         }
     };
-
     const validarFormulario = () => {
         if (!formData.titulo.trim()) {
             setMensaje({ tipo: 'error', texto: 'El nombre del evento es obligatorio' });
@@ -205,13 +202,10 @@ const CrearEventoPage = () => {
             setMensaje({ tipo: 'error', texto: 'La fecha de fin no puede ser anterior a la fecha de inicio' });
             return false;
         }
-        // PENDIENTE: Validación de ponente
-        /*
-        if (!formData.id_ponente) {
-            setMensaje({ tipo: 'error', texto: 'Debe seleccionar un ponente' });
+        if (formData.cupos && parseInt(formData.cupos) <= 0) {
+            setMensaje({ tipo: 'error', texto: 'Los cupos deben ser un número positivo' });
             return false;
         }
-        */
         return true;
     };
 
@@ -220,123 +214,99 @@ const CrearEventoPage = () => {
 
         if (!validarFormulario()) return;
 
-        setEnviando(true);
+        setGuardando(true);
         setMensaje({ tipo: '', texto: '' });
 
         try {
-            // Verificar que tenemos el token
-            const token = localStorage.getItem('access_token');
-            if (!token) {
-                throw new Error('No se encontró token de autenticación. Por favor, inicia sesión nuevamente.');
-            }
-
-            // Verificar que tenemos la empresa
-            if (!empresa || !empresa.id) {
-                throw new Error('No se pudo obtener la información de la empresa.');
-            }
-
-            const eventoData = {
-                titulo: formData.titulo,
-                descripcion: formData.descripcion_adicional || formData.titulo,
-                modalidad: formData.modalidad,
-                hora: formData.hora || '00:00',
-                cupos: parseInt(formData.cupos) || 0,
+            // Preparar datos
+            const datosActualizados = {
+                titulo: formData.titulo.trim(),
+                descripcion: formData.descripcion.trim(),
                 fecha_inicio: formData.fecha_inicio,
                 fecha_fin: formData.fecha_fin,
-                id_empresa: empresa.id,
-                // PENDIENTE: Campos de ponente y especialidad
-                // id_ponente: parseInt(formData.id_ponente),
-                // id_especialidad: formData.id_especialidad ? parseInt(formData.id_especialidad) : null,
-                id_lugar: formData.id_lugar ? parseInt(formData.id_lugar) : null,
-                actividades: formData.actividades.filter(act => act.nombre.trim() !== '') // Solo enviar actividades con nombre
+                cupos: parseInt(formData.cupos) || null,
+                modalidad: formData.modalidad,
+                estado: parseInt(formData.estado),
+                id_lugar: (formData.modalidad === 'Presencial' || formData.modalidad === 'Híbrido') && formData.id_lugar
+                    ? parseInt(formData.id_lugar)
+                    : null,
+                url_virtual: (formData.modalidad === 'Virtual' || formData.modalidad === 'Híbrido') && formData.url_virtual
+                    ? formData.url_virtual.trim()
+                    : null
             };
 
-            await crearEvento(eventoData);
-            setMensaje({ tipo: 'exito', texto: 'Evento creado exitosamente' });
-            const eventoCreado = await crearEvento(eventoData);
+            console.log('📤 Actualizando evento con:', datosActualizados);
 
-            const eventoId =
-                eventoCreado?.data?.id ||
-                eventoCreado?.id ||
-                eventoCreado?.evento?.id;
-
-            if (!eventoId) {
-                throw new Error('No se pudo obtener el ID del evento recién creado.');
-            }
-            setMostrarModalExito(true);
-            setTimeout(() => {
-                setMostrarModalExito(false);
-                navigate('/organizador');
-            }, 2500);
-
-
-            const actividadesValidas = formData.actividades.filter(
-                act => act.nombre.trim() !== ''
-            );
+            await actualizarEvento(id, datosActualizados);
+            // 2. Procesar actividades
+            const actividadesValidas = actividades.filter(act => act.titulo.trim() !== '');
 
             for (const actividad of actividadesValidas) {
                 const actividadData = {
-                    titulo: actividad.nombre,
-                    descripcion: actividad.descripcion || '',
-                    fecha_actividad: actividad.fecha_inicio || formData.fecha_inicio,
+                    titulo: actividad.titulo.trim(),
+                    descripcion: actividad.descripcion?.trim() || '',
+                    fecha_actividad: actividad.fecha_actividad || formData.fecha_inicio,
                     hora_inicio: actividad.hora_inicio || '00:00',
                     hora_fin: actividad.hora_fin || '00:00',
                     lugares: formData.id_lugar ? [parseInt(formData.id_lugar)] : []
                 };
 
-                console.log(`🧩 Creando actividad:`, actividadData);
-
-                await crearActividad(eventoId, actividadData);
+                if (actividad.esExistente && actividad.id) {
+                    // Actualizar actividad existente
+                    await actualizarActividad(actividad.id, actividadData);
+                    console.log(`✅ Actividad ${actividad.id} actualizada`);
+                } else {
+                    // Crear nueva actividad
+                    await crearActividad(id, actividadData);
+                    console.log(`✅ Nueva actividad creada`);
+                }
             }
 
-            console.log('🎉 Todas las actividades fueron creadas correctamente.');
+            setMensaje({ tipo: 'exito', texto: 'Evento y actividades actualizados exitosamente' });
+            setMostrarModalExito(true);
+
+            console.log('✅ Evento actualizado exitosamente');
+            setMensaje({ tipo: 'exito', texto: 'Evento actualizado exitosamente' });
+            setMostrarModalExito(true);
+
+            setTimeout(() => {
+                setMostrarModalExito(false);
+                navigate('/organizador');
+            }, 2500);
 
         } catch (error) {
-            console.error('❌ Error completo al crear evento:', error);
-
-            // Manejo específico de errores
-            let mensajeError = 'Error al crear el evento';
-
-            if (error.message?.includes('Token')) {
-                mensajeError = 'Sesión expirada. Por favor, inicia sesión nuevamente.';
-                setTimeout(() => navigate('/login'), 2000);
-            } else if (error.message?.includes('permisos')) {
-                mensajeError = 'No tienes permisos para crear eventos. Contacta al administrador.';
-            } else if (error.message) {
-                mensajeError = error.message;
-            }
-
-            setMensaje({
-                tipo: 'error',
-                texto: mensajeError
-            });
+            console.error('❌ Error al actualizar:', error);
+            const mensajeError = error.message || error.error || 'Error desconocido al actualizar';
+            setMensaje({ tipo: 'error', texto: 'Error al actualizar el evento: ' + mensajeError });
         } finally {
-            setEnviando(false);
+            setGuardando(false);
         }
     };
 
-    if (loading) {
+    // Loading state
+    if (cargando) {
         return (
             <div className="crear-evento-page">
                 <div className="loading-container">
                     <div className="spinner"></div>
-                    <p>Cargando información...</p>
+                    <p>Cargando evento...</p>
                 </div>
             </div>
         );
     }
 
-    // Si hay un error crítico y no se pudo cargar la empresa
-    if (!empresa) {
+    // Error state
+    if (error && !empresa) {
         return (
             <div className="crear-evento-page">
                 <div className="crear-evento-container">
                     <div className="error-container">
                         <AlertCircle size={64} color="#dc3545" />
-                        <h2>Error al Cargar Información</h2>
-                        <p>No se pudo obtener la información de tu empresa.</p>
+                        <h2>Error al Cargar Evento</h2>
+                        <p>{error}</p>
                         {mensaje.texto && (
                             <div className="mensaje-alert alert-error">
+                                <AlertCircle size={20} />
                                 <span>{mensaje.texto}</span>
                             </div>
                         )}
@@ -370,7 +340,7 @@ const CrearEventoPage = () => {
                     </button>
                     <div className="header-content-crear">
                         <Calendar size={28} className="header-icon" />
-                        <h1 className="page-title-crear">Crear Nuevo Evento</h1>
+                        <h1 className="page-title-crear">Editar Evento</h1>
                     </div>
                 </div>
 
@@ -391,7 +361,7 @@ const CrearEventoPage = () => {
                 )}
 
                 <form onSubmit={handleSubmit} className="form-crear-evento">
-                    <p className="form-hint">El evento debe incluir un nombre claro y una definición de la agenda o su asignación a fechas específicas antes del evento</p>
+                    <p className="form-hint">Actualiza la información del evento y sus actividades</p>
 
                     {/* Información Básica */}
                     <section className="form-section">
@@ -440,56 +410,42 @@ const CrearEventoPage = () => {
                                 />
                             </div>
                         </div>
-                        <p className="form-hint">El evento puede durar uno o varios días. Las actividades de la agenda se asignarán a fechas específicas dentro de este rango.</p>
-
-                        {/* PENDIENTE: Sección de Ponente y Especialidad */}
-                        {/*
-                        <div className="form-section-subtitle">Ponente</div>
 
                         <div className="form-row-crear">
                             <div className="form-group-crear">
                                 <label className="form-label-crear">
                                     <Users size={18} />
-                                    Seleccionar Ponente <span className="required">*</span>
+                                    Cupos Disponibles
                                 </label>
-                                <select
-                                    value={formData.id_ponente}
-                                    onChange={(e) => handleInputChange('id_ponente', e.target.value)}
-                                    className="form-select-crear"
-                                    required
-                                >
-                                    <option value="">-- Seleccione un ponente --</option>
-                                    {ponentes.map(ponente => (
-                                        <option key={ponente.id} value={ponente.id}>
-                                            {ponente.nombre} {ponente.apellido}
-                                        </option>
-                                    ))}
-                                </select>
-                                {ponentes.length === 0 && (
-                                    <p className="form-hint text-warning">No hay ponentes registrados para esta empresa</p>
-                                )}
+                                <input
+                                    type="number"
+                                    value={formData.cupos}
+                                    onChange={(e) => handleInputChange('cupos', e.target.value)}
+                                    placeholder="Número máximo de participantes"
+                                    className="form-input-crear"
+                                    min="1"
+                                />
+                                <p className="form-hint">Deja vacío para cupos ilimitados</p>
                             </div>
 
                             <div className="form-group-crear">
                                 <label className="form-label-crear">
-                                    <FileText size={18} />
-                                    Especialidad del Ponente
+                                    Estado del Evento <span className="required">*</span>
                                 </label>
                                 <select
-                                    value={formData.id_especialidad}
-                                    onChange={(e) => handleInputChange('id_especialidad', e.target.value)}
+                                    value={formData.estado}
+                                    onChange={(e) => handleInputChange('estado', e.target.value)}
                                     className="form-select-crear"
+                                    required
                                 >
-                                    <option value="">-- Seleccione especialidad --</option>
-                                    {especialidades.map(especialidad => (
-                                        <option key={especialidad.id} value={especialidad.id}>
-                                            {especialidad.nombre}
+                                    {ESTADOS.map(estado => (
+                                        <option key={estado.value} value={estado.value}>
+                                            {estado.label}
                                         </option>
                                     ))}
                                 </select>
                             </div>
                         </div>
-                        */}
                     </section>
 
                     {/* Ubicación */}
@@ -535,12 +491,13 @@ const CrearEventoPage = () => {
                             <div className="form-group-crear">
                                 <label className="form-label-crear">
                                     <Building2 size={18} />
-                                    Lugar Físico <span className="required">*</span>
+                                    Lugar Físico {formData.modalidad === 'Presencial' && <span className="required">*</span>}
                                 </label>
                                 <select
                                     value={formData.id_lugar}
                                     onChange={(e) => handleInputChange('id_lugar', e.target.value)}
                                     className="form-select-crear"
+                                    required={formData.modalidad === 'Presencial'}
                                 >
                                     <option value="">-- Seleccione un lugar --</option>
                                     {Array.isArray(lugares) ? (
@@ -554,13 +511,26 @@ const CrearEventoPage = () => {
                                             {lugares.nombre} — {lugares.ubicacion?.direccion}
                                         </option>
                                     )}
-
-
                                 </select>
-                                <p className="form-hint">Los lugares registrados incluyen capacidad y dirección</p>
                                 {lugares.length === 0 && (
-                                    <p className="form-hint text-warning">No hay lugares registrados para esta empresa</p>
+                                    <p className="form-hint text-warning">No hay lugares registrados</p>
                                 )}
+                            </div>
+                        )}
+
+                        {(formData.modalidad === 'Virtual' || formData.modalidad === 'Híbrido') && (
+                            <div className="form-group-crear">
+                                <label className="form-label-crear">
+                                    URL Virtual {formData.modalidad === 'Virtual' && <span className="required">*</span>}
+                                </label>
+                                <input
+                                    type="url"
+                                    value={formData.url_virtual}
+                                    onChange={(e) => handleInputChange('url_virtual', e.target.value)}
+                                    placeholder="https://meet.google.com/xxx-xxxx-xxx"
+                                    className="form-input-crear"
+                                    required={formData.modalidad === 'Virtual'}
+                                />
                             </div>
                         )}
                     </section>
@@ -568,17 +538,30 @@ const CrearEventoPage = () => {
                     {/* Agenda del Evento */}
                     <section className="form-section">
                         <h2 className="section-title">Agenda del Evento</h2>
-                        <p className="section-description">Actividades Programadas*</p>
+                        <p className="section-description">Actividades Programadas</p>
 
-                        {formData.actividades.map((actividad, index) => (
+                        {actividades.map((actividad, index) => (
                             <div key={index} className="actividad-card">
                                 <div className="actividad-header">
-                                    <h3 className="actividad-title">Actividad {index + 1}</h3>
-                                    {formData.actividades.length > 1 && (
+                                    <h3 className="actividad-title">
+                                        Actividad {index + 1}
+                                        {actividad.esExistente && (
+                                            <span style={{
+                                                marginLeft: '0.5rem',
+                                                fontSize: '0.75rem',
+                                                color: '#667eea',
+                                                fontWeight: 'normal'
+                                            }}>
+                                                (Guardada)
+                                            </span>
+                                        )}
+                                    </h3>
+                                    {actividades.length > 1 && (
                                         <button
                                             type="button"
-                                            onClick={() => eliminarActividad(index)}
+                                            onClick={() => eliminarActividadLocal(index)}
                                             className="btn-eliminar-actividad"
+                                            title={actividad.esExistente ? "Eliminar de la base de datos" : "Quitar actividad"}
                                         >
                                             <Trash2 size={16} />
                                         </button>
@@ -589,8 +572,8 @@ const CrearEventoPage = () => {
                                     <label className="form-label-crear">Nombre de la Actividad</label>
                                     <input
                                         type="text"
-                                        value={actividad.nombre}
-                                        onChange={(e) => handleActividadChange(index, 'nombre', e.target.value)}
+                                        value={actividad.titulo}
+                                        onChange={(e) => handleActividadChange(index, 'titulo', e.target.value)}
                                         placeholder="Ej: Conferencia inaugural"
                                         className="form-input-crear"
                                     />
@@ -601,8 +584,8 @@ const CrearEventoPage = () => {
                                         <label className="form-label-crear">Fecha:</label>
                                         <input
                                             type="date"
-                                            value={actividad.fecha_inicio}
-                                            onChange={(e) => handleActividadChange(index, 'fecha_inicio', e.target.value)}
+                                            value={actividad.fecha_actividad}
+                                            onChange={(e) => handleActividadChange(index, 'fecha_actividad', e.target.value)}
                                             className="form-input-crear"
                                         />
                                     </div>
@@ -652,36 +635,16 @@ const CrearEventoPage = () => {
                         </button>
                     </section>
 
-                    {/* Información Adicional */}
+                    {/* Detalles Adicionales */}
                     <section className="form-section">
-                        <h2 className="section-title">Información Adicional</h2>
-
-                        <div className="form-row-crear">
-                            <div className="form-group-crear">
-                                <label className="form-label-crear">
-                                    <Users size={18} />
-                                    Cupos Disponibles <span className="required">*</span>
-                                </label>
-                                <input
-                                    type="number"
-                                    value={formData.cupos}
-                                    onChange={(e) => handleInputChange('cupos', e.target.value)}
-                                    placeholder="Número máximo de participantes"
-                                    className="form-input-crear"
-                                    min="1"
-                                />
-                            </div>
-
-                        </div>
+                        <h2 className="section-title">Detalles Adicionales</h2>
 
                         <div className="form-group-crear">
-                            <label className="form-label-crear">
-                                Descripción Adicional
-                            </label>
+                            <label className="form-label-crear">Descripción Adicional</label>
                             <textarea
-                                value={formData.descripcion_adicional}
-                                onChange={(e) => handleInputChange('descripcion_adicional', e.target.value)}
-                                placeholder="Información adicional sobre el evento, requisitos, público objetivo, etc."
+                                value={formData.descripcion}
+                                onChange={(e) => handleInputChange('descripcion', e.target.value)}
+                                placeholder="Información adicional sobre el evento"
                                 className="form-textarea-crear"
                                 rows="5"
                             />
@@ -694,27 +657,29 @@ const CrearEventoPage = () => {
                             type="button"
                             onClick={() => navigate('/organizador')}
                             className="btn-cancelar-crear"
+                            disabled={guardando}
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
-                            disabled={enviando}
+                            disabled={guardando}
                             className="btn-submit-crear"
                         >
                             <Save size={20} />
-                            {enviando ? 'Creando Evento...' : 'Crear Evento'}
+                            {guardando ? 'Guardando Cambios...' : 'Guardar Cambios'}
                         </button>
                     </div>
                 </form>
             </div>
+
             {/* Modal de éxito */}
             {mostrarModalExito && (
                 <div className="modal-overlay">
                     <div className="modal-exito">
                         <CheckCircle size={48} color="#28a745" />
-                        <h2>¡Evento creado exitosamente!</h2>
-                        <p>Serás redirigido al panel del organizador.</p>
+                        <h2>¡Evento actualizado exitosamente!</h2>
+                        <p>Las actividades también han sido actualizadas.</p>
                         <button
                             className="btn-submit-crear"
                             onClick={() => {
@@ -727,9 +692,7 @@ const CrearEventoPage = () => {
                     </div>
                 </div>
             )}
-
         </div>
     );
 };
-
-export default CrearEventoPage;
+export default EditarEventoPage;

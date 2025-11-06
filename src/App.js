@@ -21,6 +21,7 @@ import AfiliacionesRechazadas from './pages/empresa/afiliacionesRechazadas';
 import CrearOrganizador from './pages/gerente/CrearOrganizadorPage';
 import Ubicaciones from './pages/gerente/ubicaciones';
 import Lugares from './pages/gerente/lugares';
+import EditarEventoPage from './pages/organizador/EditarEventoPage';
 
 import OrganizerDashboard from './pages/organizador/OrganizerDashboard';
 import CrearEventoPage from './pages/organizador/CrearEventoPage';
@@ -87,12 +88,12 @@ function App() {
           path="/asistente"
           element={
             <AsistenteRoute>
-              <Asistente/>
+              <Asistente />
             </AsistenteRoute>
           }
         />
 
-        
+
 
         {/*Ruta para gestión de empresa*/}
         <Route
@@ -140,6 +141,7 @@ function App() {
           }
         />
         <Route path="/eventos/crear" element={<CrearEventoPage />} />
+        <Route path="/eventos/editar/:id" element={<EditarEventoPage />} />
 
         {/*Gestion de roles (subruta de asistente)*/}
 

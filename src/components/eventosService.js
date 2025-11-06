@@ -194,3 +194,51 @@ export const crearActividad = async (eventoId, actividadData) => {
     }
 };
 
+export const obtenerActividadesEvento = async (eventoId) => {
+    try {
+        console.log(`🔍 Obteniendo actividades del evento ${eventoId}...`);
+        const response = await axios.get(
+            `${API_URL}/${eventoId}/actividades`,
+            getHeaders()
+        );
+        console.log('✅ Actividades obtenidas:', response.data);
+        return response.data;
+    } catch (error) {
+        console.error("❌ Error al obtener actividades:", error);
+        throw error.response?.data || error;
+    }
+};
+
+// ✏️ Actualizar una actividad
+export const actualizarActividad = async (actividadId, datosActualizados) => {
+    try {
+        console.log(`✏️ Actualizando actividad ${actividadId}:`, datosActualizados);
+        const response = await axios.put(
+            `http://localhost:3000/api/actividades/${actividadId}`,
+            datosActualizados,
+            getHeaders()
+        );
+        console.log('✅ Actividad actualizada:', response.data);
+        return response.data;
+    } catch (error) {
+        console.error("❌ Error al actualizar actividad:", error);
+        throw error.response?.data || error;
+    }
+};
+
+// 🗑️ Eliminar una actividad
+export const eliminarActividad = async (actividadId) => {
+    try {
+        console.log(`🗑️ Eliminando actividad ${actividadId}...`);
+        const response = await axios.delete(
+            `http://localhost:3000/api/actividades/${actividadId}`,
+            getHeaders()
+        );
+        console.log('✅ Actividad eliminada:', response.data);
+        return response.data;
+    } catch (error) {
+        console.error("❌ Error al eliminar actividad:", error);
+        throw error.response?.data || error;
+    }
+};
+
