@@ -245,7 +245,6 @@ const EventosPage = () => {
                 </div>
             )}
 
-            {/* 👁️ Modal de visualización de evento */}
             {modalVerVisible && eventoAVer && (
                 <div className="modal-overlay">
                     <div className="modal-content modal-ver-evento">
@@ -258,109 +257,92 @@ const EventosPage = () => {
 
                         <div className="modal-header-ver">
                             <h2 className="modal-title-ver">{eventoAVer.titulo}</h2>
-                            <span className={`estado-badge estado-${ESTADOS_EVENTO[eventoAVer.estado]?.clase || 'desconocido'}`}>
+                            <span className={`estado-badge-modal estado-${ESTADOS_EVENTO[eventoAVer.estado]?.clase || 'desconocido'}`}>
                                 {ESTADOS_EVENTO[eventoAVer.estado]?.texto || 'Desconocido'}
                             </span>
                         </div>
 
                         <div className="modal-body-ver">
-                            {/* Descripción */}
-                            <div className="detalle-section">
-                                <div className="detalle-header">
-                                    <FileText size={18} />
-                                    <h3>Descripción</h3>
-                                </div>
-                                <p className="detalle-text">{eventoAVer.descripcion || 'Sin descripción'}</p>
-                            </div>
-
-                            {/* Fechas */}
-                            <div className="detalle-section">
-                                <div className="detalle-header">
-                                    <Calendar size={18} />
-                                    <h3>Fechas del Evento</h3>
-                                </div>
-                                <div className="detalle-grid">
-                                    <div className="detalle-item">
-                                        <span className="detalle-label">Inicio:</span>
-                                        <span className="detalle-value">
-                                            {new Date(eventoAVer.fecha_inicio).toLocaleDateString('es-ES', {
-                                                weekday: 'long',
-                                                year: 'numeric',
-                                                month: 'long',
-                                                day: 'numeric'
-                                            })}
-                                        </span>
-                                    </div>
-                                    <div className="detalle-item">
-                                        <span className="detalle-label">Fin:</span>
-                                        <span className="detalle-value">
-                                            {new Date(eventoAVer.fecha_fin).toLocaleDateString('es-ES', {
-                                                weekday: 'long',
-                                                year: 'numeric',
-                                                month: 'long',
-                                                day: 'numeric'
-                                            })}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Modalidad y Cupos */}
-                            <div className="detalle-section">
-                                <div className="detalle-header">
-                                    <Users size={18} />
-                                    <h3>Información de Asistencia</h3>
-                                </div>
-                                <div className="detalle-grid">
-                                    <div className="detalle-item">
-                                        <span className="detalle-label">Modalidad:</span>
-                                        <span className="detalle-value detalle-badge">{eventoAVer.modalidad}</span>
-                                    </div>
-                                    <div className="detalle-item">
-                                        <span className="detalle-label">Cupos disponibles:</span>
-                                        <span className="detalle-value">{eventoAVer.cupos} personas</span>
-                                    </div>
-                                    <div className="detalle-item">
-                                        <span className="detalle-label">Inscritos actuales:</span>
-                                        <span className="detalle-value">0/{eventoAVer.cupos}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Ubicación */}
-                            {eventoAVer.modalidad !== 'Virtual' && eventoAVer.ubicacion && (
-                                <div className="detalle-section">
+                            {eventoAVer.descripcion && (
+                                <div className="detalle-card">
                                     <div className="detalle-header">
-                                        <MapPin size={18} />
-                                        <h3>Ubicación</h3>
+                                        <div className="icon-circle blue">
+                                            <FileText size={18} />
+                                        </div>
+                                        <h3>Descripción</h3>
                                     </div>
-                                    <p className="detalle-text">{eventoAVer.ubicacion}</p>
+                                    <p className="detalle-text">{eventoAVer.descripcion}</p>
                                 </div>
                             )}
 
-                            {/* Fechas de sistema */}
-                            <div className="detalle-section detalle-system">
+                            <div className="detalle-card">
                                 <div className="detalle-header">
-                                    <Clock size={18} />
-                                    <h3>Información del Sistema</h3>
+                                    <div className="icon-circle yellow">
+                                        <Calendar size={18} />
+                                    </div>
+                                    <h3>Fechas del Evento</h3>
                                 </div>
-                                <div className="detalle-grid">
-                                    <div className="detalle-item">
-                                        <span className="detalle-label">Creado:</span>
-                                        <span className="detalle-value">
-                                            {new Date(eventoAVer.created_at).toLocaleString('es-ES')}
+                                <div className="detalle-grid-two">
+                                    <div className="info-box">
+                                        <span className="info-label">Inicio</span>
+                                        <span className="info-value">
+                                            {new Date(eventoAVer.fecha_inicio).toLocaleDateString('es-ES', {
+                                                day: 'numeric',
+                                                month: 'long',
+                                                year: 'numeric'
+                                            })}
                                         </span>
                                     </div>
-                                    {eventoAVer.updated_at && (
-                                        <div className="detalle-item">
-                                            <span className="detalle-label">Última actualización:</span>
-                                            <span className="detalle-value">
-                                                {new Date(eventoAVer.updated_at).toLocaleString('es-ES')}
-                                            </span>
-                                        </div>
-                                    )}
+                                    <div className="info-box">
+                                        <span className="info-label">Fin</span>
+                                        <span className="info-value">
+                                            {new Date(eventoAVer.fecha_fin).toLocaleDateString('es-ES', {
+                                                day: 'numeric',
+                                                month: 'long',
+                                                year: 'numeric'
+                                            })}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
+
+                            <div className="detalle-card">
+                                <div className="detalle-header">
+                                    <div className="icon-circle blue">
+                                        <Users size={18} />
+                                    </div>
+                                    <h3>Información de Asistencia</h3>
+                                </div>
+                                <div className="detalle-grid-three">
+                                    <div className="info-box">
+                                        <span className="info-label">Modalidad</span>
+                                        <span className="info-badge">{eventoAVer.modalidad}</span>
+                                    </div>
+                                    <div className="info-box">
+                                        <span className="info-label">Cupos totales</span>
+                                        <span className="info-value">{eventoAVer.cupos}</span>
+                                    </div>
+                                    <div className="info-box">
+                                        <span className="info-label">Inscritos</span>
+                                        <span className="info-value">0/{eventoAVer.cupos}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {eventoAVer.modalidad !== 'Virtual' && eventoAVer.lugar && (
+                                <div className="detalle-card">
+                                    <div className="detalle-header">
+                                        <div className="icon-circle yellow">
+                                            <MapPin size={18} />
+                                        </div>
+                                        <h3>Ubicación</h3>
+                                    </div>
+                                    <p className="detalle-text location-text">
+                                        <MapPin size={16} />
+                                        {eventoAVer.lugar.nombre} - {eventoAVer.lugar.ubicacion?.direccion || 'Sin dirección'}
+                                    </p>
+                                </div>
+                            )}
                         </div>
 
                         <div className="modal-footer-ver">
