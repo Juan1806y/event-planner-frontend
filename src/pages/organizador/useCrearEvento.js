@@ -89,18 +89,27 @@ export const useEvento = (idEvento = null) => {
 
     useEffect(() => {
         if (!empresa?.id) return;
+
         const cargar = async () => {
             try {
                 if (!ubicacionSeleccionada) {
                     setLugares([]);
+                    setFormData(prev => ({ ...prev, id_lugar: '' }));
                     return;
                 }
                 const data = await obtenerLugares(empresa.id, ubicacionSeleccionada);
-                setLugares(Array.isArray(data.data) ? data.data : [data.data]);
-            } catch {
+                const lugaresFiltrados = Array.isArray(data.data)
+                    ? data.data.filter(l => String(l.id_ubicacion) === String(ubicacionSeleccionada))
+                    : [];
+
+                setLugares(lugaresFiltrados);
+                setFormData(prev => ({ ...prev, id_lugar: '' }));
+            } catch (error) {
                 setLugares([]);
+                setFormData(prev => ({ ...prev, id_lugar: '' }));
             }
         };
+
         cargar();
     }, [ubicacionSeleccionada, empresa?.id]);
 
@@ -236,8 +245,11 @@ export const useEvento = (idEvento = null) => {
         ubicacionSeleccionada,
         setUbicacionSeleccionada,
         lugares,
+        setLugares,
         formData,
+        setFormData,
         actividades,
+        setActividades,
         mensaje,
         loading,
         cargando,
@@ -249,8 +261,6 @@ export const useEvento = (idEvento = null) => {
         setMostrarModalExito,
         setMostrarModalError,
         handleInputChange,
-        setFormData,
-        setActividades,
         guardarEvento,
         handleSubmit,
         errorCupos,

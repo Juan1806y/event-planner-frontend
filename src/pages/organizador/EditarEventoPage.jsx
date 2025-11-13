@@ -56,6 +56,7 @@ const EditarEventoPage = () => {
         }
     }, [mostrarModalExito, navigate, setMostrarModalExito]);
 
+
     if (cargando) {
         return (
             <div className="crear-evento-page">

@@ -50,11 +50,13 @@ export const obtenerUbicaciones = async (idEmpresa) => {
 };
 
 export const obtenerLugares = async (idEmpresa, idUbicacion = null) => {
-    const config = {
-        ...getHeaders(),
-        params: idUbicacion ? { id_ubicacion: idUbicacion } : {}
-    };
-    const response = await axios.get(`http://localhost:3000/api/empresas/${idEmpresa}/lugares`, config);
+    let url = `http://localhost:3000/api/empresas/${idEmpresa}/lugares`;
+
+    if (idUbicacion) {
+        url += `?id_ubicacion=${idUbicacion}`;
+    }
+
+    const response = await axios.get(url, getHeaders());
     return response.data;
 };
 
