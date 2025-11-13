@@ -1,7 +1,7 @@
 import React from 'react';
 import {
     Calendar, Users, Building2,
-    CheckCircle, AlertCircle, ArrowLeft, Plus, Trash2, Save, MapPin
+    CheckCircle, AlertCircle, ArrowLeft, Save, MapPin
 } from 'lucide-react';
 import { useEvento } from './useCrearEvento';
 import './CrearEventoPage.css';

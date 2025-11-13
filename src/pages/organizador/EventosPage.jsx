@@ -72,15 +72,6 @@ const EventosPage = () => {
 
             const eventoEliminado = eventosActualizados.data.find(e => e.id === eventoAEliminar.id);
 
-            if (eventoEliminado) {
-                console.error('❌ EL EVENTO NO SE ELIMINÓ DEL BACKEND');
-                console.error('El evento ID', eventoAEliminar.id, 'aún existe en la BD');
-                alert('⚠️ ERROR: El evento no se eliminó correctamente en el servidor. Contacta al desarrollador del backend.');
-            } else {
-                console.log('✅ Evento eliminado correctamente');
-                alert('✅ Evento eliminado exitosamente');
-            }
-
             setEventos(eventosActualizados.data);
 
         } catch (error) {

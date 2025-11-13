@@ -12,7 +12,6 @@ import {
 } from '../../components/eventosService';
 import { useNavigate } from 'react-router-dom';
 
-
 export const useEvento = (idEvento = null) => {
     const navigate = useNavigate();
     const [empresa, setEmpresa] = useState(null);
@@ -29,22 +28,34 @@ export const useEvento = (idEvento = null) => {
         cupos: '',
         estado: 0,
         url_virtual: '',
+        descripcion_adicional: ''
     });
     const [actividades, setActividades] = useState([
         { titulo: '', descripcion: '', fecha_actividad: '', hora_inicio: '', hora_fin: '' },
     ]);
     const [mensaje, setMensaje] = useState({ tipo: '', texto: '' });
+    const [loading, setLoading] = useState(true);
     const [cargando, setCargando] = useState(true);
     const [errorCupos, setErrorCupos] = useState({ mostrar: false, mensaje: '', capacidadLugar: 0 });
     const [guardando, setGuardando] = useState(false);
+    const [enviando, setEnviando] = useState(false);
+    const [mostrarModalExito, setMostrarModalExito] = useState(false);
+    const [mostrarModalError, setMostrarModalError] = useState(false);
+    const [error, setError] = useState(null);
+
     const handleVolver = () => {
-        console.log('Volviendo al organizador...');
+        navigate('/organizador');
+    };
+
+    const handleCerrarModal = () => {
+        setMostrarModalExito(false);
         navigate('/organizador');
     };
 
     useEffect(() => {
         const cargarDatos = async () => {
             try {
+                setLoading(true);
                 setCargando(true);
                 const perfil = await obtenerPerfil();
                 const empresaId = perfil.data?.usuario?.rolData?.id_empresa;
@@ -56,14 +67,25 @@ export const useEvento = (idEvento = null) => {
                 const lugaresData = await obtenerLugares(empresaId);
                 setLugares(Array.isArray(lugaresData.data) ? lugaresData.data : [lugaresData.data]);
                 if (idEvento) await cargarEvento(idEvento);
-            } catch {
+            } catch (err) {
+                setError('Error al cargar datos');
                 setMensaje({ tipo: 'error', texto: 'Error al cargar datos' });
             } finally {
+                setLoading(false);
                 setCargando(false);
             }
         };
         cargarDatos();
     }, [idEvento]);
+
+    useEffect(() => {
+        if (mostrarModalExito) {
+            const timer = setTimeout(() => {
+                handleCerrarModal();
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [mostrarModalExito]);
 
     useEffect(() => {
         if (!empresa?.id) return;
@@ -97,6 +119,7 @@ export const useEvento = (idEvento = null) => {
                 cupos: evento.cupos ?? '',
                 estado: evento.estado ?? 0,
                 url_virtual: evento.url_virtual ?? '',
+                descripcion_adicional: evento.descripcion_adicional ?? ''
             });
             if (evento.id_lugar && lugares.length) {
                 const lugar = lugares.find(l => String(l.id) === String(evento.id_lugar));
@@ -171,7 +194,10 @@ export const useEvento = (idEvento = null) => {
             return false;
         }
         if ((formData.modalidad === 'Presencial' || formData.modalidad === 'Híbrido') && formData.id_lugar && formData.cupos) {
-            if (!validarCuposContraCapacidad(formData.id_lugar, formData.cupos)) return false;
+            if (!validarCuposContraCapacidad(formData.id_lugar, formData.cupos)) {
+                setMostrarModalError(true);
+                return false;
+            }
         }
         return true;
     };
@@ -179,6 +205,7 @@ export const useEvento = (idEvento = null) => {
     const guardarEvento = async () => {
         if (!validarFormulario()) return;
         setGuardando(true);
+        setEnviando(true);
         try {
             const eventoGuardado = idEvento
                 ? await actualizarEvento(idEvento, formData)
@@ -189,15 +216,18 @@ export const useEvento = (idEvento = null) => {
                 if (act.id) await actualizarActividad(act.id, act);
                 else await crearActividad(eventoId, act);
             }
-            setMensaje({
-                tipo: 'exito',
-                texto: idEvento ? 'Evento actualizado correctamente' : 'Evento creado exitosamente',
-            });
+            setMostrarModalExito(true);
         } catch {
             setMensaje({ tipo: 'error', texto: 'Error al guardar el evento' });
         } finally {
             setGuardando(false);
+            setEnviando(false);
         }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        await guardarEvento();
     };
 
     return {
@@ -209,15 +239,24 @@ export const useEvento = (idEvento = null) => {
         formData,
         actividades,
         mensaje,
+        loading,
         cargando,
         guardando,
+        enviando,
+        error,
+        mostrarModalExito,
+        mostrarModalError,
+        setMostrarModalExito,
+        setMostrarModalError,
         handleInputChange,
         setFormData,
         setActividades,
         guardarEvento,
+        handleSubmit,
         errorCupos,
         setErrorCupos,
         obtenerCapacidadLugar,
-        handleVolver
+        handleVolver,
+        handleCerrarModal
     };
 };

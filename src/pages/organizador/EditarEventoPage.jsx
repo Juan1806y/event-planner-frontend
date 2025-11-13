@@ -1,5 +1,5 @@
 // src/pages/EventosPage/EditarEventoPage.jsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
     Calendar,
@@ -9,7 +9,8 @@ import {
     Building2,
     Users,
     CheckCircle,
-    XCircle, MapPin
+    XCircle,
+    MapPin
 } from 'lucide-react';
 import { useEvento } from './useCrearEvento';
 import './CrearEventoPage.css';
@@ -29,7 +30,6 @@ const EditarEventoPage = () => {
         cargando,
         guardando,
         error,
-        mensaje,
         mostrarModalExito,
         mostrarModalError,
         errorCupos,
@@ -45,6 +45,16 @@ const EditarEventoPage = () => {
         ubicacionSeleccionada,
         setUbicacionSeleccionada
     } = useEvento(id);
+
+    useEffect(() => {
+        if (mostrarModalExito) {
+            const timer = setTimeout(() => {
+                setMostrarModalExito(false);
+                navigate('/organizador');
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [mostrarModalExito, navigate, setMostrarModalExito]);
 
     if (cargando) {
         return (
@@ -80,7 +90,6 @@ const EditarEventoPage = () => {
     return (
         <div className="crear-evento-page">
             <div className="crear-evento-container">
-                {/* Header */}
                 <div className="page-header-crear">
                     <button onClick={() => navigate('/organizador')} className="btn-back">
                         <ArrowLeft size={20} />
@@ -91,7 +100,6 @@ const EditarEventoPage = () => {
                     </div>
                 </div>
 
-                {/* Empresa Info */}
                 {empresa && (
                     <div className="empresa-info-header">
                         <Building2 size={20} />
@@ -99,24 +107,15 @@ const EditarEventoPage = () => {
                     </div>
                 )}
 
-                {/* Mensajes */}
-                {mensaje.texto && (
-                    <div className={`mensaje-alert ${mensaje.tipo === 'exito' ? 'alert-exito' : 'alert-error'}`}>
-                        {mensaje.tipo === 'exito' ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
-                        <span>{mensaje.texto}</span>
-                    </div>
-                )}
-
                 <form
                     onSubmit={(e) => {
                         e.preventDefault();
-                        guardarEvento(); // 👈 Llama al hook
+                        guardarEvento();
                     }}
                     className="form-crear-evento"
                 >
                     <p className="form-hint">Actualiza la información del evento y sus actividades</p>
 
-                    {/* Información Básica */}
                     <section className="form-section">
                         <h2 className="section-title">Información Básica</h2>
 
@@ -203,7 +202,6 @@ const EditarEventoPage = () => {
                         </div>
                     </section>
 
-                    {/* Ubicación */}
                     <section className="form-section">
                         <h2 className="section-title">Ubicación</h2>
 
@@ -244,7 +242,6 @@ const EditarEventoPage = () => {
 
                         {(formData.modalidad === 'Presencial' || formData.modalidad === 'Híbrido') && (
                             <>
-                                {/* 🔹 Nuevo campo: Selección de ubicación */}
                                 <div className="form-group-crear">
                                     <label className="form-label-crear">
                                         <MapPin size={18} />
@@ -261,7 +258,6 @@ const EditarEventoPage = () => {
                                                 {ubicacion.lugar}
                                             </option>
                                         ))}
-
                                     </select>
                                     {Array.isArray(ubicaciones) && ubicaciones.length === 0 && (
                                         <p className="form-hint text-warning">
@@ -270,7 +266,6 @@ const EditarEventoPage = () => {
                                     )}
                                 </div>
 
-                                {/* 🔹 Campo existente: Selección de lugar */}
                                 <div className="form-group-crear">
                                     <label className="form-label-crear">
                                         <Building2 size={18} />
@@ -280,7 +275,7 @@ const EditarEventoPage = () => {
                                         value={formData.id_lugar}
                                         onChange={(e) => handleInputChange('id_lugar', e.target.value)}
                                         className="form-select-crear"
-                                        disabled={!ubicacionSeleccionada} // 👈 evita seleccionar sin ubicación
+                                        disabled={!ubicacionSeleccionada}
                                     >
                                         <option value="">-- Seleccione un lugar --</option>
                                         {Array.isArray(lugares) ? (
@@ -308,7 +303,6 @@ const EditarEventoPage = () => {
                         )}
                     </section>
 
-                    {/* Botones */}
                     <div className="form-actions-crear">
                         <button
                             type="button"
@@ -330,26 +324,16 @@ const EditarEventoPage = () => {
                 </form>
             </div>
 
-            {/* Modal de éxito */}
             {mostrarModalExito && (
                 <div className="modal-overlay">
                     <div className="modal-exito">
                         <CheckCircle size={48} color="#28a745" />
-                        <h2>¡Evento actualizado exitosamente!</h2>
-                        <button
-                            className="btn-submit-crear"
-                            onClick={() => {
-                                setMostrarModalExito(false);
-                                navigate('/organizador');
-                            }}
-                        >
-                            Aceptar
-                        </button>
+                        <h2>¡Evento actualizado correctamente!</h2>
+                        <p>Redirigiendo...</p>
                     </div>
                 </div>
             )}
 
-            {/* Modal de error */}
             {mostrarModalError && (
                 <div className="modal-overlay">
                     <div className="modal-exito" style={{ borderTop: '4px solid #dc3545' }}>
