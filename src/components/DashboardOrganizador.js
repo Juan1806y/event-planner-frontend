@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Users, FileText, Settings } from 'lucide-react';
+import { obtenerPerfil, obtenerEventos } from './eventosService';
 
 export const useOrganizerDashboard = () => {
     const navigate = useNavigate();
@@ -47,58 +48,57 @@ export const useOrganizerDashboard = () => {
     // Mueve fetchEventos fuera del useEffect
     const fetchEventos = async () => {
         try {
-            const token = localStorage.getItem('access_token');
-            const response = await fetch('http://localhost:3000/api/eventos/', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+            const perfil = await obtenerPerfil();
+            const idCreador = perfil?.data?.usuario?.id
+            if (!idCreador) return;
 
-            if (!response.ok) throw new Error('Error al obtener los eventos');
+            const data = await obtenerEventos();
+            const eventos = Array.isArray(data?.data) ? data.data : [];
 
-            const data = await response.json();
+            const eventosDelCreador = eventos.filter(ev =>
+                String(ev.id_creador) === String(idCreador)
+            );
 
-            // Accedemos correctamente al array de eventos
-            const eventos = Array.isArray(data.data) ? data.data : [];
+            const eventosPublicados = eventosDelCreador.filter(ev => ev.estado === 1);
 
-            // Filtramos los eventos publicados (estado = 1)
-            const eventosPublicados = eventos.filter(ev => ev.estado === 1);
-
-            // Eventos del mes actual
             const now = new Date();
             const mesActual = now.getMonth();
             const anioActual = now.getFullYear();
 
-            const eventosMes = eventos.filter(ev => {
-                if (!ev.fecha_inicio) return false; // Evita errores si la fecha es null o undefined
+            const eventosMes = eventosDelCreador.filter(ev => {
+                if (!ev.fecha_inicio) return false;
                 const fecha = new Date(ev.fecha_inicio);
-
-                const mes = fecha.getUTCMonth();      // 0-11
-                const anio = fecha.getUTCFullYear();  // Año completo
-
-                return mes === mesActual && anio === anioActual;
+                return (
+                    fecha.getUTCMonth() === mesActual &&
+                    fecha.getUTCFullYear() === anioActual
+                );
             });
 
-
-            // Últimos 5 eventos
             const eventosRecientes = [...eventosPublicados]
                 .sort((a, b) => new Date(b.fecha_inicio) - new Date(a.fecha_inicio))
                 .slice(0, 5);
-            console.log(eventosRecientes)
-            // Actualizamos el estado
+
             setStats([
                 { label: 'Eventos Activos', value: eventosPublicados.length, color: 'bg-blue' },
                 { label: 'Eventos del Mes', value: eventosMes.length, color: 'bg-purple' }
             ]);
 
-            setRecentEvents(eventosRecientes.map(ev => ({
-                name: ev.nombre || ev.titulo,
-                date: new Date(ev.fecha_inicio).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' }),
-                status: ev.estado === 1 ? 'Publicado' : 'Borrador'
-            })));
-
+            setRecentEvents(
+                eventosRecientes.map(ev => ({
+                    name: ev.nombre || ev.titulo,
+                    date: new Date(ev.fecha_inicio).toLocaleDateString('es-CO', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric'
+                    }),
+                    status: ev.estado === 1 ? 'Publicado' : 'Borrador'
+                }))
+            );
         } catch (error) {
-            console.error('Error al cargar los eventos:', error);
+            console.error('❌ Error al cargar los eventos:', error);
         }
     };
+
 
     // Llamada automática al montar
     useEffect(() => {

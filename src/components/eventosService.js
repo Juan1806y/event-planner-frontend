@@ -38,6 +38,7 @@ export const eliminarEvento = async (id) => {
 
 export const obtenerPerfil = async () => {
     const response = await axios.get(`http://localhost:3000/api/auth/profile`, getHeaders());
+    console.log("Actuaaaaal", response.data)
     return response.data;
 };
 

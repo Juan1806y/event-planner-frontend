@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Plus, Search, Edit, Eye, Trash2, X, MapPin, Users, Clock, FileText } from 'lucide-react';
 import {
-    obtenerEventos,
-    eliminarEvento,
+    obtenerEventos, eliminarEvento, obtenerPerfil
 } from "../../components/eventosService";
 import './EventosPage.css';
 
@@ -26,13 +25,16 @@ const EventosPage = () => {
 
     const cargarEventos = async () => {
         try {
+            const perfil = await obtenerPerfil();
+            const idCreador =
+                perfil?.data?.usuario?.id || perfil?.data?.id || null;
             const data = await obtenerEventos();
-            setEventos(data.data);
+            const eventosDelCreador = Array.isArray(data.data)
+                ? data.data.filter(e => String(e.id_creador) === String(idCreador))
+                : [];
+            setEventos(eventosDelCreador);
         } catch (error) {
-            console.error("Error al cargar eventos:", error.message);
-            if (error.message?.includes("Token inválido")) {
-                alert("Tu sesión ha expirado. Por favor, vuelve a iniciar sesión.");
-            }
+            console.error("❌ Error al cargar eventos:", error);
         }
     };
 
