@@ -1,7 +1,7 @@
 // components/OrganizerComponents.jsx
 import React from 'react';
 import { Lock, X, Eye, EyeOff, Menu, LogOut } from 'lucide-react';
-import EventosPage from './EventosPage'; // Ajusta la ruta según tu estructura
+import EventosPage from './EventosPageOrganizador'; // Ajusta la ruta según tu estructura
 import './OrganizerDashboard.css';
 import ActividadesPage from './ActividadesPage';
 

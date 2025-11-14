@@ -2,6 +2,9 @@
     min-height: 100vh;
     background: #f8f9fa;
     padding: 2rem;
+    width: 75%;
+    margin-left: 350px;
+    box-sizing: border-box;
 }
 
 .agenda-container {

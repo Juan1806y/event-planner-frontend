@@ -16,6 +16,7 @@ import {
     obtenerPerfil
 } from '../../components/eventosService';
 import './CrearActividadPage.css';
+import Sidebar from './Sidebar';
 
 const TIPOS_ACTIVIDAD = [
     'Conferencia',
@@ -118,7 +119,7 @@ const CrearActividadPage = () => {
 
     return (
         <div className="crear-actividad-page">
-
+            <Sidebar />
             <div className="actividad-container">
                 <div className="page-header-actividad">
                     <Calendar size={28} className="header-icon-actividad" />

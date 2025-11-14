@@ -1,6 +1,9 @@
 .actividades-page {
     min-height: 100vh;
     padding: 2rem;
+    width: 75%;
+    margin-left: 350px;
+    box-sizing: border-box;
 }
 
 .actividades-container {

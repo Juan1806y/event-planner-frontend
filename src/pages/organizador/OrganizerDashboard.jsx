@@ -2,19 +2,17 @@
 import React from 'react';
 import { useOrganizerDashboard } from '../../components/DashboardOrganizador';
 import {
-    Sidebar,
     Header,
     MainContent,
     PasswordModal
 } from './OrganizerComponents';
 import './OrganizerDashboard.css';
+import Sidebar from './Sidebar';
 
 export default function OrganizerDashboard() {
     const {
         activeSection,
         isSidebarOpen,
-        user,
-        menuItems,
         stats,
         recentEvents,
         showPasswordModal,
@@ -23,27 +21,18 @@ export default function OrganizerDashboard() {
         passwordError,
         passwordSuccess,
         isLoading,
-        handleMenuClick,
         toggleSidebar,
-        openPasswordModal,
         closePasswordModal,
         handlePasswordChange,
         togglePasswordVisibility,
-        handleSubmitPassword,
-        onLogout
+        handleSubmitPassword
     } = useOrganizerDashboard();
 
     return (
         <div className="dashboard-container">
-            <Sidebar
-                isOpen={isSidebarOpen}
-                user={user}
-                menuItems={menuItems}
-                activeSection={activeSection}
-                onMenuClick={handleMenuClick}
-                onOpenPasswordModal={openPasswordModal}
-                onLogout={onLogout}
-            />
+
+            {/* Sidebar totalmente autónomo */}
+            <Sidebar />
 
             <div className="dashboard-main">
                 <Header

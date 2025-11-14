@@ -11,7 +11,6 @@ import {
     MapPin,
     Users,
     FileText,
-    Sidebar
 } from 'lucide-react';
 import {
     obtenerEventoPorId,
@@ -19,6 +18,7 @@ import {
     eliminarActividad
 } from '../../components/eventosService';
 import './GestionarAgendaPage.css';
+import Sidebar from './Sidebar';
 
 const TIPO_ACTIVIDAD = {
     'Conferencia': { color: '#e0f2fe', textColor: '#0369a1' },
@@ -101,6 +101,7 @@ const GestionarAgendaPage = () => {
 
     return (
         <div className="gestionar-agenda-page">
+            <Sidebar />
             <div className="agenda-container">
                 <div className="page-header-agenda">
                     <Calendar size={28} className="header-icon-agenda" />

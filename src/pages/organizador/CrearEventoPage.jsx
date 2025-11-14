@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { useEvento } from './useCrearEvento';
 import './CrearEventoPage.css';
+import Sidebar from './Sidebar'
 
 const CrearEventoPage = () => {
     const {
@@ -64,6 +65,7 @@ const CrearEventoPage = () => {
 
     return (
         <div className="crear-evento-page">
+            <Sidebar />
             <div className="crear-evento-container">
                 {/* Header */}
                 <div className="page-header-crear">

@@ -5,6 +5,7 @@ import {
     obtenerEventos, eliminarEvento, obtenerPerfil
 } from "../../components/eventosService";
 import './EventosPage.css';
+import Sidebar from './Sidebar'
 
 const ESTADOS_EVENTO = {
     0: { texto: 'Borrador', clase: 'inactivo' },
@@ -13,7 +14,7 @@ const ESTADOS_EVENTO = {
     3: { texto: 'Finalizado', clase: 'cancelado' },
 };
 
-const EventosPage = () => {
+const EventosPageOrganizador = () => {
     const navigate = useNavigate();
     const [eventos, setEventos] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -95,6 +96,7 @@ const EventosPage = () => {
 
     return (
         <div className="eventos-page">
+            <Sidebar />
             <div className="eventos-container">
                 {/* Header */}
                 <div className="page-header">
@@ -376,4 +378,4 @@ const EventosPage = () => {
     );
 };
 
-export default EventosPage;
+export default EventosPageOrganizador;

@@ -29,6 +29,7 @@ import GestionarAgendaPage from './pages/organizador/GestionarAgendaPage';
 import CrearActividadPage from './pages/organizador/CrearActividadPage';
 import EditarActividadPage from './pages/organizador/EditarActividadPage';
 import ActividadesPage from './pages/organizador/ActividadesPage';
+import EventosPageOrganizador from './pages/organizador/EventosPageOrganizador';
 function App() {
   return (
     <BrowserRouter>
@@ -57,7 +58,7 @@ function App() {
         {/*<Route path="/gerente/solicitudes" element={<GerenteSolicitudes />} />
         <Route path="/gerente/configuracion" element={<GerenteConfiguracion />} />*/}
         <Route path="/gerente/crear-organizador" element={<CrearOrganizador />} />
-        <Route path="/gerente/eventos" element={<EventosPage />}/>
+        <Route path="/gerente/eventos" element={<EventosPage />} />
 
         {/* Ruta del panel de administración */}
         <Route
@@ -139,6 +140,7 @@ function App() {
             </PrivateRoute>
           }
         />
+        <Route path="/eventos" element={<EventosPageOrganizador />} />
         <Route path="/eventos/crear" element={<CrearEventoPage />} />
         <Route path="/eventos/editar/:id" element={<EditarEventoPage />} />
         <Route path="/organizador/eventos/:eventoId/agenda" element={<GestionarAgendaPage />} />

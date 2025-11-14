@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Calendar, MapPin, Users, Clock, ChevronRight } from 'lucide-react';
 import { obtenerPerfil, obtenerEventos, obtenerActividadesEvento } from '../../components/eventosService';
 import './ActividadesPage.css';
+import Sidebar from './Sidebar';
 
 const ActividadesPage = () => {
     const navigate = useNavigate();
@@ -81,6 +82,7 @@ const ActividadesPage = () => {
 
     return (
         <div className="actividades-page">
+            <Sidebar />
             <div className="actividades-container">
                 <div className="agenda-header">
                     <div className="header-icon-box">

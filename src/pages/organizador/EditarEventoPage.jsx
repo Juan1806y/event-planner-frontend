@@ -10,10 +10,11 @@ import {
     Users,
     CheckCircle,
     XCircle,
-    MapPin
+    MapPin,
 } from 'lucide-react';
 import { useEvento } from './useCrearEvento';
 import './CrearEventoPage.css';
+import Sidebar from './Sidebar';
 
 const ESTADOS = [
     { value: 0, label: 'Borrador' },
@@ -90,6 +91,7 @@ const EditarEventoPage = () => {
 
     return (
         <div className="crear-evento-page">
+            <Sidebar />
             <div className="crear-evento-container">
                 <div className="page-header-crear">
                     <button onClick={() => navigate('/organizador')} className="btn-back">
