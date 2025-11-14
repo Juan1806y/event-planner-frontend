@@ -1,0 +1,244 @@
+.crear-actividad-page {
+    min-height: 100vh;
+    background: #f8f9fa;
+    padding: 2rem;
+}
+
+.actividad-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.page-header-actividad {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.header-icon-actividad {
+    color: #667eea;
+}
+
+.page-header-actividad h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0;
+}
+
+.info-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    background: linear-gradient(135deg, #fff7e6 0%, #ffe8cc 100%);
+    border: 2px solid #ffd699;
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.info-banner svg {
+    color: #f59e0b;
+    flex-shrink: 0;
+    margin-top: 0.2rem;
+}
+
+.info-banner p {
+    color: #4a5568;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.form-actividad {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.form-section-actividad {
+    margin-bottom: 2rem;
+}
+
+.section-title-actividad {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0 0 1.5rem 0;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #f7fafc;
+}
+
+.form-group-actividad {
+    margin-bottom: 1.5rem;
+}
+
+.form-label-actividad {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #4a5568;
+    margin-bottom: 0.5rem;
+}
+
+.form-label-actividad svg {
+    color: #667eea;
+}
+
+.required {
+    color: #dc3545;
+}
+
+.form-input-actividad,
+.form-textarea-actividad,
+.form-select-actividad {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.form-input-actividad:focus,
+.form-textarea-actividad:focus,
+.form-select-actividad:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-textarea-actividad {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.input-error {
+    border-color: #dc3545;
+}
+
+.input-error:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+.error-message {
+    display: block;
+    color: #dc3545;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+}
+
+.form-row-actividad {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.form-actions-actividad {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid #f7fafc;
+}
+
+.btn-cancelar-actividad {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.5rem;
+    background: transparent;
+    border: 2px solid #e2e8f0;
+    color: #4a5568;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-cancelar-actividad:hover {
+    background: #f7fafc;
+    border-color: #cbd5e0;
+}
+
+.btn-submit-actividad {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-submit-actividad:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.btn-submit-actividad:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    gap: 1rem;
+}
+
+.spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid #e2e8f0;
+    border-top-color: #667eea;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 768px) {
+    .crear-actividad-page {
+        padding: 1rem;
+    }
+
+    .actividad-container {
+        max-width: 100%;
+    }
+
+    .form-actividad {
+        padding: 1.5rem;
+    }
+
+    .form-row-actividad {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions-actividad {
+        flex-direction: column;
+    }
+
+    .btn-cancelar-actividad,
+    .btn-submit-actividad {
+        width: 100%;
+        justify-content: center;
+    }
+}

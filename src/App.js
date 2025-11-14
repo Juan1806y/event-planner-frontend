@@ -25,6 +25,10 @@ import EditarEventoPage from './pages/organizador/EditarEventoPage';
 
 import OrganizerDashboard from './pages/organizador/OrganizerDashboard';
 import CrearEventoPage from './pages/organizador/CrearEventoPage';
+import GestionarAgendaPage from './pages/organizador/GestionarAgendaPage';
+import CrearActividadPage from './pages/organizador/CrearActividadPage';
+import EditarActividadPage from './pages/organizador/EditarActividadPage';
+import ActividadesPage from './pages/organizador/ActividadesPage';
 function App() {
   return (
     <BrowserRouter>
@@ -142,6 +146,24 @@ function App() {
         />
         <Route path="/eventos/crear" element={<CrearEventoPage />} />
         <Route path="/eventos/editar/:id" element={<EditarEventoPage />} />
+        <Route path="/organizador/eventos/:eventoId/agenda" element={<GestionarAgendaPage />} />
+        <Route
+          path="/organizador/eventos/:eventoId/actividades/crear"
+          element={<CrearActividadPage />}
+        />
+
+        <Route
+          path="/organizador/actividades/:idActividad/editar"
+          element={<EditarActividadPage />}
+        />
+
+
+        <Route
+          path="/organizador/agenda"
+          element={<ActividadesPage />}
+        />
+
+
 
         {/*Gestion de roles (subruta de asistente)*/}
 

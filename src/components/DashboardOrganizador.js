@@ -1,7 +1,7 @@
 // components/DashboardOrganizador.js
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Users, FileText, Settings } from 'lucide-react';
+import { Calendar, Users, FileText, Settings, CalendarCheck } from 'lucide-react';
 import { obtenerPerfil, obtenerEventos } from './eventosService';
 
 export const useOrganizerDashboard = () => {
@@ -33,6 +33,7 @@ export const useOrganizerDashboard = () => {
     const menuItems = [
         { id: 'eventos', label: 'Eventos', icon: Calendar },
         { id: 'asistentes', label: 'Asistentes', icon: Users },
+        { id: 'actividades', label: 'Agenda', icon: CalendarCheck },
         { id: 'configuracion', label: 'Configuración', icon: Settings }
     ];
 
