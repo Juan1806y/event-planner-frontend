@@ -142,7 +142,9 @@ const EventosPage = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {eventosFiltrados.length === 0 ? (
+                            {eventos.filter(evento =>
+                                evento.titulo.toLowerCase().includes(searchTerm.toLowerCase())
+                            ).length === 0 ? (
                                 <tr>
                                     <td colSpan="7" className="empty-state">
                                         <Calendar size={48} className="empty-icon" />
@@ -156,7 +158,9 @@ const EventosPage = () => {
                                     </td>
                                 </tr>
                             ) : (
-                                eventosFiltrados.map((evento) => (
+                                eventos.filter(evento =>
+                                    evento.titulo.toLowerCase().includes(searchTerm.toLowerCase())
+                                ).map((evento) => (
                                     <tr key={evento.id}>
                                         <td className="evento-nombre">{evento.titulo}</td>
                                         <td>{new Date(evento.fecha_inicio).toLocaleDateString('es-ES')}</td>

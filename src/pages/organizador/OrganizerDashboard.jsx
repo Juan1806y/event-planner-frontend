@@ -2,12 +2,12 @@
 import React from 'react';
 import { useOrganizerDashboard } from '../../components/DashboardOrganizador';
 import {
+    Sidebar,
     Header,
     MainContent,
     PasswordModal
 } from './OrganizerComponents';
 import './OrganizerDashboard.css';
-import Sidebar from './Sidebar';
 
 export default function OrganizerDashboard() {
     const {

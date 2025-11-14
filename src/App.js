@@ -3,11 +3,9 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Dashboard from './components/Dashboard';
 import Admin from './pages/admin/admin';
-import Asistente from './pages/asistente/asistente';
 import Roles from './pages/admin/roles';
 import PrivateRoute from './components/PrivateRoute';
 import AdminRoute from './components/AdminRoute';
-import AsistenteRoute from './components/AsistenteRoute';
 import Empresa from './pages/empresa/empresa';
 import Usuarios from './pages/admin/usuarios';
 import AdminLogin from './pages/AdminLogin';
@@ -18,10 +16,12 @@ import ActualizarEmpresa from './pages/gerente/ActualizarEmpresa';
 import AfiliacionesAprobadas from './pages/empresa/afiliacionesAprobadas';
 import AfiliacionesPendientes from './pages/empresa/afiliacionesPendientes';
 import AfiliacionesRechazadas from './pages/empresa/afiliacionesRechazadas';
+import EventosPage from './pages/gerente/eventosPage';
 import CrearOrganizador from './pages/gerente/CrearOrganizadorPage';
 import Ubicaciones from './pages/gerente/ubicaciones';
 import Lugares from './pages/gerente/lugares';
 import EditarEventoPage from './pages/organizador/EditarEventoPage';
+import Asistente from './pages/asistente/asistente';
 
 import OrganizerDashboard from './pages/organizador/OrganizerDashboard';
 import CrearEventoPage from './pages/organizador/CrearEventoPage';
@@ -57,6 +57,7 @@ function App() {
         {/*<Route path="/gerente/solicitudes" element={<GerenteSolicitudes />} />
         <Route path="/gerente/configuracion" element={<GerenteConfiguracion />} />*/}
         <Route path="/gerente/crear-organizador" element={<CrearOrganizador />} />
+        <Route path="/gerente/eventos" element={<EventosPage />}/>
 
         {/* Ruta del panel de administración */}
         <Route
@@ -88,14 +89,8 @@ function App() {
         />
 
         {/* Ruta para asistentes */}
-        <Route
-          path="/asistente"
-          element={
-            <AsistenteRoute>
-              <Asistente />
-            </AsistenteRoute>
-          }
-        />
+        <Route path="/asistente" element={<Asistente />} />
+        <Route path="/asistente/eventos" element={<Asistente />} />
 
 
 

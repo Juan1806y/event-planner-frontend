@@ -1,0 +1,115 @@
+import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import styles from './sidebar.module.css';
+import campana from '../../assets/notifications.png';
+import hamburgerIcon from '../../assets/hamburgerIcon.png';
+import logoIcon from '../../assets/evento-remove.png';
+import calendarEvento from '../../assets/calendarEvento.png'
+
+const Sidebar = ({onToggle}) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  const toggleSidebar = () => {
+    const newCollapsedState = !isCollapsed;
+    setIsCollapsed(newCollapsedState);
+
+    if(onToggle){
+      onToggle(newCollapsedState);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
+  const isActive = (path) => location.pathname === path;
+
+  return (
+    <aside className={`${styles.rectangleParent} ${isCollapsed ? styles.collapsed : ''}`}>
+      <div className={styles.groupChild} />
+      
+      <button
+        className={styles.hamburgerIcon}
+        onClick={toggleSidebar}
+        title={isCollapsed ? 'Expandir menú' : 'Colapsar menú'}
+      >
+        <img
+          src={hamburgerIcon}
+          alt="menu toggle"
+          onError={(e) => {
+            e.target.style.display = 'none';
+            const parent = e.target.parentElement;
+            if (!parent.querySelector('.fallbackHamburger')) {
+              const fallback = document.createElement('div');
+              fallback.className = 'fallbackHamburger';
+              fallback.innerHTML = `
+                <div style="width: 20px; height: 2px; background: white; margin: 4px 0;"></div>
+                <div style="width: 20px; height: 2px; background: white; margin: 4px 0;"></div>
+                <div style="width: 20px; height: 2px; background: white; margin: 4px 0;"></div>
+              `;
+              parent.appendChild(fallback);
+            }
+          }}
+        />
+      </button>
+      
+      <div className={styles.logoSection}>
+        {!isCollapsed ? (
+          <div className={styles.panelDeAdministracin}>Panel de Asistente</div>
+        ) : (
+          <img
+            src={logoIcon}
+            alt="Event Planner"
+            className={styles.logoCollapsed}
+          />
+        )}
+      </div>
+
+      <div className={styles.menuContainer}>
+        <div className={styles.menuItem}>
+          <div 
+            className={`${styles.menuItemContent} ${
+              isActive('/asistente/eventos') ? styles.activeMenuItem : ''
+            }`}
+            onClick={() => navigate('/asistente/eventos')}
+            title={isCollapsed ? 'Eventos' : ''}
+          >
+            <img src={calendarEvento} alt="Evento Icon" className={styles.menuIcon} />
+            {!isCollapsed && <span className={styles.menuLabel}>Eventos</span>}
+          </div>
+        </div>
+
+        <div className={styles.menuItem}>
+          <div 
+            className={`${styles.menuItemContent} ${
+              isActive('/asistente/agenda') ? styles.activeMenuItem : ''
+            }`}
+            onClick={() => navigate('/asistente/agenda')}
+            title={isCollapsed ? 'Agenda' : ''}
+          >
+            <img src={campana} alt="Agenda Icon" className={styles.menuIcon} />
+            {!isCollapsed && <span className={styles.menuLabel}>Agenda</span>}
+          </div>
+        </div>
+      </div>
+
+      <button 
+        className={styles.logoutButton}
+        onClick={handleLogout}
+        title="Cerrar Sesión"
+      >
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className={styles.logoutIcon}>
+          <path d="M13 3h3a2 2 0 012 2v10a2 2 0 01-2 2h-3M8 16l-5-5 5-5M3 11h11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        {!isCollapsed && <span>Cerrar Sesión</span>}
+      </button>
+    </aside>
+    
+  );
+};
+
+export default Sidebar;

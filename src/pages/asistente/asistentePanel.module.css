@@ -1,796 +1,1553 @@
-.asistentePanel {
-  width: 100%;
-  background-color: #f2e6cf;
-  min-height: 100vh;
-  overflow-x: hidden;
-  color: #6c757d;
-  font-family: 'Inter', sans-serif;
-}
-
-.app {
-  width: 100%;
-  max-width: 1440px;
+.asistenteContainer {
+  max-width: 1200px;
   margin: 0 auto;
-  background-color: transparent;
-  box-sizing: border-box;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.pageTitle {
+  color: #2C5F7C;
+  font-size: 2.5rem;
+  margin-bottom: 8px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.pageSubtitle {
+  color: #6c757d;
+  font-size: 1.2rem;
+  margin-bottom: 32px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* Loading */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #2C5F7C;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Navegación */
+.navigationButtons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.navButton {
+  padding: 14px 24px;
+  border: 2px solid #2C5F7C;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2C5F7C;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navButton:hover {
+  background: #f0f7ff;
+  transform: translateY(-2px);
+}
+
+.navButtonActive {
+  background: #2C5F7C;
+  color: white;
+  box-shadow: 0 4px 12px rgba(44, 95, 124, 0.3);
+}
+
+.navButtonActive:hover {
+  background: #1E4157;
+  transform: translateY(-2px);
+}
+
+/* Filtros */
+.filtersCard {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 32px;
+  border: 1px solid #e9ecef;
+}
+
+.filterGroup {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.filterIcon {
+  font-size: 1.4rem;
+  color: #2C5F7C;
+}
+
+.filterSelect {
+  padding: 12px 16px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 1rem;
+  min-width: 250px;
+  background: white;
+  transition: border-color 0.3s ease;
+}
+
+.filterSelect:focus {
+  outline: none;
+  border-color: #2C5F7C;
+}
+
+.btnClearFilter {
+  padding: 12px 24px;
+  border: 2px solid #6c757d;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.btnClearFilter:hover:not(:disabled) {
+  background: #6c757d;
+  color: white;
+}
+
+.btnClearFilter:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Grid de eventos */
+.eventsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.eventCard {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e9ecef;
   position: relative;
-  padding-top: 20px;
-}
-.container {
-	position: relative;
-	margin: 20px auto 0 auto;
-	border-radius: 23px;
-	background-color: #fff;
-	width: 90%;
-	max-width: 1082.8px;
-	min-height: 600px;
-	font-size: 32px;
-	font-family: 'Montserrat', sans-serif;
-	box-sizing: border-box;
-	padding-bottom: 40px;
-}
-.asistentePanelContainer {
-  	border-radius: 23px 23px 0px 0px;
-  	background-color: #e9ecef;
-  	width: 100%;
-  	height: 64px;
-  	display: flex;
-  	flex-direction: column;
-  	align-items: flex-start;
-  	padding: 20px 40px 0px;
-  	box-sizing: border-box;
-}
-.paragraph {
-  	align-self: stretch;
-  	height: 24px;
-  	position: relative;
-}
-.catlogoDeEventos {
-  	position: absolute;
-  	top: 0.4px;
-  	left: 0px;
-  	line-height: 24px;
-}
-.container2 {
-  	border-radius: 10px;
-  	background-color: #caf0f8;
-  	width: calc(100% - 80px);
-  	margin: 20px 40px;
-  	height: 106px;
-  	display: flex;
-  	align-items: flex-start;
-  	padding: 20px 0px 0px 20px;
-  	box-sizing: border-box;
-  	gap: 16px;
-  	font-size: 20px;
-  	color: #03045e;
-}
-.alertcircleIcon {
-  	height: 39px;
-  	width: 38px;
-}
-.container3 {
-  	height: 49px;
-  	flex: 1;
-  	display: flex;
-  	flex-direction: column;
-  	align-items: flex-start;
-  	gap: 4px;
-}
-.asistentePanelParagraph {
-  	align-self: stretch;
-  	height: 22.5px;
-  	position: relative;
-}
-.instrucciones {
-  	position: absolute;
-  	top: -1.4px;
-  	left: 0px;
-  	line-height: 22.5px;
-}
-.paragraph2 {
-  	align-self: stretch;
-  	height: 22.5px;
-  	position: relative;
-  	font-size: 18px;
-}
-.exploreTodosLos {
-  	line-height: 22.5px;
-  	display: inline-block;
-  	width: 100%;
-}
-.container4 {
-  	border-radius: 10px;
-  	background-color: #f8f9fa;
-  	width: calc(100% - 80px);
-  	margin: 20px 40px;
-  	height: 153px;
-  	font-size: 24px;
-  	color: #343a40;
-  	font-family: 'Jaldi', sans-serif;
-}
-.container5 {
-  	width: calc(100% - 40px);
-  	margin: 20px;
-  	height: 44px;
-  	display: flex;
-  	align-items: center;
-  	gap: 8px;
-}
-.icon {
-  	height: 30px;
-  	width: 30px;
-  	position: relative;
-}
-.paragraph3 {
-  	height: 24px;
-  	width: 120.5px;
-  	position: relative;
+  overflow: hidden;
 }
 
-.filtrosDeBsqueda {
-	display: inline-block;
-	white-space: nowrap;
+.eventCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
 }
-.container6 {
-  	width: calc(100% - 40px);
-  	margin: 0 20px;
-  	height: 51px;
-  	font-size: 20px;
-  	color: #0a0a0a;
-  	font-family: 'Arimo', sans-serif;
-  	display: flex;
-  	align-items: center;
-  	gap: 20px;
-}
-.primitivebutton {
-  	border-radius: 10px;
-  	background-color: #fff;
-  	border: 0.8px solid #343a40;
-  	box-sizing: border-box;
-  	width: 300px;
-  	height: 36px;
-  	display: flex;
-  	align-items: center;
-  	justify-content: space-between;
-  	padding: 0px 12px;
-  	gap: 20px;
-}
-.primitivespan {
-  	height: 20px;
-  	flex: 1;
-  	overflow: hidden;
-  	flex-shrink: 0;
-  	display: flex;
-  	align-items: center;
-}
-.todosLosEstados {
-  	width: 100%;
-  	position: relative;
-  	line-height: 20px;
-  	display: inline-block;
-  	flex-shrink: 0;
-	white-space: nowrap;
-}
-.asistentePanelIcon {
-  	height: 16px;
-  	width: 16px;
-  	position: relative;
-  	opacity: 0.5;
-}
-.asistentePanelPrimitivebutton {
-  	border-radius: 10px;
-  	background-color: #fff;
-  	border: 0.8px solid #343a40;
-  	box-sizing: border-box;
-  	width: 300px;
-  	height: 36px;
-  	display: flex;
-  	align-items: center;
-  	justify-content: space-between;
-  	padding: 0px 12px;
-  	gap: 20px;
-}
-.asistentePanelPrimitivespan {
-  	height: 20px;
-  	flex: 1;
-  	overflow: hidden;
-  	flex-shrink: 0;
-  	display: flex;
-  	align-items: center;
-}
-.todosLosTipos {
-  	width: 100%;
-  	position: relative;
-  	line-height: 20px;
-  	display: inline-block;
-  	flex-shrink: 0;
-}
-.container7 {
-  	width: 300px;
-  	height: 36px;
-  	color: #717182;
-  	position: relative;
-}
-.input {
-  	border-radius: 10px;
-  	background-color: #fff;
-  	border: 0.8px solid #343a40;
-  	box-sizing: border-box;
-  	width: 100%;
-  	height: 36px;
-  	overflow: hidden;
-  	display: flex;
-  	align-items: center;
-  	padding: 4px 12px 4px 40px;
-}
-.buscarEvento {
-  	width: 100%;
-  	position: relative;
-  	display: inline-block;
-  	flex-shrink: 0;
-}
-.icon3 {
-  	position: absolute;
-  	top: 10px;
-  	left: 12px;
-  	width: 16px;
-  	height: 16px;
-}
-.label {
-  	width: calc(100% - 40px);
-  	margin: 10px 20px;
-  	height: 21px;
-  	display: flex;
-  	align-items: center;
-  	gap: 8px;
-  	color: #495057;
-}
-.checkbox {
-  	height: 16px;
-  	width: 16px;
-  	position: relative;
-}
-.text {
-  	height: 21px;
-  	flex: 1;
-  	position: relative;
-}
-.mostrarEventosCancelados {
-  	position: absolute;
-  	top: -0.6px;
-  	left: 0px;
-  	line-height: 21px;
-}
-.container8 {
-  	width: calc(100% - 80px);
-  	margin: 20px 40px;
-  	font-size: 12px;
-  	color: #fff;
-  	font-family: 'Arimo', sans-serif;
-  	display: grid;
-  	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  	gap: 20px;
-  	padding: 20px 0;
-}
-.eventcard {
-  	box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1), 0px 1px 2px -1px rgba(0, 0, 0, 0.1);
-  	border-radius: 15px;
-  	background-color: #fff;
-  	width: 100%;
-  	max-width: 318.3px;
-  	height: 353.8px;
-  	overflow: hidden;
-  	display: flex;
-  	flex-direction: column;
-  	align-items: flex-start;
-}
-.container9 {
-  	align-self: stretch;
-  	height: 180px;
-  	position: relative;
-  	overflow: hidden;
-  	flex-shrink: 0;
-}
-.imagewithfallbackIcon {
-  	position: absolute;
-  	top: 0px;
-  	left: 0px;
-  	width: 318.3px;
-  	height: 180px;
-  	object-fit: cover;
-}
-.badge {
-  	position: absolute;
-  	top: 15.6px;
-  	left: 249.24px;
-  	border-radius: 8px;
-  	background-color: #74d67b;
-  	width: 57px;
-  	height: 20px;
-  	overflow: hidden;
-  	display: flex;
-  	align-items: center;
-  	justify-content: center;
-  	padding: 2px 8px;
-  	box-sizing: border-box;
-}
-.abierto {
-  	flex: 1;
-  	position: relative;
-  	line-height: 16px;
-}
-.container10 {
-  	align-self: stretch;
-  	height: 173.8px;
-  	display: flex;
-  	flex-direction: column;
-  	align-items: flex-start;
-  	padding: 16px 16px 0px;
-  	box-sizing: border-box;
-  	gap: 12px;
-  	font-size: 20px;
-  	color: #03045e;
-}
-.heading3 {
-  	align-self: stretch;
-  	height: 48px;
-  	position: relative;
-  	overflow: hidden;
-  	flex-shrink: 0;
-}
-.conferenciaAnualDe {
-  	position: absolute;
-  	top: -2px;
-  	left: 0px;
-  	line-height: 24px;
-  	display: inline-block;
-  	width: 286px;
-}
-.container11 {
-  	align-self: stretch;
-  	height: 81.8px;
-  	display: flex;
-  	flex-direction: column;
-  	align-items: flex-start;
-  	gap: 8px;
-  	font-size: 16px;
-  	color: #495057;
-}
-.container12 {
-  	align-self: stretch;
-  	height: 19.5px;
-  	display: flex;
-  	align-items: center;
-  	gap: 8px;
-}
-.asistentePanelText {
-  	height: 19.5px;
-  	width: 133.7px;
-  	position: relative;
-}
-.deNoviembre2025 {
-  	position: absolute;
-  	top: -1px;
-  	left: 0px;
-  	line-height: 19.5px;
-  	display: inline-block;
-  	width: 196px;
-}
-.text2 {
-  	height: 19px;
-  	width: 262px;
-  	position: relative;
-  	overflow: hidden;
-  	flex-shrink: 0;
-}
-.centroDeConvenciones {
-  	position: absolute;
-  	top: -1.5px;
-  	left: 0px;
-  	line-height: 19.5px;
-  	display: inline-block;
-  	width: 277px;
-}
-.container14 {
-  	align-self: stretch;
-  	height: 26.8px;
-  	border-top: 0.8px solid #e9ecef;
-  	box-sizing: border-box;
-  	display: flex;
-  	align-items: center;
-  	justify-content: space-between;
-  	gap: 20px;
-  	font-size: 14px;
-}
-.text3 {
-  	height: 18px;
-  	width: 52.8px;
-  	position: relative;
-}
-.presencial {
-  	position: absolute;
-  	top: -1.2px;
-  	left: 0px;
-  	line-height: 18px;
-}
-.container15 {
-  	height: 18px;
-  	width: 39.4px;
-  	display: flex;
-  	align-items: center;
-  	gap: 4px;
-  	font-size: 16px;
-}
-.text4 {
-  	height: 18px;
-  	width: 19.4px;
-  	position: relative;
-}
-.asistentePanelEventcard {
-  	box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1), 0px 1px 2px -1px rgba(0, 0, 0, 0.1);
-  	border-radius: 15px;
-  	background-color: #fff;
-  	width: 100%;
-  	max-width: 318.3px;
-  	height: 353.8px;
-  	overflow: hidden;
-  	display: flex;
-  	flex-direction: column;
-  	align-items: flex-start;
-}
-.festivalDeMsica {
-  	position: absolute;
-  	top: -2px;
-  	left: -0.26px;
-  	line-height: 24px;
-  	display: inline-block;
-  	width: 210px;
-}
-.asistentePanelDeNoviembre2025 {
-  	position: absolute;
-  	top: -1px;
-  	left: -0.26px;
-  	line-height: 19.5px;
-  	display: inline-block;
-  	width: 196px;
-}
-.text6 {
-  	height: 19px;
-  	width: 231px;
-  	position: relative;
-  	overflow: hidden;
-  	flex-shrink: 0;
-}
-.parqueSimnBolvar {
-  	position: absolute;
-  	top: -1.5px;
-  	left: -0.26px;
-  	line-height: 19.5px;
-  	display: inline-block;
-  	width: 253px;
-}
-.eventcard2 {
-  	box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1), 0px 1px 2px -1px rgba(0, 0, 0, 0.1);
-  	border-radius: 15px;
-  	background-color: #fff;
-  	width: 100%;
-  	max-width: 318.3px;
-  	height: 353.8px;
-  	overflow: hidden;
-  	display: flex;
-  	flex-direction: column;
-  	align-items: flex-start;
-}
-.badge2 {
-  	position: absolute;
-  	top: 15.6px;
-  	left: 242.45px;
-  	border-radius: 8px;
-  	background-color: #118ab2;
-  	width: 63.8px;
-  	height: 20px;
-  	overflow: hidden;
-  	display: flex;
-  	align-items: center;
-  	justify-content: center;
-  	padding: 2px 8px;
-  	box-sizing: border-box;
-}
-.enCurso {
-  	position: relative;
-  	line-height: 16px;
-}
-.reuninEstratgicaDe {
-  	position: absolute;
-  	top: -2px;
-  	left: 0.48px;
-  	line-height: 24px;
-  	display: inline-block;
-  	width: 247px;
-}
-.text9 {
-  	height: 19.5px;
-  	width: 116.5px;
-  	position: relative;
-}
-.deOctubre2025 {
-  	position: absolute;
-  	top: -1px;
-  	left: 0.48px;
-  	line-height: 19.5px;
-  	display: inline-block;
-  	width: 172px;
-}
-.text10 {
-  	height: 19px;
-  	width: 179px;
-  	position: relative;
-  	overflow: hidden;
-  	flex-shrink: 0;
-}
-.hotelHiltonMedelln {
-  	position: absolute;
-  	top: -1.5px;
-  	left: 0.48px;
-  	line-height: 19.5px;
-  	display: inline-block;
-  	width: 179px;
-}
-.container29 {
-  	height: 18px;
-  	width: 32.9px;
-  	display: flex;
-  	align-items: center;
-  	gap: 4px;
-  	font-size: 16px;
-}
-.icon12 {
-  	height: 16px;
-  	flex: 1;
-  	position: relative;
-  	max-width: 100%;
-  	overflow: hidden;
-}
-.text12 {
-  	height: 18px;
-  	width: 12.9px;
-  	position: relative;
-}
-.eventcard3 {
-  	box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1), 0px 1px 2px -1px rgba(0, 0, 0, 0.1);
-  	border-radius: 15px;
-  	background-color: #fff;
-  	width: 100%;
-  	max-width: 318.3px;
-  	height: 353.8px;
-  	overflow: hidden;
-  	display: flex;
-  	flex-direction: column;
-  	align-items: flex-start;
-}
-.tallerDeDesarrollo {
-  	position: absolute;
-  	top: -1.8px;
-  	left: 0px;
-  	line-height: 24px;
-  	display: inline-block;
-  	width: 244px;
-}
-.text13 {
-  	height: 19.5px;
-  	width: 128.4px;
-  	position: relative;
-}
-.deDiciembre2025 {
-  	position: absolute;
-  	top: -0.8px;
-  	left: 0px;
-  	line-height: 19.5px;
-  	display: inline-block;
-  	width: 190px;
-}
-.text14 {
-  	height: 20px;
-  	width: 230px;
-  	position: relative;
-  	overflow: hidden;
-  	flex-shrink: 0;
-}
-.universidadNacionalBogot {
-  	position: absolute;
-  	top: -1.3px;
-  	left: 0px;
-  	line-height: 19.5px;
-  	display: inline-block;
-  	width: 248px;
-}
-.eventcard4 {
-  	box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1), 0px 1px 2px -1px rgba(0, 0, 0, 0.1);
-  	border-radius: 15px;
-  	background-color: #fff;
-  	width: 100%;
-  	max-width: 318.3px;
-  	height: 353.8px;
-  	overflow: hidden;
-  	display: flex;
-  	flex-direction: column;
-  	align-items: flex-start;
-}
-.eventoDeNetworking {
-  	position: absolute;
-  	top: -1.8px;
-  	left: -0.26px;
-  	line-height: 24px;
-  	display: inline-block;
-  	width: 257px;
-}
-.asistentePanelDeDiciembre2025 {
-  	position: absolute;
-  	top: -0.8px;
-  	left: -0.26px;
-  	line-height: 19.5px;
-  	display: inline-block;
-  	width: 190px;
-}
-.text18 {
-  	height: 20px;
-  	width: 186px;
-  	position: relative;
-  	overflow: hidden;
-  	flex-shrink: 0;
-}
-.clubElNogal {
-  	position: absolute;
-  	top: -1.3px;
-  	left: -0.26px;
-  	line-height: 19.5px;
-  	display: inline-block;
-  	width: 186px;
-}
-.eventcard5 {
-  	box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1), 0px 1px 2px -1px rgba(0, 0, 0, 0.1);
-  	border-radius: 15px;
-  	background-color: #fff;
-  	width: 100%;
-  	max-width: 318.3px;
-  	height: 353.8px;
-  	overflow: hidden;
-  	display: flex;
-  	flex-direction: column;
-  	align-items: flex-start;
-}
-.badge5 {
-  	position: absolute;
-  	top: 15.6px;
-  	left: 249.25px;
-  	border-radius: 8px;
-  	background-color: #74d67b;
-  	width: 57px;
-  	height: 20px;
-  	overflow: hidden;
-  	display: flex;
-  	align-items: center;
-  	justify-content: center;
-  	padding: 2px 8px;
-  	box-sizing: border-box;
-}
-.webinarTendenciasDigitales {
-  	position: absolute;
-  	top: -1.8px;
-  	left: 0.48px;
-  	line-height: 24px;
-  	display: inline-block;
-  	width: 265px;
-}
-.deNoviembre20252 {
-  	position: absolute;
-  	top: -0.8px;
-  	left: 0.48px;
-  	line-height: 19.5px;
-  	display: inline-block;
-  	width: 196px;
-}
-.text22 {
-  	height: 20px;
-  	width: 182px;
-  	position: relative;
-  	overflow: hidden;
-  	flex-shrink: 0;
-}
-.plataformaZoom {
-  	position: absolute;
-  	top: -1.3px;
-  	left: 0.48px;
-  	line-height: 19.5px;
-  	display: inline-block;
-  	width: 144px;
-}
-.text23 {
-  	height: 18px;
-  	width: 34.4px;
-  	position: relative;
-}
-.eventcard6 {
-  	box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1), 0px 1px 2px -1px rgba(0, 0, 0, 0.1);
-  	border-radius: 15px;
-  	background-color: #fff;
-  	width: 100%;
-  	max-width: 318.3px;
-  	height: 353.8px;
-  	overflow: hidden;
-  	display: flex;
-  	flex-direction: column;
-  	align-items: flex-start;
-}
-.badge6 {
-  	position: absolute;
-  	top: 15.6px;
-  	left: 235.33px;
-  	border-radius: 8px;
-  	background-color: #6c757d;
-  	width: 70.9px;
-  	height: 20px;
-  	overflow: hidden;
-  	display: flex;
-  	align-items: center;
-  	justify-content: center;
-  	padding: 2px 8px;
-  	box-sizing: border-box;
-}
-.seminarioDeMarketing {
-  	position: absolute;
-  	top: -2.6px;
-  	left: 0px;
-  	line-height: 24px;
-  	display: inline-block;
-  	width: 227px;
-}
-.asistentePanelDeOctubre2025 {
-  	position: absolute;
-  	top: -1.6px;
-  	left: 0px;
-  	line-height: 19.5px;
-  	display: inline-block;
-  	width: 173px;
-}
-.text26 {
-  	height: 20px;
-  	width: 211px;
-  	position: relative;
-  	overflow: hidden;
-  	flex-shrink: 0;
-}
-.auditorioCentralCali {
-  	position: absolute;
-  	top: -1.1px;
-  	left: 0px;
-  	line-height: 19.5px;
-  	display: inline-block;
-  	width: 183px;
-}
-.teGustaraRegistrarContainer {
-  	width: calc(100% - 80px);
-  	margin: 40px 40px 20px 40px;
-  	font-size: 16px;
-  	color: #6b6969;
-  	text-align: center;
-  	display: inline-block;
-  	padding: 20px 0;
-}
-.teGustaraRegistrarTuEmpre {
-  	margin: 0;
-}
-.teGustaraRegistrar {
-  	font-family: 'Montserrat', sans-serif;
-}
-.span {
-  	font-weight: 500;
-  	font-family: 'Montserrat', sans-serif;
-}
-.clicAqu {
-  	text-decoration: underline;
-  	font-family: 'Montserrat', sans-serif;
-}
-/* Removed unused positioning classes */
 
+.eventHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+
+.eventTitle {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #2C5F7C;
+  margin: 0;
+  flex: 1;
+  line-height: 1.3;
+}
+
+.eventStatus {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.estadoDisponible {
+  background: #d1fae5;
+  color: #065f46;
+  border: 2px solid #10b981;
+}
+
+.estadoLleno {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 2px solid #ef4444;
+}
+
+.estadoCerrado {
+  background: #e5e7eb;
+  color: #374151;
+  border: 2px solid #9ca3af;
+}
+
+.eventDescription {
+  color: #6b7280;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex-grow: 1;
+  font-size: 1rem;
+}
+
+.eventDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.detailItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #4b5563;
+  font-size: 0.95rem;
+}
+
+.detailIcon {
+  font-size: 1.1rem;
+  width: 20px;
+  text-align: center;
+}
+
+.eventCategory {
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  align-self: flex-start;
+  border: 1px solid #bae6fd;
+}
+
+.btnInscribirse {
+  background: linear-gradient(135deg, #2C5F7C 0%, #1E4157 100%);
+  color: white;
+  border: none;
+  padding: 14px 20px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: auto;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btnInscribirse:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(44, 95, 124, 0.4);
+  background: linear-gradient(135deg, #1E4157 0%, #2C5F7C 100%);
+}
+
+.btnDisabled {
+  background: #9ca3af !important;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Grid de inscripciones */
+.inscripcionesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.inscripcionCard {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e9ecef;
+  position: relative;
+  overflow: hidden;
+}
+
+.inscripcionCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+.inscripcionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+
+.inscripcionTitle {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #2C5F7C;
+  margin: 0;
+  flex: 1;
+  line-height: 1.3;
+}
+
+.inscripcionStatus {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.statusConfirmed {
+  background: #d1fae5;
+  color: #065f46;
+  border: 2px solid #10b981;
+}
+
+.statusPending {
+  background: #fef3c7;
+  color: #92400e;
+  border: 2px solid #f59e0b;
+}
+
+.inscripcionDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-grow: 1;
+}
+
+.asistenciasSection {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.asistenciasSection h4 {
+  margin: 0 0 12px 0;
+  color: #2C5F7C;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.asistenciaItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.asistenciaItem:last-child {
+  border-bottom: none;
+}
+
+.asistenciaStatus {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.asistenciaPresent {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.asistenciaAbsent {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.inscripcionActions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btnRegistrarAsistencia {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.btnRegistrarAsistencia:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+}
+
+.btnRegistrarAsistencia:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.asistenciaRegistrada {
+  background: #d1fae5;
+  color: #065f46;
+  padding: 12px 16px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 600;
+  border: 2px solid #10b981;
+}
+
+.inscripcionNotConfirmed {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 12px 16px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 600;
+  border: 2px solid #f59e0b;
+}
+
+/* No events */
+.noEventsCard {
+  background: white;
+  padding: 60px 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: center;
+  border: 2px dashed #e5e7eb;
+}
+
+.noEventsCard h3 {
+  color: #6b7280;
+  margin-bottom: 24px;
+  font-size: 1.4rem;
+  font-weight: 500;
+}
+
+.btnShowAll {
+  background: #2C5F7C;
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btnShowAll:hover {
+  background: #1E4157;
+  transform: translateY(-2px);
+}
+
+/* Modal */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+}
+
+.modalContent {
+  background: white;
+  border-radius: 16px;
+  max-width: 520px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  animation: modalAppear 0.3s ease-out;
+}
+
+@keyframes modalAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 28px 28px 0;
+  margin-bottom: 20px;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  color: #2C5F7C;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.btnClose {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #6b7280;
+  transition: color 0.3s ease;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.btnClose:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.modalBody {
+  padding: 0 28px 28px;
+}
+
+.modalDescription {
+  color: #6b7280;
+  margin-bottom: 24px;
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.formInput {
+  padding: 14px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.formInput:focus {
+  outline: none;
+  border-color: #2C5F7C;
+  box-shadow: 0 0 0 3px rgba(44, 95, 124, 0.1);
+}
+
+.formInput::placeholder {
+  color: #9ca3af;
+}
+
+.eventDetailsPanel {
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid #2C5F7C;
+  margin-top: 8px;
+}
+
+.eventDetailsPanel h4 {
+  margin: 0 0 12px 0;
+  color: #2C5F7C;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.eventDetailsPanel p {
+  margin: 8px 0;
+  color: #4b5563;
+  font-size: 0.95rem;
+}
+
+.confirmNote {
+  color: #6b7280;
+  font-size: 0.9rem;
+  font-style: italic;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.modalActions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding: 24px 28px;
+  border-top: 1px solid #e5e7eb;
+  background: #fafbfc;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+}
+
+.btnCancel {
+  padding: 12px 28px;
+  border: 2px solid #d1d5db;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #6b7280;
+  transition: all 0.3s ease;
+}
+
+.btnCancel:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.btnConfirm {
+  padding: 12px 28px;
+  background: linear-gradient(135deg, #2C5F7C 0%, #1E4157 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btnConfirm:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(44, 95, 124, 0.4);
+}
+
+.btnConfirm:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Snackbar */
+.snackbar {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  padding: 16px 20px;
+  border-radius: 8px;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 320px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  z-index: 1100;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.snackbarSuccess {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.snackbarError {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.snackbarWarning {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+}
+
+.snackbarClose {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.snackbarClose:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .asistenteContainer {
+    padding: 16px;
+  }
+  
+  .pageTitle {
+    font-size: 2rem;
+  }
+  
+  .pageSubtitle {
+    font-size: 1.1rem;
+  }
+  
+  .navigationButtons {
+    flex-direction: column;
+  }
+  
+  .navButton {
+    justify-content: center;
+  }
+  
+  .eventsGrid,
+  .inscripcionesGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .filterGroup {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  
+  .filterSelect {
+    min-width: auto;
+    width: 100%;
+  }
+  
+  .modalContent {
+    margin: 0;
+    border-radius: 12px;
+  }
+  
+  .modalHeader {
+    padding: 20px 20px 0;
+  }
+  
+  .modalBody {
+    padding: 0 20px 20px;
+  }
+  
+  .modalActions {
+    flex-direction: column;
+    padding: 20px;
+  }
+  
+  .snackbar {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .eventCard,
+  .inscripcionCard {
+    padding: 20px;
+  }
+  
+  .eventHeader,
+  .inscripcionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .eventStatus,
+  .inscripcionStatus {
+    align-self: flex-start;
+  }
+  
+  .asistenciaItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}
+
+.fueraDeFechas {
+    background: #fef3c7;
+    color: #92400e;
+    padding: 12px 16px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 600;
+    border: 2px solid #f59e0b;
+}
+
+/* Modal Styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  color: #333;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+}
+
+.closeButton:hover {
+  color: #333;
+}
+
+.modalBody {
+  padding: 20px;
+}
+
+.eventInfo {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+.eventInfo h3 {
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.eventInfo p {
+  margin: 5px 0;
+  color: #666;
+}
+
+.formSection {
+  margin-bottom: 20px;
+}
+
+.formSection h4 {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.formGroup {
+  margin-bottom: 15px;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #333;
+}
+
+.formInput {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.formInput:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btnCancel {
+  padding: 10px 20px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btnConfirm {
+  padding: 10px 20px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btnConfirm:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+}
+
+/* Snackbar Styles */
+.snackbar {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 15px 20px;
+  border-radius: 4px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 300px;
+  z-index: 1001;
+}
+
+.snackbar.success {
+  background-color: #28a745;
+}
+
+.snackbar.error {
+  background-color: #dc3545;
+}
+
+.snackbar.warning {
+  background-color: #ffc107;
+  color: #333;
+}
+
+.snackbarClose {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 18px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+/* Contenedor de detalles del evento */
+.eventDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 15px 0;
+}
+
+/* Cada item de detalle */
+.detailItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #666;
+}
+
+/* Contenedor del icono */
+.detailIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* Imagen del icono - TAMAÑO AJUSTADO */
+.iconImage {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  opacity: 0.7;
+}
+
+/* Categoría del evento */
+.eventCategory {
+  display: inline-block;
+  background: #a7d0f9;
+  color: #495057;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+/* Para hacer los iconos más pequeños en secciones específicas */
+.smallIcon {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  margin-right: 5px;
+  opacity: 0.7;
+}
+
+.estadoInscrito {
+  background: #dbeafe;
+  color: #1e40af;
+  border: 2px solid #3b82f6;
+}
+
+/* Header de la card con gradiente */
+.eventCardHeader {
+  background: linear-gradient(135deg, #2C5F7C 0%, #1E4157 100%);
+  padding: 20px 24px;
+  color: white;
+}
+
+.eventHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.eventTitleSection {
+  flex: 1;
+  min-width: 0;
+}
+
+.eventTitle {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 8px 0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.eventCategory {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  backdrop-filter: blur(10px);
+}
+
+/* Contenido de la card */
+.eventCardContent {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 20px;
+}
+
+/* Barra de progreso de cupos */
+.cuposProgress {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid #e9ecef;
+}
+
+.progressHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.progressLabel {
+  font-size: 0.8rem;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.progressPercentage {
+  font-size: 0.8rem;
+  color: #2C5F7C;
+  font-weight: 700;
+}
+
+.progressBar {
+  width: 100%;
+  height: 8px;
+  background: #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 8px;
+  transition: width 0.3s ease;
+}
+
+.progressFill.estadoDisponible {
+  background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+}
+
+.progressFill.estadoLleno {
+  background: linear-gradient(135deg, #f44336 0%, #c62828 100%);
+}
+
+.progressFill.estadoInscrito {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+}
+
+.progressText {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-align: center;
+  display: block;
+  font-weight: 500;
+}
+
+.eventDescription {
+  color: #6b7280;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.9rem;
+  background: #f8f9fa;
+  padding: 12px;
+  border-radius: 8px;
+  border-left: 3px solid #2C5F7C;
+  margin: 0;
+}
+
+/* Detalles del evento */
+.eventDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detailItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.detailItem:not(:last-child) {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.detailIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  background: #f0f7ff;
+  border-radius: 6px;
+  padding: 4px;
+}
+
+.detailContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.detailLabel {
+  display: block;
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.detailValue {
+  display: block;
+  font-size: 0.9rem;
+  color: #374151;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* Acciones del evento */
+.eventActions {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  gap: 12px;
+}
+
+.btnVerDetalles {
+  flex: 1;
+  background: transparent;
+  color: #2C5F7C;
+  border: 2px solid #2C5F7C;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.btnVerDetalles:hover {
+  background: #2C5F7C;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.btnInscribirse {
+  flex: 1;
+  background: linear-gradient(135deg, #2C5F7C 0%, #1E4157 100%);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.btnInscribirse:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(44, 95, 124, 0.3);
+}
+
+.btnInscrito {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+  cursor: default !important;
+}
+
+.btnInscrito:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.btnDisabled {
+  background: #9ca3af !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Modal improvements */
+.eventDescriptionModal {
+  margin-top: 16px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 3px solid #2C5F7C;
+}
+
+.eventDescriptionModal p {
+  margin: 8px 0 0 0;
+  line-height: 1.5;
+  color: #6b7280;
+}
+
+/* Ajustes responsive */
+@media (max-width: 768px) {
+  .eventActions {
+    flex-direction: column;
+  }
+  
+  .eventCardHeader {
+    padding: 16px 20px;
+  }
+  
+  .eventCardContent {
+    padding: 20px;
+  }
+  
+  .eventHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+
+/* Estilos para el modal de detalles completos */
+.eventInfoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.infoSection {
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 12px;
+  border-left: 4px solid #2C5F7C;
+}
+
+.infoSection h4 {
+  margin: 0 0 16px 0;
+  color: #2C5F7C;
+  font-size: 1rem;
+  font-weight: 600;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 8px;
+}
+
+.infoItem {
+  margin-bottom: 12px;
+}
+
+.infoItem:last-child {
+  margin-bottom: 0;
+}
+
+.infoItem label {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 4px;
+  font-size: 0.85rem;
+}
+
+.infoItem span,
+.infoItem p {
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.5;
+  font-size: 0.9rem;
+}
+
+.infoItem p {
+  background: white;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+/* Estilos para actividades */
+.actividadItem {
+  background: white;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 8px;
+}
+
+.actividadItem:last-child {
+  margin-bottom: 0;
+}
+
+.actividadTitle {
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.actividadFecha {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* Mejoras para el modal de inscripción */
+.eventDescriptionModal {
+  margin-top: 16px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 3px solid #2C5F7C;
+}
+
+.eventDescriptionModal p {
+  margin: 8px 0 0 0;
+  line-height: 1.5;
+  color: #6b7280;
+}
+
+/* Estilos para el botón de registrar asistencia */
+.btnRegistrarAsistencia {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  width: 100%;
+}
+
+.btnRegistrarAsistencia:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+}
+
+.btnRegistrarAsistencia:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btnRegistrando {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+}
+
+/* Estilo para cuando la asistencia está registrada */
+.asistenciaRegistrada {
+  background: #d1fae5;
+  color: #065f46;
+  padding: 12px 16px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 600;
+  border: 2px solid #10b981;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.asistenciaRegistrada::before {
+  content: "✓";
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+/* Estados de los botones */
+.inscripcionNotConfirmed {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 12px 16px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 600;
+  border: 2px solid #f59e0b;
+  width: 100%;
+}
+
+.fueraDeFechas {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 12px 16px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 600;
+  border: 2px solid #f59e0b;
+  width: 100%;
+}
+
+/* Mejoras para la sección de acciones */
+.inscripcionActions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .eventInfoGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .infoSection {
+    padding: 16px;
+  }
+}

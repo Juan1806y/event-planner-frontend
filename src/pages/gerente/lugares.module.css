@@ -156,7 +156,7 @@
 }
 
 .lugaresTable th {
-    background: #f8f9fa;
+    background: #B8E6F5;
     padding: 12px 16px;
     text-align: left;
     font-weight: 600;
@@ -342,7 +342,7 @@
     padding: 10px 20px;
     border: none;
     border-radius: 6px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #4A90E2;
     color: white;
     cursor: pointer;
     font-size: 14px;
@@ -416,4 +416,179 @@
     color: #666;
     font-size: 16px;
     margin: 0;
+}
+
+/* Estilos para la información de la empresa */
+.headerInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.empresaInfo {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.empresaModalInfo {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+    font-style: italic;
+}
+
+.empresaDisplay {
+    padding: 12px;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    color: #495057;
+}
+
+.helpText {
+    margin: 4px 0 0 0;
+    color: #6c757d;
+    font-size: 12px;
+    font-style: italic;
+}
+
+.ubicacionForm .formGroup:first-child {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+/* Agrega estos estilos al final de tu archivo CSS existente */
+
+/* Notificaciones personalizadas */
+.notificationContainer {
+  position: fixed;
+  top: 100px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 400px;
+}
+
+.notification {
+  background: white;
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border-left: 5px solid;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  animation: slideInRight 0.3s ease-out;
+  transition: all 0.3s ease;
+  transform: translateX(0);
+  max-width: 400px;
+}
+
+.notification.hiding {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.notification.success {
+  border-left-color: #10B981;
+  background: linear-gradient(135deg, #F0FDF4, #FFFFFF);
+}
+
+.notification.error {
+  border-left-color: #EF4444;
+  background: linear-gradient(135deg, #FEF2F2, #FFFFFF);
+}
+
+.notification.warning {
+  border-left-color: #F59E0B;
+  background: linear-gradient(135deg, #FFFBEB, #FFFFFF);
+}
+
+.notification.info {
+  border-left-color: #3B82F6;
+  background: linear-gradient(135deg, #EFF6FF, #FFFFFF);
+}
+
+.notificationIcon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.notificationContent {
+  flex: 1;
+}
+
+.notificationTitle {
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 4px;
+  color: #1F2937;
+}
+
+.notification.success .notificationTitle {
+  color: #065F46;
+}
+
+.notification.error .notificationTitle {
+  color: #991B1B;
+}
+
+.notification.warning .notificationTitle {
+  color: #92400E;
+}
+
+.notification.info .notificationTitle {
+  color: #1E40AF;
+}
+
+.notificationMessage {
+  font-size: 14px;
+  color: #6B7280;
+  line-height: 1.4;
+}
+
+.notificationClose {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9CA3AF;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.notificationClose:hover {
+  color: #374151;
+  background-color: #F3F4F6;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive para notificaciones */
+@media (max-width: 768px) {
+  .notificationContainer {
+    right: 10px;
+    left: 10px;
+    top: 70px;
+    max-width: none;
+  }
+
+  .notification {
+    max-width: none;
+  }
 }

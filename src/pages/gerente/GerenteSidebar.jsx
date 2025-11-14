@@ -9,6 +9,7 @@ import campana from '../../assets/notifications.png';
 import settings from '../../assets/settings.png';
 import hamburgerIcon from '../../assets/hamburgerIcon.png';
 import logoIcon from '../../assets/evento-remove.png';
+import calendarEvento from '../../assets/calendarEvento.png'
 
 const GerenteSidebar = ({onToggle}) => {
   const navigate = useNavigate();
@@ -17,13 +18,14 @@ const GerenteSidebar = ({onToggle}) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const toggleSidebar = () => {
-    const newState = !isCollapsed;
-    setIsCollapsed(newState);
+    const newCollapsedState = !isCollapsed;
+    setIsCollapsed(newCollapsedState);
 
     if(onToggle){
-      onToggle(newState);
+      onToggle(newCollapsedState);
     }
-    if (newState) {
+    
+    if (newCollapsedState) {
       setEmpresaOpen(false);
     }
   };
@@ -143,6 +145,15 @@ const GerenteSidebar = ({onToggle}) => {
             </div>
           )}
         </div>
+
+        <button
+          className={`nav-item ${isActive('/gerente/eventos') ? 'active' : ''}`}
+          onClick={() => navigate('/gerente/eventos')}
+          title={isCollapsed ? 'Eventos' : ''}
+        >
+          <img src={calendarEvento} alt="Evento Icon" />
+          {!isCollapsed && <span className="nav-text">Eventos</span>}
+        </button>
 
         <button
           className={`nav-item ${isActive('/gerente/solicitudes') ? 'active' : ''}`}

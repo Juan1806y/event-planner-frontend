@@ -1,8 +1,46 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Eye, Pencil, X } from 'lucide-react';
+import { Search, Plus, Eye, Pencil, X, Trash2, CheckCircle, XCircle, AlertCircle, Info } from 'lucide-react';
 import styles from './lugares.module.css';
 import Header from '../../layouts/Header/header';
 import GerenteSidebar from '../gerente/GerenteSidebar';
+
+const Notification = ({ type, title, message, onClose, duration = 5000 }) => {
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            onClose();
+        }, duration);
+
+        return () => clearTimeout(timer);
+    }, [duration, onClose]);
+
+    const getIcon = () => {
+        switch (type) {
+            case 'success':
+                return <CheckCircle size={20} className={styles.notificationIcon} />;
+            case 'error':
+                return <XCircle size={20} className={styles.notificationIcon} />;
+            case 'warning':
+                return <AlertCircle size={20} className={styles.notificationIcon} />;
+            case 'info':
+                return <Info size={20} className={styles.notificationIcon} />;
+            default:
+                return <Info size={20} className={styles.notificationIcon} />;
+        }
+    };
+
+    return (
+        <div className={`${styles.notification} ${styles[type]}`}>
+            {getIcon()}
+            <div className={styles.notificationContent}>
+                <div className={styles.notificationTitle}>{title}</div>
+                <div className={styles.notificationMessage}>{message}</div>
+            </div>
+            <button className={styles.notificationClose} onClick={onClose}>
+                <X size={16} />
+            </button>
+        </div>
+    );
+};
 
 const Lugares = () => {
     const [lugares, setLugares] = useState([]);
@@ -12,6 +50,8 @@ const Lugares = () => {
     const [filterEmpresa, setFilterEmpresa] = useState('');
     const [selectedEmpresaId, setSelectedEmpresaId] = useState('');
     const [showModal, setShowModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [loading, setLoading] = useState(true);
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [formData, setFormData] = useState({
@@ -20,6 +60,28 @@ const Lugares = () => {
         descripcion: '',
         id_ubicacion: ''
     });
+    const [notifications, setNotifications] = useState([]);
+    const [empresaSeleccionada, setEmpresaSeleccionada] = useState(null);
+    const [editingLugar, setEditingLugar] = useState(null);
+    const [deletingLugar, setDeletingLugar] = useState(null);
+
+    const showNotification = (type, title, message, duration = 5000) => {
+        const id = Date.now() + Math.random();
+        const newNotification = {
+            id,
+            type,
+            title,
+            message,
+            duration
+        };
+
+        setNotifications(prev => [...prev, newNotification]);
+        return id;
+    };
+
+    const closeNotification = (id) => {
+        setNotifications(prev => prev.filter(notification => notification.id !== id));
+    };
 
     const getToken = () => {
         const tokenNames = ['access_token', 'token', 'auth_token'];
@@ -40,6 +102,7 @@ const Lugares = () => {
                 await fetchEmpresas(token);
             } catch (error) {
                 console.error('Error cargando datos:', error);
+                showNotification('error', 'Error', 'Error al cargar los datos. Por favor, recargue la página.');
             } finally {
                 setLoading(false);
             }
@@ -52,7 +115,8 @@ const Lugares = () => {
             const primeraEmpresa = empresas[0];
             setFilterEmpresa(primeraEmpresa.nombre);
             setSelectedEmpresaId(primeraEmpresa.id);
-            
+            setEmpresaSeleccionada(primeraEmpresa);
+
             const token = getToken();
             fetchLugaresByEmpresa(primeraEmpresa.id, token);
         }
@@ -69,7 +133,7 @@ const Lugares = () => {
                 headers['Authorization'] = `Bearer ${token}`;
             }
 
-            const response = await fetch(`http://localhost:3000/api/lugares/${empresaId}`, {
+            const response = await fetch(`http://localhost:3000/api/empresas/${empresaId}/lugares`, {
                 headers: headers
             });
 
@@ -86,15 +150,17 @@ const Lugares = () => {
             console.log('Lugares obtenidos:', result);
 
             if (result.success && result.data) {
-                // Enriquecer lugares con nombres de ubicaciones
                 const ubicacionesEmpresa = await fetchUbicacionesByEmpresa(empresaId, token);
                 console.log('Ubicaciones para enriquecer:', ubicacionesEmpresa);
-                
+
                 const lugaresConUbicaciones = result.data.map(lugar => {
-                    const ubicacion = ubicacionesEmpresa.find(u => u.id === lugar.id_ubicacion);
+                    const ubicacion = Array.isArray(ubicacionesEmpresa) 
+                        ? ubicacionesEmpresa.find(u => u.id === lugar.id_ubicacion)
+                        : null;
                     return {
                         ...lugar,
-                        ubicacion_nombre: ubicacion ? `${ubicacion.lugar} - ${ubicacion.direccion}` : 'Sin ubicación'
+                        ubicacion_nombre: ubicacion ? `${ubicacion.lugar} - ${ubicacion.direccion}` : 'Sin ubicación',
+                        ubicacion_data: ubicacion
                     };
                 });
                 setLugares(lugaresConUbicaciones);
@@ -105,6 +171,7 @@ const Lugares = () => {
         } catch (error) {
             console.error('Error al obtener lugares:', error);
             setLugares([]);
+            showNotification('error', 'Error', 'Error al cargar los lugares de la empresa.');
         }
     };
 
@@ -135,10 +202,12 @@ const Lugares = () => {
             } else {
                 console.log('No se encontraron empresas');
                 setEmpresas([]);
+                showNotification('warning', 'Advertencia', 'No se encontraron empresas disponibles.');
             }
         } catch (error) {
             console.error('Error al obtener empresas:', error);
             setEmpresas([]);
+            showNotification('error', 'Error', 'Error al cargar las empresas.');
         }
     };
 
@@ -153,7 +222,7 @@ const Lugares = () => {
                 headers['Authorization'] = `Bearer ${token}`;
             }
 
-            const response = await fetch(`http://localhost:3000/api/ubicaciones/${empresaId}`, {
+            const response = await fetch(`http://localhost:3000/api/empresas/${empresaId}/ubicaciones`, {
                 headers: headers
             });
 
@@ -167,10 +236,12 @@ const Lugares = () => {
 
             const result = await response.json();
             console.log('Ubicaciones obtenidas:', result);
+            
             return result.success && result.data ? result.data : [];
         } catch (error) {
             console.error('Error al obtener ubicaciones por empresa:', error);
-            return [];
+            showNotification('error', 'Error', 'Error al cargar las ubicaciones de la empresa.');
+            return []; 
         }
     };
 
@@ -188,7 +259,7 @@ const Lugares = () => {
 
             console.log('Enviando datos del lugar:', formData);
 
-            const response = await fetch('http://localhost:3000/api/lugares', {
+            const response = await fetch(`http://localhost:3000/api/empresas/${empresaSeleccionada.id}/lugares`, {
                 method: 'POST',
                 headers: headers,
                 body: JSON.stringify({
@@ -203,24 +274,132 @@ const Lugares = () => {
             console.log('Respuesta crear lugar:', result);
 
             if (result.success) {
-                alert('Lugar creado exitosamente');
-                setShowModal(false);
-                setFormData({
-                    empresaId: '',
-                    nombre: '',
-                    descripcion: '',
-                    id_ubicacion: ''
-                });
+                showNotification('success', 'Éxito', 'Lugar creado exitosamente');
+                closeAllModals();
 
                 if (selectedEmpresaId) {
                     await fetchLugaresByEmpresa(selectedEmpresaId, token);
                 }
             } else {
-                alert('Error al crear lugar: ' + (result.message || 'Error desconocido'));
+                showNotification('error', 'Error', `Error al crear lugar: ${result.message || 'Error desconocido'}`);
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('Error al crear lugar: ' + error.message);
+            showNotification('error', 'Error', 'Error al crear lugar. Por favor, intente nuevamente.');
+        }
+    };
+
+    const handleEdit = async (lugar) => {
+        try {
+            setEditingLugar(lugar);
+
+            const token = getToken();
+            const ubicacionesEmpresa = await fetchUbicacionesByEmpresa(lugar.empresaId || selectedEmpresaId, token);
+            setUbicaciones(Array.isArray(ubicacionesEmpresa) ? ubicacionesEmpresa : []);
+
+            setFormData({
+                empresaId: lugar.empresaId || selectedEmpresaId,
+                nombre: lugar.nombre || '',
+                descripcion: lugar.descripcion || '',
+                id_ubicacion: lugar.id_ubicacion || ''
+            });
+
+            setShowEditModal(true);
+        } catch (error) {
+            console.error('Error al preparar edición:', error);
+            showNotification('error', 'Error', 'Error al cargar datos para editar.');
+        }
+    };
+
+    const handleUpdate = async (e) => {
+        e.preventDefault();
+        try {
+            const token = getToken();
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            if (!editingLugar || !empresaSeleccionada) {
+                showNotification('error', 'Error', 'No hay lugar seleccionado para editar o no se encontró la empresa');
+                return;
+            }
+
+            console.log('Actualizando lugar:', formData);
+
+            const response = await fetch(`http://localhost:3000/api/lugares/${editingLugar.id}`, {
+                method: 'PUT',
+                headers: headers,
+                body: JSON.stringify({
+                    nombre: formData.nombre,
+                    descripcion: formData.descripcion,
+                    id_ubicacion: parseInt(formData.id_ubicacion)
+                })
+            });
+
+            const result = await response.json();
+            console.log('Respuesta actualizar lugar:', result);
+
+            if (result.success) {
+                showNotification('success', 'Éxito', 'Lugar actualizado exitosamente');
+                closeAllModals();
+
+                if (selectedEmpresaId) {
+                    await fetchLugaresByEmpresa(selectedEmpresaId, token);
+                }
+            } else {
+                showNotification('error', 'Error', `Error al actualizar lugar: ${result.message || 'Error desconocido'}`);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showNotification('error', 'Error', 'Error al actualizar lugar. Por favor, intente nuevamente.');
+        }
+    };
+
+    const handleDeleteClick = (lugar) => {
+        setDeletingLugar(lugar);
+        setShowDeleteModal(true);
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (!deletingLugar || !empresaSeleccionada) return;
+
+        try {
+            const token = getToken();
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            console.log('Eliminando lugar:', deletingLugar.id);
+
+            const response = await fetch(`http://localhost:3000/api/lugares/${deletingLugar.id}`, {
+                method: 'DELETE',
+                headers: headers
+            });
+
+            const result = await response.json();
+            console.log('Respuesta eliminar lugar:', result);
+
+            if (result.success) {
+                showNotification('success', 'Éxito', 'Lugar eliminado exitosamente');
+                closeAllModals();
+
+                if (selectedEmpresaId) {
+                    await fetchLugaresByEmpresa(selectedEmpresaId, token);
+                }
+            } else {
+                showNotification('error', 'Error', `Error al eliminar lugar: ${result.message || 'Error desconocido'}`);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showNotification('error', 'Error', 'Error al eliminar lugar. Por favor, intente nuevamente.');
         }
     };
 
@@ -232,19 +411,18 @@ const Lugares = () => {
         }));
     };
 
-    const handleEmpresaChange = async (e) => {
-        const empresaId = e.target.value;
+    const handleEmpresaSeleccionada = (empresa) => {
+        setEmpresaSeleccionada(empresa);
         setFormData(prev => ({
             ...prev,
-            empresaId: empresaId,
-            id_ubicacion: '' 
+            empresaId: empresa.id,
+            id_ubicacion: ''
         }));
 
-        if (empresaId) {
-            const token = getToken();
-            const ubicacionesEmpresa = await fetchUbicacionesByEmpresa(parseInt(empresaId), token);
-            setUbicaciones(ubicacionesEmpresa);
-        }
+        const token = getToken();
+        fetchUbicacionesByEmpresa(parseInt(empresa.id), token).then(ubicacionesEmpresa => {
+            setUbicaciones(Array.isArray(ubicacionesEmpresa) ? ubicacionesEmpresa : []);
+        });
     };
 
     const handleFilterChange = async (e) => {
@@ -255,13 +433,30 @@ const Lugares = () => {
             const empresaSeleccionada = empresas.find(emp => emp.nombre === selectedEmpresaNombre);
             if (empresaSeleccionada) {
                 setSelectedEmpresaId(empresaSeleccionada.id);
+                setEmpresaSeleccionada(empresaSeleccionada);
                 const token = getToken();
                 await fetchLugaresByEmpresa(empresaSeleccionada.id, token);
             }
         } else {
             setLugares([]);
             setSelectedEmpresaId('');
+            setEmpresaSeleccionada(null);
         }
+    };
+
+    const closeAllModals = () => {
+        setShowModal(false);
+        setShowEditModal(false);
+        setShowDeleteModal(false);
+        setEditingLugar(null);
+        setDeletingLugar(null);
+        setFormData({
+            empresaId: '',
+            nombre: '',
+            descripcion: '',
+            id_ubicacion: ''
+        });
+        setUbicaciones([]);
     };
 
     const handleSidebarToggle = (collapsed) => {
@@ -269,7 +464,7 @@ const Lugares = () => {
     };
 
     const filteredLugares = lugares.filter(lugar => {
-        const matchesSearch = searchTerm === '' || 
+        const matchesSearch = searchTerm === '' ||
             (lugar.nombre && lugar.nombre.toLowerCase().includes(searchTerm.toLowerCase())) ||
             (lugar.descripcion && lugar.descripcion.toLowerCase().includes(searchTerm.toLowerCase()));
         return matchesSearch;
@@ -295,16 +490,44 @@ const Lugares = () => {
     return (
         <div className={styles.appContainer}>
             <Header />
+
+            {/* Sistema de notificaciones */}
+            <div className={styles.notificationContainer}>
+                {notifications.map((notification) => (
+                    <Notification
+                        key={notification.id}
+                        type={notification.type}
+                        title={notification.title}
+                        message={notification.message}
+                        duration={notification.duration}
+                        onClose={() => closeNotification(notification.id)}
+                    />
+                ))}
+            </div>
+
             <div className={styles.mainLayout}>
                 <GerenteSidebar onToggle={handleSidebarToggle} />
                 <div className={`${styles.mainContent} ${sidebarCollapsed ? styles.sidebarCollapsed : styles.sidebarExpanded}`}>
                     <div className={styles.lugaresContainer}>
                         <div className={styles.lugaresHeader}>
-                            <h1>Lugares</h1>
-                            <button 
-                                className={styles.btnCreate} 
-                                onClick={() => setShowModal(true)}
-                                disabled={empresas.length === 0}
+                            <div className={styles.headerInfo}>
+                                <h1>Lugares</h1>
+                            </div>
+                            <button
+                                className={styles.btnCreate}
+                                onClick={() => {
+                                    if (empresas.length === 0) {
+                                        showNotification('warning', 'Advertencia', 'No hay empresas disponibles para crear lugares.');
+                                        return;
+                                    }
+                                    if (!empresaSeleccionada) {
+                                        showNotification('warning', 'Seleccione empresa', 'Primero seleccione una empresa del filtro.');
+                                        return;
+                                    }
+                                    handleEmpresaSeleccionada(empresaSeleccionada);
+                                    setShowModal(true);
+                                }}
+                                disabled={empresas.length === 0 || !empresaSeleccionada}
                             >
                                 <Plus size={20} />
                                 Crear Lugar
@@ -325,22 +548,6 @@ const Lugares = () => {
                                         className={styles.searchInput}
                                     />
                                 </div>
-
-                                <div className={styles.filterGroup}>
-                                    <label>Filtrar por empresa:</label>
-                                    <select
-                                        value={filterEmpresa}
-                                        onChange={handleFilterChange}
-                                        className={styles.filterSelect}
-                                    >
-                                        <option value="">Seleccione una empresa</option>
-                                        {empresas.map((empresa) => (
-                                            <option key={empresa.id} value={empresa.nombre}>
-                                                {empresa.nombre}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
                             </div>
 
                             <div className={styles.tableContainer}>
@@ -356,14 +563,6 @@ const Lugares = () => {
                                     <tbody>
                                         {filteredLugares.length === 0 ? (
                                             <tr>
-                                                <td colSpan="4" className={styles.noData}>
-                                                    {!filterEmpresa 
-                                                        ? 'Seleccione una empresa para ver sus lugares' 
-                                                        : lugares.length === 0
-                                                        ? `No hay lugares disponibles para ${filterEmpresa}`
-                                                        : 'No se encontraron lugares que coincidan con la búsqueda'
-                                                    }
-                                                </td>
                                             </tr>
                                         ) : (
                                             filteredLugares.map((lugar) => (
@@ -372,11 +571,19 @@ const Lugares = () => {
                                                     <td>{lugar.descripcion || 'Sin descripción'}</td>
                                                     <td>{lugar.ubicacion_nombre || 'Sin ubicación'}</td>
                                                     <td className={styles.actionsCell}>
-                                                        <button className={styles.btnIcon} title="Ver detalles">
-                                                            <Eye size={18} />
-                                                        </button>
-                                                        <button className={styles.btnIcon} title="Editar">
+                                                        <button
+                                                            className={styles.btnIcon}
+                                                            title="Editar"
+                                                            onClick={() => handleEdit(lugar)}
+                                                        >
                                                             <Pencil size={18} />
+                                                        </button>
+                                                        <button
+                                                            className={`${styles.btnIcon} ${styles.btnDelete}`}
+                                                            title="Eliminar"
+                                                            onClick={() => handleDeleteClick(lugar)}
+                                                        >
+                                                            <Trash2 size={18} />
                                                         </button>
                                                     </td>
                                                 </tr>
@@ -390,34 +597,23 @@ const Lugares = () => {
                 </div>
             </div>
 
-            {showModal && (
-                <div className={styles.modalOverlay} onClick={() => setShowModal(false)}>
+            {/* Modal para crear lugar */}
+            {showModal && empresaSeleccionada && (
+                <div className={styles.modalOverlay} onClick={closeAllModals}>
                     <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
                         <div className={styles.modalHeader}>
                             <h2>Crear Nuevo Lugar</h2>
-                            <button className={styles.btnClose} onClick={() => setShowModal(false)}>
+                            <button className={styles.btnClose} onClick={closeAllModals}>
                                 <X size={24} />
                             </button>
                         </div>
 
                         <form onSubmit={handleSubmit} className={styles.lugarForm}>
                             <div className={styles.formGroup}>
-                                <label htmlFor="empresaId">Empresa *</label>
-                                <select
-                                    id="empresaId"
-                                    name="empresaId"
-                                    value={formData.empresaId}
-                                    onChange={handleEmpresaChange}
-                                    required
-                                    className={styles.formSelect}
-                                >
-                                    <option value="">Seleccione una empresa</option>
-                                    {empresas.map((empresa) => (
-                                        <option key={empresa.id} value={empresa.id}>
-                                            {empresa.nombre}
-                                        </option>
-                                    ))}
-                                </select>
+                                <label>Empresa</label>
+                                <div className={styles.empresaDisplay}>
+                                    <strong>{empresaSeleccionada.nombre}</strong>
+                                </div>
                             </div>
 
                             <div className={styles.formGroup}>
@@ -428,21 +624,23 @@ const Lugares = () => {
                                     value={formData.id_ubicacion}
                                     onChange={handleInputChange}
                                     required
-                                    disabled={!formData.empresaId}
                                     className={styles.formSelect}
                                 >
                                     <option value="">
-                                        {formData.empresaId 
-                                            ? 'Seleccione una ubicación' 
-                                            : 'Primero seleccione una empresa'
+                                        {Array.isArray(ubicaciones) && ubicaciones.length > 0
+                                            ? 'Seleccione una ubicación'
+                                            : 'Cargando ubicaciones...'
                                         }
                                     </option>
-                                    {ubicaciones.map((ubicacion) => (
+                                    {Array.isArray(ubicaciones) && ubicaciones.map((ubicacion) => (
                                         <option key={ubicacion.id} value={ubicacion.id}>
-                                            {ubicacion.lugar} - {ubicacion.direccion}
+                                            {ubicacion.lugar} - {ubicacion.direccion} {ubicacion.ciudad_nombre ? `(${ubicacion.ciudad_nombre})` : ''}
                                         </option>
                                     ))}
                                 </select>
+                                <p className={styles.helpText}>
+                                    Seleccione una de las ubicaciones disponibles para {empresaSeleccionada.nombre}
+                                </p>
                             </div>
 
                             <div className={styles.formGroup}>
@@ -453,7 +651,6 @@ const Lugares = () => {
                                     name="nombre"
                                     value={formData.nombre}
                                     onChange={handleInputChange}
-                                    placeholder="Ej: Aula C - Auditorio"
                                     required
                                     className={styles.formInput}
                                 />
@@ -466,7 +663,6 @@ const Lugares = () => {
                                     name="descripcion"
                                     value={formData.descripcion}
                                     onChange={handleInputChange}
-                                    placeholder="Ej: Edificio 8003 del secundario"
                                     rows="4"
                                     required
                                     className={styles.formTextarea}
@@ -474,22 +670,153 @@ const Lugares = () => {
                             </div>
 
                             <div className={styles.formActions}>
-                                <button 
-                                    type="button" 
-                                    className={styles.btnCancel} 
-                                    onClick={() => setShowModal(false)}
+                                <button
+                                    type="button"
+                                    className={styles.btnCancel}
+                                    onClick={closeAllModals}
                                 >
                                     Cancelar
                                 </button>
-                                <button 
-                                    type="submit" 
+                                <button
+                                    type="submit"
                                     className={styles.btnSubmit}
-                                    disabled={!formData.empresaId || !formData.id_ubicacion || !formData.nombre || !formData.descripcion}
+                                    disabled={!formData.id_ubicacion || !formData.nombre || !formData.descripcion}
                                 >
                                     Crear Lugar
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal para editar lugar */}
+            {showEditModal && editingLugar && empresaSeleccionada && (
+                <div className={styles.modalOverlay} onClick={closeAllModals}>
+                    <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+                        <div className={styles.modalHeader}>
+                            <h2>Editar Lugar</h2>
+                            <button className={styles.btnClose} onClick={closeAllModals}>
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleUpdate} className={styles.lugarForm}>
+                            <div className={styles.formGroup}>
+                                <label>Empresa</label>
+                                <div className={styles.empresaDisplay}>
+                                    <strong>{empresaSeleccionada.nombre}</strong>
+                                </div>
+                                <p className={styles.helpText}>
+                                    La empresa no se puede modificar al editar un lugar
+                                </p>
+                            </div>
+
+                            <div className={styles.formGroup}>
+                                <label htmlFor="edit_id_ubicacion">Ubicación *</label>
+                                <select
+                                    id="edit_id_ubicacion"
+                                    name="id_ubicacion"
+                                    value={formData.id_ubicacion}
+                                    onChange={handleInputChange}
+                                    required
+                                    className={styles.formSelect}
+                                >
+                                    <option value="">Seleccione una ubicación</option>
+                                    {Array.isArray(ubicaciones) && ubicaciones.map((ubicacion) => (
+                                        <option key={ubicacion.id} value={ubicacion.id}>
+                                            {ubicacion.lugar} - {ubicacion.direccion} {ubicacion.ciudad_nombre ? `(${ubicacion.ciudad_nombre})` : ''}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className={styles.formGroup}>
+                                <label htmlFor="edit_nombre">Nombre del Lugar *</label>
+                                <input
+                                    type="text"
+                                    id="edit_nombre"
+                                    name="nombre"
+                                    value={formData.nombre}
+                                    onChange={handleInputChange}
+                                    required
+                                    className={styles.formInput}
+                                />
+                            </div>
+
+                            <div className={`${styles.formGroup} ${styles.fullWidth}`}>
+                                <label htmlFor="edit_descripcion">Descripción *</label>
+                                <textarea
+                                    id="edit_descripcion"
+                                    name="descripcion"
+                                    value={formData.descripcion}
+                                    onChange={handleInputChange}
+                                    rows="4"
+                                    required
+                                    className={styles.formTextarea}
+                                />
+                            </div>
+
+                            <div className={styles.formActions}>
+                                <button
+                                    type="button"
+                                    className={styles.btnCancel}
+                                    onClick={closeAllModals}
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="submit"
+                                    className={styles.btnSubmit}
+                                    disabled={!formData.id_ubicacion || !formData.nombre || !formData.descripcion}
+                                >
+                                    Actualizar Lugar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal de confirmación para eliminar */}
+            {showDeleteModal && deletingLugar && (
+                <div className={styles.modalOverlay} onClick={closeAllModals}>
+                    <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+                        <div className={styles.modalHeader}>
+                            <h2>Confirmar Eliminación</h2>
+                            <button className={styles.btnClose} onClick={closeAllModals}>
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        <div className={styles.confirmDeleteContent}>
+                            <div className={styles.warningIcon}>
+                                <Trash2 size={48} className={styles.warningIcon} />
+                            </div>
+                            <p>
+                                ¿Está seguro de que desea eliminar el lugar <strong>"{deletingLugar.nombre}"</strong>?
+                            </p>
+                            <p className={styles.warningText}>
+                                Esta acción no se puede deshacer.
+                            </p>
+
+                            <div className={styles.formActions}>
+                                <button
+                                    type="button"
+                                    className={styles.btnCancel}
+                                    onClick={closeAllModals}
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="button"
+                                    className={`${styles.btnSubmit} ${styles.btnDeleteConfirm}`}
+                                    onClick={handleDeleteConfirm}
+                                >
+                                    Eliminar Lugar
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
