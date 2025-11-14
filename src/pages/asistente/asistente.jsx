@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './asistentePanel.module.css';
-import Sidebar from './sidebar';
+import Sidebar from './sidebar'
 import Header from '../../layouts/Header/header';
 import Calendar from '../../assets/calendar.png';
 import Cupos from '../../assets/cupos.png';
@@ -29,6 +29,11 @@ const Asistente = () => {
 		telefono: '',
 		institucion: ''
 	});
+	const [eventosInscritos, setEventosInscritos] = useState(new Set());
+	const [modalType, setModalType] = useState('details');
+	const [asistenciasRegistradas, setAsistenciasRegistradas] = useState(new Set());
+	const [inscripcionRegistrando, setInscripcionRegistrando] = useState(null);
+	const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
 	useEffect(() => {
 		const token = localStorage.getItem('access_token');
@@ -45,6 +50,7 @@ const Asistente = () => {
 			return;
 		}
 		cargarEventosDisponibles();
+		cargarMisInscripciones();
 	}, []);
 
 	const cargarEventosDisponibles = async () => {
@@ -98,7 +104,11 @@ const Asistente = () => {
 						cupos_disponibles: cuposDisponibles,
 						estado_evento: cuposDisponibles > 0 ? 'Disponible' : 'Lleno',
 						empresa: evento.empresa,
-						estado: 1
+						estado: 1,
+						actividades: evento.actividades || [],
+						creador: evento.creador || {},
+						fecha_creacion: evento.fecha_creacion,
+						fecha_actualizacion: evento.fecha_actualizacion
 					};
 				});
 
@@ -156,6 +166,25 @@ const Asistente = () => {
 				});
 
 				setMisInscripciones(inscripcionesConAsistencias);
+
+				const eventosInscritosIds = new Set(inscripcionesConAsistencias.map(insc => insc.evento?.id).filter(Boolean));
+				setEventosInscritos(eventosInscritosIds);
+
+				// Actualizar asistencias registradas
+				const nuevasAsistencias = new Set();
+				inscripcionesConAsistencias.forEach(inscripcion => {
+					if (inscripcion.asistencias && Array.isArray(inscripcion.asistencias)) {
+						const hoy = new Date().toISOString().split('T')[0];
+						const asistenciaHoy = inscripcion.asistencias.some(asistencia =>
+							asistencia.fecha === hoy && asistencia.estado === 'Presente'
+						);
+						if (asistenciaHoy) {
+							nuevasAsistencias.add(inscripcion.id);
+						}
+					}
+				});
+				setAsistenciasRegistradas(nuevasAsistencias);
+
 				setSnackbar({
 					open: true,
 					message: `${inscripcionesConAsistencias.length} inscripciones cargadas`,
@@ -163,6 +192,8 @@ const Asistente = () => {
 				});
 			} else {
 				setMisInscripciones([]);
+				setEventosInscritos(new Set());
+				setAsistenciasRegistradas(new Set());
 			}
 
 		} catch (error) {
@@ -172,6 +203,8 @@ const Asistente = () => {
 				severity: 'error'
 			});
 			setMisInscripciones([]);
+			setEventosInscritos(new Set());
+			setAsistenciasRegistradas(new Set());
 		} finally {
 			setLoadingInscripciones(false);
 		}
@@ -180,23 +213,31 @@ const Asistente = () => {
 	const handleRegistrarAsistencia = async (inscripcion) => {
 		try {
 			setRegistrandoAsistencia(true);
+			setInscripcionRegistrando(inscripcion.id);
 			const token = localStorage.getItem('access_token');
 
 			if (!token) {
 				throw new Error('No se encontró token de autenticación');
 			}
-			
-			const response = await fetch('http://localhost:3000/api/asistencias/codigo', {
-				method: 'POST',
-				headers: {
-					'Authorization': `Bearer ${token}`,
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					codigo: inscripcion.codigo 
-				})
-			});
 
+			let response;
+			try {
+				response = await fetch('http://localhost:3000/api/asistencias/codigo', {
+					method: 'POST',
+					headers: {
+						'Authorization': `Bearer ${token}`,
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({
+						codigo: inscripcion.codigo
+					})
+				});
+			} catch (networkError) {
+				// Error de red (servidor no disponible)
+				throw new Error('No se pudo conectar con el servidor.');
+			}
+
+			// Si llegamos aquí, la conexión fue exitosa
 			const result = await response.json();
 
 			if (!response.ok) {
@@ -212,13 +253,18 @@ const Asistente = () => {
 				throw new Error(result.message || 'Error al registrar asistencia');
 			}
 
-			await cargarMisInscripciones();
+			// Éxito
+			setAsistenciasRegistradas(prev => new Set([...prev, inscripcion.id]));
 
 			setSnackbar({
 				open: true,
 				message: result.message || 'Asistencia registrada exitosamente',
 				severity: 'success'
 			});
+
+			setTimeout(() => {
+				cargarMisInscripciones();
+			}, 500);
 
 		} catch (error) {
 			setSnackbar({
@@ -228,7 +274,12 @@ const Asistente = () => {
 			});
 		} finally {
 			setRegistrandoAsistencia(false);
+			setInscripcionRegistrando(null);
 		}
+	};
+
+	const handleSidebarToggle = (isCollapsed) => {
+		setSidebarCollapsed(isCollapsed);
 	};
 
 	const handleMisInscripcionesClick = () => {
@@ -253,6 +304,15 @@ const Asistente = () => {
 	}, [filtroCategoria, eventos]);
 
 	const handleInscribirse = (evento) => {
+		if (eventosInscritos.has(evento.id)) {
+			setSnackbar({
+				open: true,
+				message: 'Ya estás inscrito en este evento.',
+				severity: 'info'
+			});
+			return;
+		}
+
 		const estado = getEstadoEvento(evento);
 		if (estado.texto !== 'DISPONIBLE') {
 			setSnackbar({
@@ -264,6 +324,7 @@ const Asistente = () => {
 		}
 
 		setSelectedEvento(evento);
+		setModalType('inscription');
 		const user = JSON.parse(localStorage.getItem('user') || '{}');
 		setFormData({
 			nombre: user.nombre || user.username || '',
@@ -271,6 +332,12 @@ const Asistente = () => {
 			telefono: user.telefono || '',
 			institucion: user.institucion || ''
 		});
+		setDialogOpen(true);
+	};
+
+	const handleVerDetalles = (evento) => {
+		setSelectedEvento(evento);
+		setModalType('details');
 		setDialogOpen(true);
 	};
 
@@ -358,7 +425,9 @@ const Asistente = () => {
 			});
 
 			setDialogOpen(false);
+			setEventosInscritos(prev => new Set([...prev, selectedEvento.id]));
 			await cargarEventosDisponibles();
+			await cargarMisInscripciones();
 
 		} catch (error) {
 			setSnackbar({
@@ -372,6 +441,9 @@ const Asistente = () => {
 	};
 
 	const getEstadoEvento = (evento) => {
+		if (eventosInscritos.has(evento.id)) {
+			return { texto: 'INSCRITO', clase: styles.estadoInscrito };
+		}
 		if (evento.estado_evento === 'Lleno' || evento.cupos_disponibles <= 0) {
 			return { texto: 'LLENO', clase: styles.estadoLleno };
 		}
@@ -396,7 +468,22 @@ const Asistente = () => {
 
 	const formatHora = (hora) => {
 		if (!hora) return '';
-		return hora;
+		return hora.substring(0, 5);
+	};
+
+	const formatFechaCompleta = (fecha) => {
+		if (!fecha) return 'Fecha no definida';
+		try {
+			return new Date(fecha).toLocaleDateString('es-ES', {
+				year: 'numeric',
+				month: 'long',
+				day: 'numeric',
+				hour: '2-digit',
+				minute: '2-digit'
+			});
+		} catch (e) {
+			return fecha;
+		}
 	};
 
 	const getModalidadTexto = (evento) => {
@@ -414,6 +501,11 @@ const Asistente = () => {
 	};
 
 	const puedeRegistrarAsistencia = (inscripcion) => {
+		// Si ya registró asistencia hoy, no puede registrar de nuevo
+		if (asistenciasRegistradas.has(inscripcion.id)) {
+			return false;
+		}
+
 		const hoy = new Date().toISOString().split('T')[0];
 		const yaRegistroHoy = inscripcion.asistencias?.some(asistencia =>
 			asistencia.fecha === hoy && asistencia.estado === 'Presente'
@@ -433,10 +525,11 @@ const Asistente = () => {
 	};
 
 	const tieneAsistenciaHoy = (inscripcion) => {
-		const hoy = new Date().toISOString().split('T')[0];
-		return inscripcion.asistencias?.some(asistencia =>
-			asistencia.fecha === hoy && asistencia.estado === 'Presente'
-		);
+		return asistenciasRegistradas.has(inscripcion.id) ||
+			inscripcion.asistencias?.some(asistencia => {
+				const hoy = new Date().toISOString().split('T')[0];
+				return asistencia.fecha === hoy && asistencia.estado === 'Presente';
+			});
 	};
 
 	const getAsistenciasDelEvento = (inscripcion) => {
@@ -455,10 +548,328 @@ const Asistente = () => {
 		);
 	}
 
+	const EventoCard = ({ evento }) => {
+		const estado = getEstadoEvento(evento);
+		const fechaInicio = formatFecha(evento.fecha_inicio || evento.fecha);
+		const hora = formatHora(evento.hora);
+
+		return (
+			<div className={styles.eventCard}>
+				<div className={styles.eventCardHeader}>
+					<div className={styles.eventHeader}>
+						<div className={styles.eventTitleSection}>
+							<h3 className={styles.eventTitle}>
+								{evento.titulo || evento.nombre || 'Evento sin título'}
+							</h3>
+							<span className={styles.eventCategory}>
+								{evento.modalidad || 'Presencial'}
+							</span>
+						</div>
+						<span className={`${styles.eventStatus} ${estado.clase}`}>
+							{estado.texto}
+						</span>
+					</div>
+				</div>
+
+				<div className={styles.eventCardContent}>
+					{evento.cupos_disponibles !== undefined && (
+						<div className={styles.cuposProgress}>
+							<div className={styles.progressHeader}>
+								<span className={styles.progressLabel}>Cupos disponibles</span>
+								<span className={styles.progressPercentage}>
+									{evento.cupo_total > 0 ? Math.round((evento.cupos_disponibles / evento.cupo_total) * 100) : 0}%
+								</span>
+							</div>
+							<div className={styles.progressBar}>
+								<div
+									className={`${styles.progressFill} ${estado.clase}`}
+									style={{
+										width: `${evento.cupo_total > 0 ? Math.round((evento.cupos_disponibles / evento.cupo_total) * 100) : 0}%`
+									}}
+								/>
+							</div>
+							<span className={styles.progressText}>
+								{evento.cupos_disponibles} de {evento.cupo_total} cupos disponibles
+							</span>
+						</div>
+					)}
+
+					{evento.descripcion && evento.descripcion !== 'Sin descripción disponible' && (
+						<p className={styles.eventDescription}>
+							{evento.descripcion}
+						</p>
+					)}
+
+					<div className={styles.eventDetails}>
+						<div className={styles.detailItem}>
+							<span className={styles.detailIcon}>
+								<img src={Calendar} alt="Fecha" className={styles.iconImage} />
+							</span>
+							<div className={styles.detailContent}>
+								<span className={styles.detailLabel}>Fecha y hora</span>
+								<span className={styles.detailValue}>
+									{fechaInicio}{hora ? ` - ${hora}` : ''}
+								</span>
+							</div>
+						</div>
+
+						<div className={styles.detailItem}>
+							<span className={styles.detailIcon}>
+								<img src={Lugar} alt="Ubicación" className={styles.iconImage} />
+							</span>
+							<div className={styles.detailContent}>
+								<span className={styles.detailLabel}>Ubicación</span>
+								<span className={styles.detailValue}>{getLugarTexto(evento)}</span>
+							</div>
+						</div>
+
+						<div className={styles.detailItem}>
+							<span className={styles.detailIcon}>
+								<img src={Cupos} alt="Cupos" className={styles.iconImage} />
+							</span>
+							<div className={styles.detailContent}>
+								<span className={styles.detailLabel}>Capacidad</span>
+								<span className={styles.detailValue}>
+									{evento.cupo_total || 'N/A'} cupos totales
+								</span>
+							</div>
+						</div>
+
+						{evento.empresa && (
+							<div className={styles.detailItem}>
+								<span className={styles.detailIcon}>
+									<img src={Edificio} alt="Empresa" className={styles.iconImage} />
+								</span>
+								<div className={styles.detailContent}>
+									<span className={styles.detailLabel}>Organizador</span>
+									<span className={styles.detailValue}>{evento.empresa}</span>
+								</div>
+							</div>
+						)}
+					</div>
+
+					<div className={styles.eventActions}>
+						<button
+							className={styles.btnVerDetalles}
+							onClick={() => handleVerDetalles(evento)}
+						>
+							Ver Detalles Completos
+						</button>
+						<button
+							className={`${styles.btnInscribirse} ${estado.texto === 'INSCRITO' ? styles.btnInscrito :
+								estado.texto !== 'DISPONIBLE' ? styles.btnDisabled : ''
+								}`}
+							onClick={() => handleInscribirse(evento)}
+							disabled={estado.texto !== 'DISPONIBLE'}
+						>
+							{estado.texto === 'INSCRITO' ? 'Inscrito' :
+								estado.texto === 'DISPONIBLE' ? 'Inscribirse' : estado.texto}
+						</button>
+					</div>
+				</div>
+			</div>
+		);
+	};
+
+	const DetallesCompletosModal = ({ evento }) => {
+		return (
+			<div className={styles.modalBody}>
+				<div className={styles.eventInfoGrid}>
+					<div className={styles.infoSection}>
+						<h4>Información General</h4>
+						<div className={styles.infoItem}>
+							<label>Título:</label>
+							<span>{evento.titulo}</span>
+						</div>
+						<div className={styles.infoItem}>
+							<label>Descripción:</label>
+							<p>{evento.descripcion || 'No disponible'}</p>
+						</div>
+						<div className={styles.infoItem}>
+							<label>Modalidad:</label>
+							<span>{evento.modalidad || 'No especificado'}</span>
+						</div>
+						<div className={styles.infoItem}>
+							<label>Estado:</label>
+							<span>{evento.estado === 1 ? 'Activo' : 'Inactivo'}</span>
+						</div>
+					</div>
+
+					<div className={styles.infoSection}>
+						<h4>Fechas y Horarios</h4>
+						<div className={styles.infoItem}>
+							<label>Fecha de inicio:</label>
+							<span>{formatFecha(evento.fecha_inicio)}</span>
+						</div>
+						<div className={styles.infoItem}>
+							<label>Fecha de fin:</label>
+							<span>{formatFecha(evento.fecha_fin)}</span>
+						</div>
+						<div className={styles.infoItem}>
+							<label>Hora:</label>
+							<span>{formatHora(evento.hora) || 'No especificada'}</span>
+						</div>
+					</div>
+
+					<div className={styles.infoSection}>
+						<h4>Ubicación</h4>
+						<div className={styles.infoItem}>
+							<label>Lugar:</label>
+							<span>{getLugarTexto(evento)}</span>
+						</div>
+					</div>
+
+					<div className={styles.infoSection}>
+						<h4>Capacidad y Organización</h4>
+						<div className={styles.infoItem}>
+							<label>Cupos totales:</label>
+							<span>{evento.cupo_total || 'No definido'}</span>
+						</div>
+						<div className={styles.infoItem}>
+							<label>Cupos disponibles:</label>
+							<span>{evento.cupos_disponibles || 'N/A'}</span>
+						</div>
+						<div className={styles.infoItem}>
+							<label>Organizador:</label>
+							<span>{evento.creador?.nombre || 'No especificado'}</span>
+						</div>
+						<div className={styles.infoItem}>
+							<label>Empresa:</label>
+							<span>{evento.empresa?.nombre || evento.empresa || 'No especificado'}</span>
+						</div>
+					</div>
+
+					{evento.actividades && evento.actividades.length > 0 && (
+						<div className={styles.infoSection}>
+							<h4>Actividades</h4>
+							{evento.actividades.map((actividad, index) => (
+								<div key={actividad.id_actividad || index} className={styles.actividadItem}>
+									<div className={styles.actividadTitle}>{actividad.titulo}</div>
+									<div className={styles.actividadFecha}>
+										{formatFecha(actividad.fecha_actividad)}
+									</div>
+								</div>
+							))}
+						</div>
+					)}
+
+					<div className={styles.infoSection}>
+						<h4>Información Adicional</h4>
+						<div className={styles.infoItem}>
+							<label>Fecha de creación:</label>
+							<span>{formatFechaCompleta(evento.fecha_creacion)}</span>
+						</div>
+						<div className={styles.infoItem}>
+							<label>Última actualización:</label>
+							<span>{formatFechaCompleta(evento.fecha_actualizacion)}</span>
+						</div>
+					</div>
+				</div>
+
+				<div className={styles.modalActions}>
+					<button
+						className={styles.btnCancel}
+						onClick={() => setDialogOpen(false)}
+					>
+						Cerrar
+					</button>
+				</div>
+			</div>
+		);
+	};
+
+	const FormularioInscripcionModal = ({ evento }) => {
+		return (
+			<div className={styles.modalBody}>
+				<div className={styles.eventInfo}>
+					<h3>{evento.titulo}</h3>
+					<p><strong>Fecha:</strong> {formatFecha(evento.fecha_inicio)}</p>
+					<p><strong>Modalidad:</strong> {getModalidadTexto(evento)}</p>
+					<p><strong>Lugar:</strong> {getLugarTexto(evento)}</p>
+					<p><strong>Cupos disponibles:</strong> {evento.cupos_disponibles} de {evento.cupo_total}</p>
+					{evento.descripcion && evento.descripcion !== 'Sin descripción disponible' && (
+						<div className={styles.eventDescriptionModal}>
+							<strong>Descripción:</strong>
+							<p>{evento.descripcion}</p>
+						</div>
+					)}
+				</div>
+
+				<div className={styles.formSection}>
+					<h4>Datos de Contacto</h4>
+					<div className={styles.formGroup}>
+						<label>Nombre completo *</label>
+						<input
+							type="text"
+							value={formData.nombre}
+							onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+							className={styles.formInput}
+							placeholder="Ingresa tu nombre completo"
+							disabled={inscribiendo}
+						/>
+					</div>
+
+					<div className={styles.formGroup}>
+						<label>Email *</label>
+						<input
+							type="email"
+							value={formData.email}
+							onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+							className={styles.formInput}
+							placeholder="Ingresa tu email"
+							disabled={inscribiendo}
+						/>
+					</div>
+
+					<div className={styles.formGroup}>
+						<label>Teléfono</label>
+						<input
+							type="tel"
+							value={formData.telefono}
+							onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
+							className={styles.formInput}
+							placeholder="Ingresa tu teléfono"
+							disabled={inscribiendo}
+						/>
+					</div>
+
+					<div className={styles.formGroup}>
+						<label>Institución/Organización</label>
+						<input
+							type="text"
+							value={formData.institucion}
+							onChange={(e) => setFormData({ ...formData, institucion: e.target.value })}
+							className={styles.formInput}
+							placeholder="Ingresa tu institución"
+							disabled={inscribiendo}
+						/>
+					</div>
+				</div>
+
+				<div className={styles.modalActions}>
+					<button
+						className={styles.btnCancel}
+						onClick={() => setDialogOpen(false)}
+						disabled={inscribiendo}
+					>
+						Cancelar
+					</button>
+					<button
+						className={styles.btnConfirm}
+						onClick={handleConfirmarInscripcion}
+						disabled={inscribiendo}
+					>
+						{inscribiendo ? 'Inscribiendo...' : 'Confirmar Inscripción'}
+					</button>
+				</div>
+			</div>
+		);
+	};
+
 	return (
-		<div className={styles.asistenteContainer}>
+		<div className={`${styles.asistenteContainer} ${sidebarCollapsed ? styles.sidebarCollapsed : styles.sidebarExpanded}`}>
 			<Header />
-			<Sidebar />
+			<Sidebar onToggle={handleSidebarToggle} />
 			<h1 className={styles.pageTitle}>
 				{vistaActual === 'eventos'
 					? 'Eventos Disponibles para Inscripción'
@@ -527,76 +938,9 @@ const Asistente = () => {
 						</div>
 					) : (
 						<div className={styles.eventsGrid}>
-							{eventosFiltrados.map((evento) => {
-								const estado = getEstadoEvento(evento);
-
-								return (
-									<div className={styles.eventCard} key={evento.id}>
-										<div className={styles.eventHeader}>
-											<h3 className={styles.eventTitle}>{evento.titulo || evento.nombre}</h3>
-											<span className={`${styles.eventStatus} ${estado.clase}`}>
-												{estado.texto}
-											</span>
-										</div>
-
-										<p className={styles.eventDescription}>
-											{evento.descripcion || 'Sin descripción disponible'}
-										</p>
-
-										<div className={styles.eventDetails}>
-											<div className={styles.detailItem}>
-												<span className={styles.detailIcon}>
-													<img src={Calendar} alt="Fecha" className={styles.iconImage} />
-												</span>
-												<span>
-													{formatFecha(evento.fecha_inicio || evento.fecha)}
-													{evento.hora && ` - ${formatHora(evento.hora)}`}
-												</span>
-											</div>
-
-											<div className={styles.detailItem}>
-												<span className={styles.detailIcon}>
-													<img src={Lugar} alt="Ubicación" className={styles.iconImage} />
-												</span>
-												<span>{getLugarTexto(evento)}</span>
-											</div>
-
-											<div className={styles.detailItem}>
-												<span className={styles.detailIcon}>
-													<img src={Cupos} alt="Cupos" className={styles.iconImage} />
-												</span>
-												<span>
-													{evento.cupos_disponibles !== undefined ? evento.cupos_disponibles : 'N/A'} /
-													{evento.cupo_total !== undefined ? evento.cupo_total : 'N/A'} cupos disponibles
-												</span>
-											</div>
-
-											{evento.empresa && (
-												<div className={styles.detailItem}>
-													<span className={styles.detailIcon}>
-														<img src={Edificio} alt="Empresa" className={styles.iconImage} />
-													</span>
-													<span>{evento.empresa}</span>
-												</div>
-											)}
-
-											{evento.modalidad && (
-												<span className={styles.eventCategory}>
-													{evento.modalidad}
-												</span>
-											)}
-										</div>
-
-										<button
-											className={`${styles.btnInscribirse} ${estado.texto !== 'DISPONIBLE' ? styles.btnDisabled : ''}`}
-											onClick={() => handleInscribirse(evento)}
-											disabled={estado.texto !== 'DISPONIBLE'}
-										>
-											{estado.texto === 'DISPONIBLE' ? 'Inscribirse' : estado.texto}
-										</button>
-									</div>
-								);
-							})}
+							{eventosFiltrados.map((evento) => (
+								<EventoCard key={evento.id} evento={evento} />
+							))}
 						</div>
 					)}
 				</>
@@ -626,6 +970,7 @@ const Asistente = () => {
 								const puedeRegistrar = puedeRegistrarAsistencia(inscripcion);
 								const yaRegistroHoy = tieneAsistenciaHoy(inscripcion);
 								const asistencias = getAsistenciasDelEvento(inscripcion);
+								const estaRegistrando = registrandoAsistencia && inscripcionRegistrando === inscripcion.id;
 
 								return (
 									<div className={styles.inscripcionCard} key={inscripcion.id}>
@@ -685,18 +1030,19 @@ const Asistente = () => {
 										)}
 
 										<div className={styles.inscripcionActions}>
-											{puedeRegistrar && (
+											{puedeRegistrar && !yaRegistroHoy && (
 												<button
-													className={styles.btnRegistrarAsistencia}
+													className={`${styles.btnRegistrarAsistencia} ${estaRegistrando ? styles.btnRegistrando : ''
+														}`}
 													onClick={() => handleRegistrarAsistencia(inscripcion)}
 													disabled={registrandoAsistencia}
 												>
-													{registrandoAsistencia ? 'Registrando...' : ' Registrar Asistencia'}
+													{estaRegistrando ? 'Registrando...' : 'Registrar Asistencia'}
 												</button>
 											)}
 											{yaRegistroHoy && (
 												<span className={styles.asistenciaRegistrada}>
-													Asistencia registrada hoy
+													✓ Asistencia Registrada
 												</span>
 											)}
 											{!puedeRegistrar && inscripcion.estado === 'Confirmada' && !yaRegistroHoy && (
@@ -722,7 +1068,12 @@ const Asistente = () => {
 				<div className={styles.modalOverlay}>
 					<div className={styles.modalContent}>
 						<div className={styles.modalHeader}>
-							<h2>Confirmar Inscripción</h2>
+							<h2>
+								{modalType === 'details'
+									? 'Detalles Completos del Evento'
+									: 'Confirmar Inscripción'
+								}
+							</h2>
 							<button
 								className={styles.closeButton}
 								onClick={() => setDialogOpen(false)}
@@ -732,82 +1083,11 @@ const Asistente = () => {
 							</button>
 						</div>
 
-						<div className={styles.modalBody}>
-							<div className={styles.eventInfo}>
-								<h3>{selectedEvento.titulo}</h3>
-								<p><strong>Fecha:</strong> {formatFecha(selectedEvento.fecha_inicio)}</p>
-								<p><strong>Modalidad:</strong> {getModalidadTexto(selectedEvento)}</p>
-								<p><strong>Lugar:</strong> {getLugarTexto(selectedEvento)}</p>
-							</div>
-
-							<div className={styles.formSection}>
-								<h4>Datos de Contacto</h4>
-								<div className={styles.formGroup}>
-									<label>Nombre completo *</label>
-									<input
-										type="text"
-										value={formData.nombre}
-										onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-										className={styles.formInput}
-										placeholder="Ingresa tu nombre completo"
-										disabled={inscribiendo}
-									/>
-								</div>
-
-								<div className={styles.formGroup}>
-									<label>Email *</label>
-									<input
-										type="email"
-										value={formData.email}
-										onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-										className={styles.formInput}
-										placeholder="Ingresa tu email"
-										disabled={inscribiendo}
-									/>
-								</div>
-
-								<div className={styles.formGroup}>
-									<label>Teléfono</label>
-									<input
-										type="tel"
-										value={formData.telefono}
-										onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
-										className={styles.formInput}
-										placeholder="Ingresa tu teléfono"
-										disabled={inscribiendo}
-									/>
-								</div>
-
-								<div className={styles.formGroup}>
-									<label>Institución/Organización</label>
-									<input
-										type="text"
-										value={formData.institucion}
-										onChange={(e) => setFormData({ ...formData, institucion: e.target.value })}
-										className={styles.formInput}
-										placeholder="Ingresa tu institución"
-										disabled={inscribiendo}
-									/>
-								</div>
-							</div>
-
-							<div className={styles.modalActions}>
-								<button
-									className={styles.btnCancel}
-									onClick={() => setDialogOpen(false)}
-									disabled={inscribiendo}
-								>
-									Cancelar
-								</button>
-								<button
-									className={styles.btnConfirm}
-									onClick={handleConfirmarInscripcion}
-									disabled={inscribiendo}
-								>
-									{inscribiendo ? 'Inscribiendo...' : 'Confirmar Inscripción'}
-								</button>
-							</div>
-						</div>
+						{modalType === 'details' ? (
+							<DetallesCompletosModal evento={selectedEvento} />
+						) : (
+							<FormularioInscripcionModal evento={selectedEvento} />
+						)}
 					</div>
 					<Footer />
 				</div>

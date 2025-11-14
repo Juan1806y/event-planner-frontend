@@ -91,7 +91,7 @@ export const isGerente = (user) => {
   if (typeof rawRole === 'string') {
     const role = rawRole.toLowerCase();
     const gerenteRoles = ['gerente', 'manager', 'supervisor', 'jefe'];
-    if (gerenteRoles.some(r => role.includes(r))) return true;
+     if (gerenteRoles.some(r => role === r)) return true; 
   }
 
   if (typeof rawRole === 'number') {

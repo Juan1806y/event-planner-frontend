@@ -14,10 +14,14 @@ const getAuthToken = () => {
  */
 const getHeaders = () => {
   const token = getAuthToken();
-  return {
-    'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json'
+  const headers = {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
   };
+  console.log('📤 Headers a enviar:', headers);
+  return headers;
 };
 
 /**

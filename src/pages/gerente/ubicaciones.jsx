@@ -5,41 +5,41 @@ import Header from '../../layouts/Header/header';
 import GerenteSidebar from '../gerente/GerenteSidebar';
 
 const Notification = ({ type, title, message, onClose, duration = 5000 }) => {
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      onClose();
-    }, duration);
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            onClose();
+        }, duration);
 
-    return () => clearTimeout(timer);
-  }, [duration, onClose]);
+        return () => clearTimeout(timer);
+    }, [duration, onClose]);
 
-  const getIcon = () => {
-    switch (type) {
-      case 'success':
-        return <CheckCircle size={20} className={styles.notificationIcon} />;
-      case 'error':
-        return <XCircle size={20} className={styles.notificationIcon} />;
-      case 'warning':
-        return <AlertCircle size={20} className={styles.notificationIcon} />;
-      case 'info':
-        return <Info size={20} className={styles.notificationIcon} />;
-      default:
-        return <Info size={20} className={styles.notificationIcon} />;
-    }
-  };
+    const getIcon = () => {
+        switch (type) {
+            case 'success':
+                return <CheckCircle size={20} className={styles.notificationIcon} />;
+            case 'error':
+                return <XCircle size={20} className={styles.notificationIcon} />;
+            case 'warning':
+                return <AlertCircle size={20} className={styles.notificationIcon} />;
+            case 'info':
+                return <Info size={20} className={styles.notificationIcon} />;
+            default:
+                return <Info size={20} className={styles.notificationIcon} />;
+        }
+    };
 
-  return (
-    <div className={`${styles.notification} ${styles[type]}`}>
-      {getIcon()}
-      <div className={styles.notificationContent}>
-        <div className={styles.notificationTitle}>{title}</div>
-        <div className={styles.notificationMessage}>{message}</div>
-      </div>
-      <button className={styles.notificationClose} onClick={onClose}>
-        <X size={16} />
-      </button>
-    </div>
-  );
+    return (
+        <div className={`${styles.notification} ${styles[type]}`}>
+            {getIcon()}
+            <div className={styles.notificationContent}>
+                <div className={styles.notificationTitle}>{title}</div>
+                <div className={styles.notificationMessage}>{message}</div>
+            </div>
+            <button className={styles.notificationClose} onClick={onClose}>
+                <X size={16} />
+            </button>
+        </div>
+    );
 };
 
 const Ubicaciones = () => {
@@ -63,6 +63,26 @@ const Ubicaciones = () => {
     const [deletingUbicacion, setDeletingUbicacion] = useState(null);
     const [notifications, setNotifications] = useState([]);
 
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    useEffect(() => {
+        if (empresa && ciudades.length > 0 && ubicaciones.length > 0) {
+            const ubicacionesActualizadas = ubicaciones.map(ubicacion => {
+                if (ubicacion.id_ciudad && !ubicacion.ciudad_nombre) {
+                    const ciudadEncontrada = ciudades.find(ciudad => ciudad.id === ubicacion.id_ciudad);
+                    return {
+                        ...ubicacion,
+                        ciudad_nombre: ciudadEncontrada ? ciudadEncontrada.nombre : 'Sin ciudad'
+                    };
+                }
+                return ubicacion;
+            });
+            setUbicaciones(ubicacionesActualizadas);
+        }
+    }, [ciudades, empresa, ubicaciones]);
+
     const showNotification = (type, title, message, duration = 5000) => {
         const id = Date.now() + Math.random();
         const newNotification = {
@@ -72,7 +92,7 @@ const Ubicaciones = () => {
             message,
             duration
         };
-        
+
         setNotifications(prev => [...prev, newNotification]);
         return id;
     };
@@ -80,10 +100,6 @@ const Ubicaciones = () => {
     const closeNotification = (id) => {
         setNotifications(prev => prev.filter(notification => notification.id !== id));
     };
-
-    useEffect(() => {
-        fetchData();
-    }, []);
 
     const getToken = () => {
         const tokenNames = ['access_token', 'token', 'auth_token'];
@@ -103,10 +119,11 @@ const Ubicaciones = () => {
                 console.error('No se encontró token de autenticación');
                 return;
             }
-            
+
             await Promise.all([
-                fetchEmpresaUsuario(token),
-                fetchCiudades(token)
+                fetchCiudades(token),
+                fetchEmpresaUsuario(token)
+
             ]);
         } catch (error) {
             console.error('Error cargando datos:', error);
@@ -262,7 +279,7 @@ const Ubicaciones = () => {
         }
     };
 
-    const fetchUbicacionesByEmpresa = async (empresaId, token = null) => {
+    const fetchUbicacionesByEmpresa = async (empresaId, token = null, ciudadesList= ciudades) => {
         try {
             const headers = {
                 'Content-Type': 'application/json'
@@ -292,18 +309,15 @@ const Ubicaciones = () => {
             const result = await response.json();
             console.log('📄 Respuesta completa del servidor:', result);
 
-            // **VALIDACIÓN CRÍTICA: Verificar que result.data sea un array**
             if (result.success && result.data) {
                 let ubicacionesArray = result.data;
-                
-                // Si data no es un array, convertirlo o manejarlo
+
                 if (!Array.isArray(ubicacionesArray)) {
                     console.warn('⚠️ result.data no es un array, convirtiendo:', ubicacionesArray);
-                    
+
                     if (ubicacionesArray === null || ubicacionesArray === undefined) {
                         ubicacionesArray = [];
                     } else if (typeof ubicacionesArray === 'object') {
-                        // Si es un objeto único, convertirlo a array
                         ubicacionesArray = [ubicacionesArray];
                     } else {
                         ubicacionesArray = [];
@@ -313,17 +327,28 @@ const Ubicaciones = () => {
                 console.log(`📍 Total de ubicaciones a procesar: ${ubicacionesArray.length}`);
 
                 const ubicacionesConCiudades = ubicacionesArray.map(ubicacion => {
-                    console.log('🔍 Procesando ubicación:', ubicacion);
+                    console.log('🔍 Procesando ubicación completa:', ubicacion);
 
                     let ciudadNombre = 'Sin ciudad';
 
+                    // Múltiples formas de obtener el nombre de la ciudad
                     if (Array.isArray(ubicacion.ciudad) && ubicacion.ciudad.length > 0) {
                         ciudadNombre = ubicacion.ciudad[0].nombre;
                     } else if (ubicacion.ciudad && typeof ubicacion.ciudad === 'object' && ubicacion.ciudad.nombre) {
                         ciudadNombre = ubicacion.ciudad.nombre;
                     } else if (ubicacion.ciudad_nombre) {
                         ciudadNombre = ubicacion.ciudad_nombre;
+                    } else if (ubicacion.nombre_ciudad) {
+                        ciudadNombre = ubicacion.nombre_ciudad;
+                    } else if (ubicacion.id_ciudad && Array.isArray(ciudades) && ciudades.length > 0) {
+                        // Buscar en el listado de ciudades si tenemos el id_ciudad
+                        const ciudadEncontrada = ciudades.find(ciudad => ciudad.id === ubicacion.id_ciudad);
+                        if (ciudadEncontrada) {
+                            ciudadNombre = ciudadEncontrada.nombre;
+                        }
                     }
+
+                    console.log(`🏙️ Ciudad asignada para ubicación ${ubicacion.id}: ${ciudadNombre}`);
 
                     return {
                         ...ubicacion,
@@ -364,7 +389,7 @@ const Ubicaciones = () => {
 
             const result = await response.json();
             console.log('📊 Ciudades recibidas:', result);
-            
+
             if (result.success && result.data && Array.isArray(result.data)) {
                 setCiudades(result.data);
             } else {
@@ -472,7 +497,10 @@ const Ubicaciones = () => {
             if (result.success) {
                 showNotification('success', 'Éxito', 'Ubicación actualizada exitosamente');
                 closeAllModals();
-                await fetchUbicacionesByEmpresa(empresa.id, token);
+                await Promise.all([
+                    fetchCiudades(token),
+                    fetchUbicacionesByEmpresa(empresa.id, token)
+                ]);
             } else {
                 showNotification('error', 'Error', `Error al actualizar ubicación: ${result.message || 'Error desconocido'}`);
             }
@@ -564,7 +592,7 @@ const Ubicaciones = () => {
     return (
         <div className={styles.appContainer}>
             <Header />
-            
+
             {/* Sistema de notificaciones */}
             <div className={styles.notificationContainer}>
                 {notifications.map((notification) => (
@@ -587,8 +615,8 @@ const Ubicaciones = () => {
                             <div className={styles.headerInfo}>
                                 <h1>Ubicaciones</h1>
                             </div>
-                            <button 
-                                className={styles.btnCreate} 
+                            <button
+                                className={styles.btnCreate}
                                 onClick={() => {
                                     if (!empresa) {
                                         showNotification('warning', 'Espera', 'Espere a que cargue la información de la empresa');
@@ -622,7 +650,7 @@ const Ubicaciones = () => {
                                 <table className={styles.ubicacionesTable}>
                                     <thead>
                                         <tr>
-                                            <th>Lugar</th>
+                                            <th>Nombre</th>
                                             <th>Dirección</th>
                                             <th>Capacidad</th>
                                             <th>Descripción</th>
@@ -643,15 +671,15 @@ const Ubicaciones = () => {
                                                     <td>{ubicacion.descripcion}</td>
                                                     <td>{ubicacion.ciudad_nombre || 'Sin ciudad'}</td>
                                                     <td className={styles.actionsCell}>
-                                                        <button 
-                                                            className={styles.btnIcon} 
+                                                        <button
+                                                            className={styles.btnIcon}
                                                             title="Editar"
                                                             onClick={() => handleEdit(ubicacion)}
                                                         >
                                                             <Pencil size={18} />
                                                         </button>
-                                                        <button 
-                                                            className={`${styles.btnIcon} ${styles.btnDelete}`} 
+                                                        <button
+                                                            className={`${styles.btnIcon} ${styles.btnDelete}`}
                                                             title="Eliminar"
                                                             onClick={() => handleDeleteClick(ubicacion)}
                                                         >
@@ -689,14 +717,14 @@ const Ubicaciones = () => {
                             </div>
 
                             <div className={styles.formGroup}>
-                                <label htmlFor="lugar">Lugar *</label>
+                                <label htmlFor="lugar">Nombre *</label>
                                 <input
                                     type="text"
                                     id="lugar"
                                     name="lugar"
                                     value={formData.lugar}
                                     onChange={handleInputChange}
-                                    placeholder="Nombre del lugar"
+                                    placeholder="Nombre de la ubicación"
                                     required
                                 />
                             </div>
@@ -875,7 +903,6 @@ const Ubicaciones = () => {
                 </div>
             )}
 
-            {/* Modal de confirmación para eliminar */}
             {showDeleteModal && deletingUbicacion && (
                 <div className={styles.modalOverlay} onClick={closeAllModals}>
                     <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
@@ -887,9 +914,6 @@ const Ubicaciones = () => {
                         </div>
 
                         <div className={styles.confirmDeleteContent}>
-                            <div className={styles.warningIcon}>
-                                <Trash2 size={48} className={styles.warningIcon} />
-                            </div>
                             <p>
                                 ¿Está seguro de que desea eliminar la ubicación <strong>"{deletingUbicacion.lugar}"</strong>?
                             </p>
@@ -898,15 +922,15 @@ const Ubicaciones = () => {
                             </p>
 
                             <div className={styles.formActions}>
-                                <button 
-                                    type="button" 
-                                    className={styles.btnCancel} 
+                                <button
+                                    type="button"
+                                    className={styles.btnCancel}
                                     onClick={closeAllModals}
                                 >
                                     Cancelar
                                 </button>
-                                <button 
-                                    type="button" 
+                                <button
+                                    type="button"
                                     className={`${styles.btnSubmit} ${styles.btnDeleteConfirm}`}
                                     onClick={handleDeleteConfirm}
                                 >

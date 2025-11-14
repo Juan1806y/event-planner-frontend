@@ -7,9 +7,9 @@ const API_BASE_URL = 'http://localhost:3000';
 
 // Mapeo de roles de la UI a roles del backend
 const ROLE_MAPPING = {
-  'asistente': ['asistente', 'participante', 'attendee'],
-  'gerente': ['gerente', 'organizador', 'manager', 'organizer'],
-  'ponente': ['ponente', 'expositor', 'speaker', 'presenter'],
+  'asistente': ['asistente'],
+  'gerente': ['gerente'],
+  'ponente': ['ponente'],
   'organizador': ['organizador']
 };
 
@@ -30,7 +30,7 @@ export const useLogin = () => {
 
     try {
       // Obtener el rol seleccionado en la UI
-      const selectedRole = localStorage.getItem('selected_role') || 'asistente';
+      const selectedRole = localStorage.getItem('selected_role');
       console.log('Rol seleccionado en UI:', selectedRole);
 
       // Enviar con los nombres de campos que espera el backend
@@ -140,11 +140,11 @@ export const useLogin = () => {
 
         console.log('Login exitoso!');
 
-        // Obtener la ruta de redirección según el rol del usuario
-        const redirectPath = getRedirectPath(usuario);
-        console.log('Redirigiendo a:', redirectPath);
+        // *** CORRECCIÓN: Usar el userRole real del backend para la redirección ***
+        const redirectPath = getRedirectPath(userRole); // Cambiado de selectedRole a userRole
+        console.log('Redirigiendo a:', redirectPath, 'para el rol:', userRole);
 
-        // Redirigir según el rol del usuario
+        // Redirigir según el rol REAL del usuario
         navigate(redirectPath);
       } else {
         throw new Error('No se recibió el token de acceso');

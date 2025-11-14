@@ -1,9 +1,10 @@
 // components/OrganizerComponents.jsx
 import React from 'react';
-import { Lock, X, Eye, EyeOff, Menu } from 'lucide-react';
+import { Lock, X, Eye, EyeOff, Menu, LogOut } from 'lucide-react';
+import EventosPage from './EventosPage'; // Ajusta la ruta según tu estructura
 import './OrganizerDashboard.css';
-import { LogOut } from 'lucide-react';
 
+// Modal de Contraseña
 export const PasswordModal = ({
     isOpen,
     onClose,
@@ -40,7 +41,7 @@ export const PasswordModal = ({
                             value={passwordData.correo}
                             onChange={(e) => onPasswordChange('correo', e.target.value)}
                             className="form-input"
-                            placeholder={"Ej: usuario@ejemplo.com"}
+                            placeholder="Ej: usuario@ejemplo.com"
                         />
                     </div>
 
@@ -129,7 +130,7 @@ export const Sidebar = ({ isOpen, user, menuItems, activeSection, onMenuClick, o
     <div className={`sidebar ${isOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
         <div className="sidebar-header">
             <div className="user-info">
-                <div className="user-avatar">0</div>
+                <div className="user-avatar">O</div>
                 <div className="user-details">
                     <h3 className="user-name">Organizador</h3>
                     <p className="user-role">{user?.correo}</p>
@@ -164,7 +165,6 @@ export const Sidebar = ({ isOpen, user, menuItems, activeSection, onMenuClick, o
                 <span>Cerrar Sesión</span>
             </button>
         </div>
-
     </div>
 );
 
@@ -197,18 +197,17 @@ export const EventRow = ({ event }) => (
 // Contenido principal
 export const MainContent = ({ activeSection, stats, recentEvents }) => (
     <div className="main-content">
-        <h1 className="page-title">
-            {activeSection.charAt(0).toUpperCase() + activeSection.slice(1)}
-        </h1>
 
         {activeSection === 'inicio' && (
             <div>
+                {/* Estadísticas */}
                 <div className="stats-grid">
                     {stats.map((stat, index) => (
                         <StatCard key={index} {...stat} />
                     ))}
                 </div>
 
+                {/* Eventos recientes */}
                 <div className="events-container">
                     <h2 className="events-title">Eventos Recientes</h2>
                     <div>
@@ -220,7 +219,9 @@ export const MainContent = ({ activeSection, stats, recentEvents }) => (
             </div>
         )}
 
-        {activeSection !== 'inicio' && (
+        {activeSection === 'eventos' && <EventosPage />}
+
+        {activeSection !== 'inicio' && activeSection !== 'eventos' && (
             <div className="placeholder-content">
                 <p>Contenido de {activeSection} - En desarrollo</p>
             </div>
@@ -234,6 +235,5 @@ export const Header = ({ isSidebarOpen, onToggleSidebar }) => (
         <button onClick={onToggleSidebar} className="toggle-sidebar-btn">
             {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
-        <h2 className="header-title">Panel de Control</h2>
     </header>
 );
