@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, MapPin, Users, Clock, ChevronRight } from 'lucide-react';
+import { Calendar, MapPin, Users, ChevronRight } from 'lucide-react';
 import { obtenerPerfil, obtenerEventos, obtenerActividadesEvento } from '../../../components/eventosService';
 import './ActividadesPage.css';
 import Sidebar from '../Sidebar';
@@ -11,11 +11,7 @@ const ActividadesPage = () => {
     const [loading, setLoading] = useState(true);
     const [usuario, setUsuario] = useState(null);
 
-    useEffect(() => {
-        cargarDatos();
-    }, []);
-
-    const cargarDatos = async () => {
+    const cargarDatos = useCallback(async () => {
         try {
             setLoading(true);
 
@@ -36,7 +32,11 @@ const ActividadesPage = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        cargarDatos();
+    }, [cargarDatos]);
 
     const formatearFecha = (fecha) => {
         return new Date(fecha).toLocaleDateString('es-ES', {
@@ -66,6 +66,7 @@ const ActividadesPage = () => {
         );
     }
 
+    console.log(usuario)
     return (
         <div className="actividades-page">
             <Sidebar />

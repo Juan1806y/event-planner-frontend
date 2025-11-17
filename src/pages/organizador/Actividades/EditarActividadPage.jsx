@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Calendar, ArrowLeft, Save, FileText } from 'lucide-react';
 import {
@@ -13,7 +13,7 @@ const EditarActividadPage = () => {
     const navigate = useNavigate();
     const { idActividad } = useParams();
 
-    const [evento, setEvento] = useState(null);
+    const [setEvento] = useState(null);
     const [loading, setLoading] = useState(true);
     const [guardando, setGuardando] = useState(false);
 
@@ -29,11 +29,7 @@ const EditarActividadPage = () => {
     const [errores, setErrores] = useState({});
     const eventoId = sessionStorage.getItem("currentEventoId");
 
-    useEffect(() => {
-        cargarActividad();
-    }, [idActividad]);
-
-    const cargarActividad = async () => {
+    const cargarActividad = useCallback(async () => {
         try {
             setLoading(true);
 
@@ -67,7 +63,12 @@ const EditarActividadPage = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [eventoId, idActividad, setFormData, setEvento]);
+
+
+    useEffect(() => {
+        cargarActividad();
+    }, [cargarActividad]);
 
     const handleInputChange = (campo, valor) => {
         setFormData(prev => ({ ...prev, [campo]: valor }));

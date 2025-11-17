@@ -12,9 +12,9 @@ import {
     XCircle,
     MapPin,
 } from 'lucide-react';
-import { useEvento } from './useCrearEvento';
+import { useEvento } from '../useCrearEvento';
 import './CrearEventoPage.css';
-import Sidebar from './Sidebar';
+import Sidebar from '../Sidebar';
 
 const ESTADOS = [
     { value: 0, label: 'Borrador' },
@@ -57,7 +57,6 @@ const EditarEventoPage = () => {
         }
     }, [mostrarModalExito, navigate, setMostrarModalExito]);
 
-
     if (cargando) {
         return (
             <div className="crear-evento-page">
@@ -92,6 +91,7 @@ const EditarEventoPage = () => {
     return (
         <div className="crear-evento-page">
             <Sidebar />
+
             <div className="crear-evento-container">
                 <div className="page-header-crear">
                     <button onClick={() => navigate('/organizador')} className="btn-back">
@@ -119,6 +119,7 @@ const EditarEventoPage = () => {
                 >
                     <p className="form-hint">Actualiza la información del evento y sus actividades</p>
 
+                    {/* Información básica */}
                     <section className="form-section">
                         <h2 className="section-title">Información Básica</h2>
 
@@ -139,8 +140,7 @@ const EditarEventoPage = () => {
                         <div className="form-row-crear">
                             <div className="form-group-crear">
                                 <label className="form-label-crear">
-                                    <Calendar size={18} />
-                                    Fecha de Inicio <span className="required">*</span>
+                                    <Calendar size={18} /> Fecha de Inicio <span className="required">*</span>
                                 </label>
                                 <input
                                     type="date"
@@ -153,8 +153,7 @@ const EditarEventoPage = () => {
 
                             <div className="form-group-crear">
                                 <label className="form-label-crear">
-                                    <Calendar size={18} />
-                                    Fecha de Fin <span className="required">*</span>
+                                    <Calendar size={18} /> Fecha de Fin <span className="required">*</span>
                                 </label>
                                 <input
                                     type="date"
@@ -169,8 +168,7 @@ const EditarEventoPage = () => {
                         <div className="form-row-crear">
                             <div className="form-group-crear">
                                 <label className="form-label-crear">
-                                    <Users size={18} />
-                                    Cupos Disponibles
+                                    <Users size={18} /> Cupos Disponibles
                                 </label>
                                 <input
                                     type="number"
@@ -181,7 +179,7 @@ const EditarEventoPage = () => {
                                     min="1"
                                 />
                                 {formData.id_lugar && formData.modalidad !== 'Virtual' && (
-                                    <p className="form-hint" style={{ color: '#667eea', fontWeight: '500' }}>
+                                    <p className="form-hint" style={{ color: '#667eea', fontWeight: 500 }}>
                                         Capacidad del lugar: {obtenerCapacidadLugar(formData.id_lugar) || 'No especificada'} personas
                                     </p>
                                 )}
@@ -205,6 +203,7 @@ const EditarEventoPage = () => {
                         </div>
                     </section>
 
+                    {/* Ubicación */}
                     <section className="form-section">
                         <h2 className="section-title">Ubicación</h2>
 
@@ -213,42 +212,26 @@ const EditarEventoPage = () => {
                                 Tipo de Evento <span className="required">*</span>
                             </label>
                             <div className="radio-group">
-                                <label className="radio-label">
-                                    <input
-                                        type="radio"
-                                        value="Presencial"
-                                        checked={formData.modalidad === 'Presencial'}
-                                        onChange={(e) => handleInputChange('modalidad', e.target.value)}
-                                    />
-                                    <span>Presencial</span>
-                                </label>
-                                <label className="radio-label">
-                                    <input
-                                        type="radio"
-                                        value="Virtual"
-                                        checked={formData.modalidad === 'Virtual'}
-                                        onChange={(e) => handleInputChange('modalidad', e.target.value)}
-                                    />
-                                    <span>Virtual</span>
-                                </label>
-                                <label className="radio-label">
-                                    <input
-                                        type="radio"
-                                        value="Híbrido"
-                                        checked={formData.modalidad === 'Híbrido'}
-                                        onChange={(e) => handleInputChange('modalidad', e.target.value)}
-                                    />
-                                    <span>Híbrido</span>
-                                </label>
+                                {['Presencial', 'Virtual', 'Híbrido'].map((tipo) => (
+                                    <label key={tipo} className="radio-label">
+                                        <input
+                                            type="radio"
+                                            value={tipo}
+                                            checked={formData.modalidad === tipo}
+                                            onChange={(e) => handleInputChange('modalidad', e.target.value)}
+                                        />
+                                        <span>{tipo}</span>
+                                    </label>
+                                ))}
                             </div>
                         </div>
 
                         {(formData.modalidad === 'Presencial' || formData.modalidad === 'Híbrido') && (
                             <>
+                                {/* Ubicación */}
                                 <div className="form-group-crear">
                                     <label className="form-label-crear">
-                                        <MapPin size={18} />
-                                        Ubicación <span className="required">*</span>
+                                        <MapPin size={18} /> Ubicación <span className="required">*</span>
                                     </label>
                                     <select
                                         value={ubicacionSeleccionada || ''}
@@ -256,23 +239,24 @@ const EditarEventoPage = () => {
                                         className="form-select-crear"
                                     >
                                         <option value="">-- Seleccione una ubicación --</option>
-                                        {Array.isArray(ubicaciones) && ubicaciones.map((ubicacion) => (
+                                        {ubicaciones?.map((ubicacion) => (
                                             <option key={ubicacion.id} value={ubicacion.id}>
                                                 {ubicacion.lugar}
                                             </option>
                                         ))}
                                     </select>
-                                    {Array.isArray(ubicaciones) && ubicaciones.length === 0 && (
+
+                                    {ubicaciones?.length === 0 && (
                                         <p className="form-hint text-warning">
                                             No hay ubicaciones registradas para esta empresa
                                         </p>
                                     )}
                                 </div>
 
+                                {/* Lugar */}
                                 <div className="form-group-crear">
                                     <label className="form-label-crear">
-                                        <Building2 size={18} />
-                                        Lugar Físico <span className="required">*</span>
+                                        <Building2 size={18} /> Lugar Físico <span className="required">*</span>
                                     </label>
                                     <select
                                         value={formData.id_lugar}
@@ -281,22 +265,15 @@ const EditarEventoPage = () => {
                                         disabled={!ubicacionSeleccionada}
                                     >
                                         <option value="">-- Seleccione un lugar --</option>
-                                        {Array.isArray(lugares) ? (
+                                        {Array.isArray(lugares) &&
                                             lugares.map((lugar) => (
                                                 <option key={lugar.id} value={lugar.id}>
                                                     {lugar.nombre} — {lugar.ubicacion?.direccion || 'Sin dirección'}
                                                 </option>
-                                            ))
-                                        ) : (
-                                            <option key={lugares.id} value={lugares.id}>
-                                                {lugares.nombre} — {lugares.ubicacion?.direccion}
-                                            </option>
-                                        )}
+                                            ))}
                                     </select>
-                                    <p className="form-hint">
-                                        Los lugares registrados incluyen capacidad y dirección
-                                    </p>
-                                    {ubicacionSeleccionada && lugares.length === 0 && (
+
+                                    {ubicacionSeleccionada && lugares?.length === 0 && (
                                         <p className="form-hint text-warning">
                                             No hay lugares registrados para esta ubicación
                                         </p>
@@ -315,6 +292,7 @@ const EditarEventoPage = () => {
                         >
                             Cancelar
                         </button>
+
                         <button
                             type="submit"
                             disabled={guardando || errorCupos.mostrar}
@@ -327,6 +305,7 @@ const EditarEventoPage = () => {
                 </form>
             </div>
 
+            {/* Modal éxito */}
             {mostrarModalExito && (
                 <div className="modal-overlay">
                     <div className="modal-exito">
@@ -337,6 +316,7 @@ const EditarEventoPage = () => {
                 </div>
             )}
 
+            {/* Modal error */}
             {mostrarModalError && (
                 <div className="modal-overlay">
                     <div className="modal-exito" style={{ borderTop: '4px solid #dc3545' }}>
