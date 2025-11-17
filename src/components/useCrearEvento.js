@@ -9,7 +9,7 @@ import {
     crearActividad,
     actualizarEvento,
     actualizarActividad,
-} from '../../components/eventosService';
+} from './eventosService';
 import { useNavigate } from 'react-router-dom';
 
 export const useEvento = (idEvento = null) => {

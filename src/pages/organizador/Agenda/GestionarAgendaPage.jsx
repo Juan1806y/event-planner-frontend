@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
     Calendar,
@@ -9,16 +9,14 @@ import {
     User,
     Clock,
     MapPin,
-    Users,
-    FileText,
 } from 'lucide-react';
 import {
     obtenerEventoPorId,
     obtenerActividadesEvento,
     eliminarActividad
-} from '../../components/eventosService';
+} from '../../../components/eventosService';
 import './GestionarAgendaPage.css';
-import Sidebar from './Sidebar';
+import Sidebar from '../Sidebar';
 
 const TIPO_ACTIVIDAD = {
     'Conferencia': { color: '#e0f2fe', textColor: '#0369a1' },
@@ -35,18 +33,18 @@ const GestionarAgendaPage = () => {
     const [loading, setLoading] = useState(true);
     const [actividadesPorFecha, setActividadesPorFecha] = useState({});
 
-    useEffect(() => {
-        cargarDatos();
-    }, [eventoId]);
-
-    const cargarDatos = async () => {
+    const cargarDatos = useCallback(async () => {
         try {
             setLoading(true);
+
             const eventoData = await obtenerEventoPorId(eventoId);
             setEvento(eventoData.data);
 
             const actividadesData = await obtenerActividadesEvento(eventoId);
-            const acts = Array.isArray(actividadesData.data) ? actividadesData.data : [actividadesData.data];
+            const acts = Array.isArray(actividadesData.data)
+                ? actividadesData.data
+                : [actividadesData.data];
+
             setActividades(acts);
             agruparActividadesPorFecha(acts);
         } catch (error) {
@@ -54,7 +52,11 @@ const GestionarAgendaPage = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [eventoId]);
+
+    useEffect(() => {
+        cargarDatos();
+    }, [cargarDatos]);
 
     const agruparActividadesPorFecha = (acts) => {
         const agrupadas = acts.reduce((acc, actividad) => {
@@ -66,10 +68,6 @@ const GestionarAgendaPage = () => {
             return acc;
         }, {});
         setActividadesPorFecha(agrupadas);
-    };
-
-    const contarPorTipo = (tipo) => {
-        return actividades.filter(a => a.tipo_actividad === tipo).length;
     };
 
     const handleEliminar = async (actividadId) => {

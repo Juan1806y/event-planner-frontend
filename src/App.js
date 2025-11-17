@@ -25,7 +25,7 @@ import Asistente from './pages/asistente/asistente';
 
 import OrganizerDashboard from './pages/organizador/OrganizerDashboard';
 import CrearEventoPage from './pages/organizador/Eventos/CrearEventoPage';
-import GestionarAgendaPage from './pages/organizador/GestionarAgendaPage';
+import GestionarAgendaPage from './pages/organizador/Agenda/GestionarAgendaPage';
 import CrearActividadPage from './pages/organizador/Actividades/CrearActividadPage';
 import EditarActividadPage from './pages/organizador/Actividades/EditarActividadPage';
 import ActividadesPage from './pages/organizador/Actividades/ActividadesPage';

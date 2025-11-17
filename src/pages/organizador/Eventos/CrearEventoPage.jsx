@@ -3,7 +3,7 @@ import {
     Calendar, Users, Building2,
     CheckCircle, AlertCircle, ArrowLeft, Save, MapPin
 } from 'lucide-react';
-import { useEvento } from '../useCrearEvento';
+import { useEvento } from '../../../components/useCrearEvento';
 import './CrearEventoPage.css';
 import Sidebar from '../Sidebar';
 
