@@ -118,7 +118,6 @@ export const useEvento = (idEvento = null) => {
                 cupos: evento.cupos ?? "",
                 estado: evento.estado ?? 0,
                 url_virtual: evento.url_virtual ?? "",
-                descripcion_adicional: evento.descripcion_adicional ?? "",
             });
 
             if (evento.id_lugar && lugares.length) {
@@ -236,26 +235,15 @@ export const useEvento = (idEvento = null) => {
                 const nombreEmpresa =
                     perfil.data?.usuario?.rolData?.empresa?.nombre || "Mi Empresa";
 
-                if (!empresaId)
-                    throw new Error(
-                        "No se pudo obtener el ID de la empresa desde el perfil."
-                    );
+                if (!empresaId) throw new Error("No se pudo obtener el ID de la empresa desde el perfil.");
 
                 setEmpresa({ id: empresaId, nombre: nombreEmpresa });
 
                 const ubicacionesData = await obtenerUbicaciones(empresaId);
-                setUbicaciones(
-                    Array.isArray(ubicacionesData.data)
-                        ? ubicacionesData.data
-                        : [ubicacionesData.data]
-                );
+                setUbicaciones(Array.isArray(ubicacionesData.data) ? ubicacionesData.data : [ubicacionesData.data]);
 
                 const lugaresData = await obtenerLugares(empresaId);
-                setLugares(
-                    Array.isArray(lugaresData.data)
-                        ? lugaresData.data
-                        : [lugaresData.data]
-                );
+                setLugares(Array.isArray(lugaresData.data) ? lugaresData.data : [lugaresData.data]);
 
                 if (idEvento) await cargarEvento(idEvento);
             } catch {
@@ -268,8 +256,7 @@ export const useEvento = (idEvento = null) => {
         };
 
         cargarDatos();
-    }, [idEvento, cargarEvento]);
-
+    }, [idEvento]);
 
     useEffect(() => {
         if (!empresa?.id) return;
