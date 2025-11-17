@@ -26,9 +26,9 @@ import Asistente from './pages/asistente/asistente';
 import OrganizerDashboard from './pages/organizador/OrganizerDashboard';
 import CrearEventoPage from './pages/organizador/CrearEventoPage';
 import GestionarAgendaPage from './pages/organizador/GestionarAgendaPage';
-import CrearActividadPage from './pages/organizador/CrearActividadPage';
-import EditarActividadPage from './pages/organizador/EditarActividadPage';
-import ActividadesPage from './pages/organizador/ActividadesPage';
+import CrearActividadPage from './pages/organizador/Actividades/CrearActividadPage';
+import EditarActividadPage from './pages/organizador/Actividades/EditarActividadPage';
+import ActividadesPage from './pages/organizador/Actividades/ActividadesPage';
 import EventosPageOrganizador from './pages/organizador/EventosPageOrganizador';
 function App() {
   return (

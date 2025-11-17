@@ -3,7 +3,7 @@ import React from 'react';
 import { Lock, X, Eye, EyeOff, Menu, LogOut } from 'lucide-react';
 import EventosPage from './EventosPageOrganizador'; // Ajusta la ruta según tu estructura
 import './OrganizerDashboard.css';
-import ActividadesPage from './ActividadesPage';
+import ActividadesPage from './Actividades/ActividadesPage';
 
 // Modal de Contraseña
 export const PasswordModal = ({

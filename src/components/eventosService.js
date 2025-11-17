@@ -1,82 +1,55 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:3000/api/eventos";
+const BASE_URL = "http://localhost:3000/api";
 
-const getAuthToken = () => localStorage.getItem('access_token') || '';
-
-const getHeaders = () => ({
-    headers: {
-        'Authorization': `Bearer ${getAuthToken()}`,
-        'Content-Type': 'application/json'
-    }
+const api = axios.create({
+    baseURL: BASE_URL,
+    headers: { "Content-Type": "application/json" }
 });
 
-export const obtenerEventos = async (filtros = {}) => {
-    const response = await axios.get(API_URL, { params: filtros, ...getHeaders() });
+api.interceptors.request.use((config) => {
+    const token = localStorage.getItem("access_token");
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+});
+
+const request = async (method, url, data = null, params = null) => {
+    const response = await api({ method, url, data, params });
     return response.data;
 };
 
-export const obtenerEventoPorId = async (id) => {
-    const response = await axios.get(`${API_URL}/${id}`, getHeaders());
-    return response.data;
-};
+export const obtenerEventos = (filtros = {}) =>
+    request("get", "/eventos", null, filtros);
 
-export const crearEvento = async (nuevoEvento) => {
-    const response = await axios.post(API_URL, nuevoEvento, getHeaders());
-    return response.data;
-};
+export const obtenerEventoPorId = (id) =>
+    request("get", `/eventos/${id}`);
 
-export const actualizarEvento = async (id, datosActualizados) => {
-    const response = await axios.put(`${API_URL}/${id}`, datosActualizados, getHeaders());
-    return response.data;
-};
+export const crearEvento = (nuevoEvento) =>
+    request("post", "/eventos", nuevoEvento);
 
-export const eliminarEvento = async (id) => {
-    const response = await axios.delete(`${API_URL}/${id}`, getHeaders());
-    return response.data;
-};
+export const actualizarEvento = (id, datos) =>
+    request("put", `/eventos/${id}`, datos);
 
-export const obtenerPerfil = async () => {
-    const response = await axios.get(`http://localhost:3000/api/auth/profile`, getHeaders());
-    console.log("Actuaaaaal", response.data)
-    return response.data;
-};
+export const eliminarEvento = (id) =>
+    request("delete", `/eventos/${id}`);
 
-export const obtenerUbicaciones = async (idEmpresa) => {
-    const response = await axios.get(
-        `http://localhost:3000/api/empresas/${idEmpresa}/ubicaciones`,
-        getHeaders()
-    );
-    return response.data;
-};
+export const obtenerPerfil = () =>
+    request("get", "/auth/profile");
 
-export const obtenerLugares = async (idEmpresa, idUbicacion = null) => {
-    let url = `http://localhost:3000/api/empresas/${idEmpresa}/lugares`;
+export const obtenerUbicaciones = (idEmpresa) =>
+    request("get", `/empresas/${idEmpresa}/ubicaciones`);
 
-    if (idUbicacion) {
-        url += `?id_ubicacion=${idUbicacion}`;
-    }
+export const obtenerLugares = (idEmpresa, idUbicacion = null) =>
+    request("get", `/empresas/${idEmpresa}/lugares`, null, idUbicacion ? { id_ubicacion: idUbicacion } : null);
 
-    const response = await axios.get(url, getHeaders());
-    return response.data;
-};
+export const obtenerActividadesEvento = (eventoId) =>
+    request("get", `/eventos/${eventoId}/actividades`);
 
-export const obtenerActividadesEvento = async (eventoId) => {
-    const response = await axios.get(`${API_URL}/${eventoId}/actividades`, getHeaders());
-    return response.data;
-};
+export const crearActividad = (eventoId, actividadData) =>
+    request("post", `/eventos/${eventoId}/actividades`, actividadData);
 
-export const crearActividad = async (eventoId, actividadData) => {
-    const response = await axios.post(`${API_URL}/${eventoId}/actividades`, actividadData, getHeaders());
-    return response.data;
-};
+export const actualizarActividad = (actividadId, datos) =>
+    request("put", `/actividades/${actividadId}`, datos);
 
-export const actualizarActividad = async (actividadId, datosActualizados) => {
-    const response = await axios.put(`http://localhost:3000/api/actividades/${actividadId}`, datosActualizados, getHeaders());
-    return response.data;
-};
-
-export const eliminarActividad = async (actividadId) => {
-    const response = await axios.delete(`http://localhost:3000/api/actividades/${actividadId}`, getHeaders());
-    return response.data;
-};
+export const eliminarActividad = (actividadId) =>
+    request("delete", `/actividades/${actividadId}`);

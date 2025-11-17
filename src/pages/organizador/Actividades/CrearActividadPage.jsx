@@ -6,26 +6,14 @@ import {
     Save,
     User,
     Clock,
-    MapPin,
-    FileText,
-    Tag
+    FileText
 } from 'lucide-react';
 import {
     obtenerEventoPorId,
-    crearActividad,
-    obtenerPerfil
-} from '../../components/eventosService';
+    crearActividad
+} from '../../../components/eventosService';
 import './CrearActividadPage.css';
-import Sidebar from './Sidebar';
-
-const TIPOS_ACTIVIDAD = [
-    'Conferencia',
-    'Taller',
-    'Panel',
-    'Networking',
-    'Keynote',
-    'Workshop'
-];
+import Sidebar from '../Sidebar';
 
 const CrearActividadPage = () => {
     const navigate = useNavigate();
@@ -39,7 +27,6 @@ const CrearActividadPage = () => {
         titulo: '',
         descripcion: '',
         ponente: '',
-        tipo_actividad: '',
         fecha_actividad: '',
         hora_inicio: '',
         hora_fin: '',
@@ -48,23 +35,23 @@ const CrearActividadPage = () => {
     const [errores, setErrores] = useState({});
 
     useEffect(() => {
-        cargarDatos();
+        const cargarEvento = async () => {
+            try {
+                setLoading(true);
+                const response = await obtenerEventoPorId(eventoId);
+                setEvento(response.data);
+            } catch (error) {
+                console.error('Error cargando evento:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        cargarEvento();
     }, [eventoId]);
-
-    const cargarDatos = async () => {
-        try {
-            setLoading(true);
-            const eventoData = await obtenerEventoPorId(eventoId);
-            setEvento(eventoData.data);
-        } catch (error) {
-            console.error('Error al cargar datos:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleInputChange = (campo, valor) => {
         setFormData(prev => ({ ...prev, [campo]: valor }));
+
         if (errores[campo]) {
             setErrores(prev => ({ ...prev, [campo]: '' }));
         }
@@ -72,23 +59,24 @@ const CrearActividadPage = () => {
 
     const validarFormulario = () => {
         const nuevosErrores = {};
+        const { titulo, descripcion, fecha_actividad, hora_inicio, hora_fin } = formData;
 
-        if (!formData.titulo.trim()) nuevosErrores.titulo = 'El título es obligatorio';
-        if (!formData.descripcion.trim()) nuevosErrores.descripcion = 'La descripción es obligatoria';
-        if (!formData.fecha_actividad) nuevosErrores.fecha_actividad = 'La fecha es obligatoria';
-        if (!formData.hora_inicio) nuevosErrores.hora_inicio = 'La hora de inicio es obligatoria';
-        if (!formData.hora_fin) nuevosErrores.hora_fin = 'La hora de fin es obligatoria';
+        if (!titulo.trim()) nuevosErrores.titulo = 'El título es obligatorio';
+        if (!descripcion.trim()) nuevosErrores.descripcion = 'La descripción es obligatoria';
+        if (!fecha_actividad) nuevosErrores.fecha_actividad = 'La fecha es obligatoria';
+        if (!hora_inicio) nuevosErrores.hora_inicio = 'La hora de inicio es obligatoria';
+        if (!hora_fin) nuevosErrores.hora_fin = 'La hora de fin es obligatoria';
 
-        if (formData.hora_inicio && formData.hora_fin && formData.hora_inicio >= formData.hora_fin) {
+        if (hora_inicio && hora_fin && hora_inicio >= hora_fin) {
             nuevosErrores.hora_fin = 'La hora de fin debe ser posterior a la hora de inicio';
         }
 
-        if (formData.fecha_actividad && evento) {
-            const fecha = new Date(formData.fecha_actividad);
+        if (fecha_actividad && evento) {
+            const fechaSel = new Date(fecha_actividad);
             const inicio = new Date(evento.fecha_inicio);
             const fin = new Date(evento.fecha_fin);
 
-            if (fecha < inicio || fecha > fin) {
+            if (fechaSel < inicio || fechaSel > fin) {
                 nuevosErrores.fecha_actividad = 'La fecha debe estar dentro del rango del evento';
             }
         }
@@ -106,20 +94,19 @@ const CrearActividadPage = () => {
             await crearActividad(eventoId, formData);
             navigate(`/organizador/eventos/${eventoId}/agenda`);
         } catch (error) {
-            console.error('Error al crear actividad:', error);
+            console.error('Error creando actividad:', error);
             alert('Error al crear la actividad. Intenta nuevamente.');
         } finally {
             setGuardando(false);
         }
     };
 
-    if (loading) {
-        return <p>Cargando...</p>;
-    }
+    if (loading) return <p>Cargando...</p>;
 
     return (
         <div className="crear-actividad-page">
             <Sidebar />
+
             <div className="actividad-container">
                 <div className="page-header-actividad">
                     <Calendar size={28} className="header-icon-actividad" />
@@ -129,110 +116,139 @@ const CrearActividadPage = () => {
                 <div className="info-banner">
                     <FileText size={20} />
                     <p>
-                        Completa los datos para agregar una actividad a la agenda del evento.
-                        El sistema validará que las horas y fechas estén dentro del rango del evento.
+                        Completa los datos para agregar una actividad al evento.
+                        El sistema validará que las horas y fechas estén dentro del rango permitido.
                     </p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="form-actividad">
 
+                    {/* ====================== */}
+                    {/* INFORMACIÓN GENERAL */}
+                    {/* ====================== */}
                     <div className="form-section-actividad">
                         <h2 className="section-title-actividad">Información de la Actividad</h2>
 
+                        {/* Título */}
                         <div className="form-group-actividad">
                             <label className="form-label-actividad">
                                 <FileText size={18} />
                                 Título <span className="required">*</span>
                             </label>
+
                             <input
                                 type="text"
                                 value={formData.titulo}
                                 onChange={(e) => handleInputChange('titulo', e.target.value)}
-                                placeholder="Ej: Introducción a React 19"
+                                placeholder="Ej: Taller de React Hooks"
                                 className={`form-input-actividad ${errores.titulo ? 'input-error' : ''}`}
                             />
+
                             {errores.titulo && <span className="error-message">{errores.titulo}</span>}
                         </div>
 
+                        {/* Descripción */}
                         <div className="form-group-actividad">
                             <label className="form-label-actividad">
                                 <FileText size={18} />
                                 Descripción <span className="required">*</span>
                             </label>
+
                             <textarea
                                 value={formData.descripcion}
-                                onChange={(e) => handleInputChange('descripcion', e.target.value)}
-                                placeholder="Describe el contenido y objetivos de la actividad..."
+                                onChange={(e) =>
+                                    handleInputChange('descripcion', e.target.value)
+                                }
+                                placeholder="Describe brevemente la actividad..."
                                 className={`form-textarea-actividad ${errores.descripcion ? 'input-error' : ''}`}
                                 rows="4"
                             />
+
                             {errores.descripcion && <span className="error-message">{errores.descripcion}</span>}
                         </div>
 
-                        <div className="form-row-actividad">
-                            <div className="form-group-actividad">
-                                <label className="form-label-actividad">
-                                    <User size={18} />
-                                    Ponente
-                                </label>
-                                <input
-                                    type="text"
-                                    value={formData.ponente}
-                                    onChange={(e) => handleInputChange('ponente', e.target.value)}
-                                    placeholder="Selecciona un ponente..."
-                                    className="form-input-actividad"
-                                />
-                            </div>
+                        {/* Ponente */}
+                        <div className="form-group-actividad">
+                            <label className="form-label-actividad">
+                                <User size={18} />
+                                Ponente
+                            </label>
+
+                            <input
+                                type="text"
+                                value={formData.ponente}
+                                onChange={(e) => handleInputChange('ponente', e.target.value)}
+                                placeholder="Nombre del ponente"
+                                className="form-input-actividad"
+                            />
                         </div>
 
+                        {/* Fecha, Hora Inicio, Hora Fin */}
                         <div className="form-row-actividad">
+
+                            {/* Fecha */}
                             <div className="form-group-actividad">
                                 <label className="form-label-actividad">
                                     <Calendar size={18} />
                                     Fecha <span className="required">*</span>
                                 </label>
+
                                 <input
                                     type="date"
                                     value={formData.fecha_actividad}
-                                    onChange={(e) => handleInputChange('fecha_actividad', e.target.value)}
+                                    onChange={(e) =>
+                                        handleInputChange('fecha_actividad', e.target.value)
+                                    }
                                     min={evento?.fecha_inicio?.split('T')[0]}
                                     max={evento?.fecha_fin?.split('T')[0]}
                                     className={`form-input-actividad ${errores.fecha_actividad ? 'input-error' : ''}`}
                                 />
+
                                 {errores.fecha_actividad && <span className="error-message">{errores.fecha_actividad}</span>}
                             </div>
 
+                            {/* Hora inicio */}
                             <div className="form-group-actividad">
                                 <label className="form-label-actividad">
                                     <Clock size={18} />
                                     Hora Inicio <span className="required">*</span>
                                 </label>
+
                                 <input
                                     type="time"
                                     value={formData.hora_inicio}
                                     onChange={(e) => handleInputChange('hora_inicio', e.target.value)}
                                     className={`form-input-actividad ${errores.hora_inicio ? 'input-error' : ''}`}
                                 />
+
                                 {errores.hora_inicio && <span className="error-message">{errores.hora_inicio}</span>}
                             </div>
 
+                            {/* Hora fin */}
                             <div className="form-group-actividad">
                                 <label className="form-label-actividad">
                                     <Clock size={18} />
                                     Hora Fin <span className="required">*</span>
                                 </label>
+
                                 <input
                                     type="time"
                                     value={formData.hora_fin}
                                     onChange={(e) => handleInputChange('hora_fin', e.target.value)}
                                     className={`form-input-actividad ${errores.hora_fin ? 'input-error' : ''}`}
                                 />
+
                                 {errores.hora_fin && <span className="error-message">{errores.hora_fin}</span>}
                             </div>
+
                         </div>
                     </div>
 
+                    {/* ====================== */}
+                    {/* ACCIONES */}
+                    {/* ====================== */}
                     <div className="form-actions-actividad">
+
                         <button
                             type="button"
                             onClick={() => navigate(`/organizador/eventos/${eventoId}/agenda`)}
@@ -243,14 +259,11 @@ const CrearActividadPage = () => {
                             Cancelar
                         </button>
 
-                        <button
-                            type="submit"
-                            disabled={guardando}
-                            className="btn-submit-actividad"
-                        >
+                        <button type="submit" disabled={guardando} className="btn-submit-actividad">
                             <Save size={18} />
-                            {guardando ? 'Creando Actividad...' : 'Crear Actividad'}
+                            {guardando ? 'Creando...' : 'Crear Actividad'}
                         </button>
+
                     </div>
 
                 </form>

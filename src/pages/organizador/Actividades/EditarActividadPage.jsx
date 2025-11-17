@@ -1,21 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-    Calendar,
-    ArrowLeft,
-    Save,
-    FileText
-} from 'lucide-react';
+import { Calendar, ArrowLeft, Save, FileText } from 'lucide-react';
 import {
     obtenerEventoPorId,
     actualizarActividad,
-    obtenerActividadesEvento,
-    obtenerPerfil
-} from '../../components/eventosService';
+    obtenerActividadesEvento
+} from '../../../components/eventosService';
 import './CrearActividadPage.css';
-import Sidebar from './Sidebar';
-
-console.log("renderizando editar")
+import Sidebar from '../Sidebar';
 
 const EditarActividadPage = () => {
     const navigate = useNavigate();
@@ -37,7 +29,6 @@ const EditarActividadPage = () => {
     const [errores, setErrores] = useState({});
     const eventoId = sessionStorage.getItem("currentEventoId");
 
-
     useEffect(() => {
         cargarActividad();
     }, [idActividad]);
@@ -46,34 +37,22 @@ const EditarActividadPage = () => {
         try {
             setLoading(true);
 
-            // 1️⃣ Asegurar que eventoId no sea null
-            if (!eventoId) {
-                console.error("No se encontró el eventoId en sessionStorage");
-                return;
-            }
+            if (!eventoId) return;
 
-            // 2️⃣ Obtener actividades del evento correcto
             const actividadesData = await obtenerActividadesEvento(eventoId);
-            const acts = Array.isArray(actividadesData.data)
+            const listaActividades = Array.isArray(actividadesData.data)
                 ? actividadesData.data
                 : [actividadesData.data];
-            console.log(actividadesData)
-            // 3️⃣ Encontrar la actividad
-            const actividadActual = acts.find(
+
+            const actividadActual = listaActividades.find(
                 a => Number(a.id_actividad) === Number(idActividad)
             );
 
-            console.log("Actividad Actual", actividadActual)
-            if (!actividadActual) {
-                console.error("Actividad no encontrada");
-                return;
-            }
+            if (!actividadActual) return;
 
-            // 4️⃣ Obtener datos del evento
             const eventoData = await obtenerEventoPorId(eventoId);
             setEvento(eventoData.data);
 
-            // 5️⃣ Rellenar formulario - AGREGADO tipo_actividad y sala
             setFormData({
                 titulo: actividadActual.titulo || '',
                 descripcion: actividadActual.descripcion || '',
@@ -106,7 +85,7 @@ const EditarActividadPage = () => {
         if (!formData.hora_inicio) nuevosErrores.hora_inicio = "La hora de inicio es obligatoria";
         if (!formData.hora_fin) nuevosErrores.hora_fin = "La hora de fin es obligatoria";
 
-        if (formData.hora_inicio && formData.hora_fin && formData.hora_inicio >= formData.hora_fin) {
+        if (formData.hora_inicio >= formData.hora_fin) {
             nuevosErrores.hora_fin = "La hora de fin debe ser posterior a la hora de inicio";
         }
 
@@ -116,17 +95,10 @@ const EditarActividadPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Ejecutando handleSubmit...");
-        console.log("FormData antes de validar:", formData); // ✅ Debug
-
-        if (!validarFormulario()) {
-            console.log("Validación falló. Errores:", errores); // ✅ Debug
-            return;
-        }
+        if (!validarFormulario()) return;
 
         try {
             setGuardando(true);
-            console.log("Enviando datos:", formData); // ✅ Debug
             await actualizarActividad(idActividad, formData);
             navigate(`/organizador/eventos/${eventoId}/agenda`);
         } catch (error) {
@@ -160,9 +132,7 @@ const EditarActividadPage = () => {
 
                 <div className="info-banner">
                     <FileText size={20} />
-                    <p>
-                        Actualiza los datos de la actividad. El sistema validará que las horas y fechas estén dentro del rango del evento.
-                    </p>
+                    <p>Actualiza los datos de la actividad.</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="form-actividad">

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, MapPin, Users, Clock, ChevronRight } from 'lucide-react';
-import { obtenerPerfil, obtenerEventos, obtenerActividadesEvento } from '../../components/eventosService';
+import { obtenerPerfil, obtenerEventos, obtenerActividadesEvento } from '../../../components/eventosService';
 import './ActividadesPage.css';
-import Sidebar from './Sidebar';
+import Sidebar from '../Sidebar';
 
 const ActividadesPage = () => {
     const navigate = useNavigate();
@@ -19,33 +19,24 @@ const ActividadesPage = () => {
         try {
             setLoading(true);
 
-            // Obtener perfil y guardar usuario
             const perfilData = await obtenerPerfil();
             const usuarioPerfil = perfilData?.data?.usuario || perfilData?.data;
             setUsuario(usuarioPerfil);
 
-            // Extraer correctamente el ID del creador
             const idCreador = usuarioPerfil?.id || null;
 
-            // Obtener todos los eventos
             const data = await obtenerEventos();
 
-            // Filtrar eventos creados por este organizador
             const eventosDelCreador = Array.isArray(data.data)
                 ? data.data.filter(e => String(e.id_creador) === String(idCreador))
                 : [];
 
-            // Guardar los eventos en tu state
             setEventosInscritos(eventosDelCreador);
-            console.log(eventosDelCreador)
-
         } catch (error) {
-            console.error("❌ Error al cargar datos:", error);
         } finally {
             setLoading(false);
         }
     };
-
 
     const formatearFecha = (fecha) => {
         return new Date(fecha).toLocaleDateString('es-ES', {
@@ -60,14 +51,9 @@ const ActividadesPage = () => {
     const verAgendaCompleta = async (eventoId) => {
         try {
             const actividades = await obtenerActividadesEvento(eventoId);
-
             navigate(`/organizador/eventos/${eventoId}/agenda`, { state: { actividades } });
-
-        } catch (error) {
-            console.error("Error al cargar actividades:", error);
-        }
+        } catch (error) { }
     };
-
 
     if (loading) {
         return (
