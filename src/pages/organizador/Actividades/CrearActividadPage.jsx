@@ -6,11 +6,16 @@ import {
     Save,
     User,
     Clock,
-    FileText
+    FileText,
+    MapPin,
+    Building2
 } from 'lucide-react';
 import {
     obtenerEventoPorId,
-    crearActividad
+    crearActividad,
+    obtenerPerfil,
+    obtenerUbicaciones,
+    obtenerLugares
 } from '../../../components/eventosService';
 import './CrearActividadPage.css';
 import Sidebar from '../Sidebar';
@@ -20,6 +25,10 @@ const CrearActividadPage = () => {
     const { eventoId } = useParams();
 
     const [evento, setEvento] = useState(null);
+    const [empresa, setEmpresa] = useState(null);
+    const [ubicaciones, setUbicaciones] = useState([]);
+    const [ubicacionSeleccionada, setUbicacionSeleccionada] = useState('');
+    const [lugares, setLugares] = useState([]);
     const [loading, setLoading] = useState(true);
     const [guardando, setGuardando] = useState(false);
 
@@ -30,24 +39,73 @@ const CrearActividadPage = () => {
         fecha_actividad: '',
         hora_inicio: '',
         hora_fin: '',
+        id_lugar: '',
     });
 
     const [errores, setErrores] = useState({});
 
     useEffect(() => {
-        const cargarEvento = async () => {
+        const cargarDatos = async () => {
             try {
                 setLoading(true);
-                const response = await obtenerEventoPorId(eventoId);
-                setEvento(response.data);
+
+                const perfil = await obtenerPerfil();
+                const empresaId = perfil.data?.usuario?.rolData?.id_empresa;
+                const nombreEmpresa = perfil.data?.usuario?.rolData?.empresa?.nombre || "Mi Empresa";
+
+                if (!empresaId) {
+                    throw new Error("No se pudo obtener el ID de la empresa.");
+                }
+
+                setEmpresa({ id: empresaId, nombre: nombreEmpresa });
+
+                const responseEvento = await obtenerEventoPorId(eventoId);
+                setEvento(responseEvento.data);
+
+                const ubicacionesData = await obtenerUbicaciones(empresaId);
+                console.log(ubicacionesData)
+                setUbicaciones(
+                    Array.isArray(ubicacionesData.data)
+                        ? ubicacionesData.data
+                        : [ubicacionesData.data]
+                );
+
             } catch (error) {
-                console.error('Error cargando evento:', error);
+                console.error('Error cargando datos:', error);
             } finally {
                 setLoading(false);
             }
         };
-        cargarEvento();
+
+        cargarDatos();
     }, [eventoId]);
+
+    useEffect(() => {
+        if (!empresa?.id || !ubicacionSeleccionada) {
+            setLugares([]);
+            setFormData(prev => ({ ...prev, id_lugar: '' }));
+            return;
+        }
+
+        const cargarLugares = async () => {
+            try {
+                const data = await obtenerLugares(empresa.id, ubicacionSeleccionada);
+                console.log("lugares", data)
+                const filtrados = Array.isArray(data.data)
+                    ? data.data.filter(l => String(l.id_ubicacion) === String(ubicacionSeleccionada))
+                    : [];
+
+                setLugares(filtrados);
+                setFormData(prev => ({ ...prev, id_lugar: '' }));
+            } catch (error) {
+                console.error('Error cargando lugares:', error);
+                setLugares([]);
+                setFormData(prev => ({ ...prev, id_lugar: '' }));
+            }
+        };
+
+        cargarLugares();
+    }, [ubicacionSeleccionada, empresa?.id]);
 
     const handleInputChange = (campo, valor) => {
         setFormData(prev => ({ ...prev, [campo]: valor }));
@@ -55,6 +113,11 @@ const CrearActividadPage = () => {
         if (errores[campo]) {
             setErrores(prev => ({ ...prev, [campo]: '' }));
         }
+    };
+
+    const handleUbicacionChange = (valor) => {
+        setUbicacionSeleccionada(valor);
+        setFormData(prev => ({ ...prev, id_lugar: '' }));
     };
 
     const validarFormulario = () => {
@@ -123,13 +186,9 @@ const CrearActividadPage = () => {
 
                 <form onSubmit={handleSubmit} className="form-actividad">
 
-                    {/* ====================== */}
-                    {/* INFORMACIÓN GENERAL */}
-                    {/* ====================== */}
                     <div className="form-section-actividad">
                         <h2 className="section-title-actividad">Información de la Actividad</h2>
 
-                        {/* Título */}
                         <div className="form-group-actividad">
                             <label className="form-label-actividad">
                                 <FileText size={18} />
@@ -147,7 +206,6 @@ const CrearActividadPage = () => {
                             {errores.titulo && <span className="error-message">{errores.titulo}</span>}
                         </div>
 
-                        {/* Descripción */}
                         <div className="form-group-actividad">
                             <label className="form-label-actividad">
                                 <FileText size={18} />
@@ -167,7 +225,6 @@ const CrearActividadPage = () => {
                             {errores.descripcion && <span className="error-message">{errores.descripcion}</span>}
                         </div>
 
-                        {/* Ponente */}
                         <div className="form-group-actividad">
                             <label className="form-label-actividad">
                                 <User size={18} />
@@ -183,10 +240,7 @@ const CrearActividadPage = () => {
                             />
                         </div>
 
-                        {/* Fecha, Hora Inicio, Hora Fin */}
                         <div className="form-row-actividad">
-
-                            {/* Fecha */}
                             <div className="form-group-actividad">
                                 <label className="form-label-actividad">
                                     <Calendar size={18} />
@@ -207,7 +261,6 @@ const CrearActividadPage = () => {
                                 {errores.fecha_actividad && <span className="error-message">{errores.fecha_actividad}</span>}
                             </div>
 
-                            {/* Hora inicio */}
                             <div className="form-group-actividad">
                                 <label className="form-label-actividad">
                                     <Clock size={18} />
@@ -224,7 +277,6 @@ const CrearActividadPage = () => {
                                 {errores.hora_inicio && <span className="error-message">{errores.hora_inicio}</span>}
                             </div>
 
-                            {/* Hora fin */}
                             <div className="form-group-actividad">
                                 <label className="form-label-actividad">
                                     <Clock size={18} />
@@ -244,9 +296,55 @@ const CrearActividadPage = () => {
                         </div>
                     </div>
 
-                    {/* ====================== */}
-                    {/* ACCIONES */}
-                    {/* ====================== */}
+                    <div className="form-section-actividad">
+                        <h2 className="section-title-actividad">Ubicación y Lugar</h2>
+
+                        <div className="form-group-actividad">
+                            <label className="form-label-actividad">
+                                <MapPin size={18} />
+                                Ubicación
+                            </label>
+
+                            <select
+                                value={ubicacionSeleccionada}
+                                onChange={(e) => handleUbicacionChange(e.target.value)}
+                                className="form-input-actividad"
+                            >
+                                <option value="">Selecciona una ubicación</option>
+                                {ubicaciones.map((ub) => (
+                                    <option key={ub.id} value={ub.id}>
+                                        {ub.lugar}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="form-group-actividad">
+                            <label className="form-label-actividad">
+                                <Building2 size={18} />
+                                Lugar
+                            </label>
+
+                            <select
+                                value={formData.id_lugar}
+                                onChange={(e) => handleInputChange('id_lugar', e.target.value)}
+                                className="form-input-actividad"
+                                disabled={!ubicacionSeleccionada}
+                            >
+                                <option value="">
+                                    {!ubicacionSeleccionada
+                                        ? 'Primero selecciona una ubicación'
+                                        : 'Selecciona un lugar'}
+                                </option>
+                                {lugares.map((lugar) => (
+                                    <option key={lugar.id} value={lugar.id}>
+                                        {lugar.nombre} - Capacidad: {lugar.ubicacion?.capacidad}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
                     <div className="form-actions-actividad">
 
                         <button

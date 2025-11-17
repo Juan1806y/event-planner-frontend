@@ -39,8 +39,6 @@ const EditarEventoPage = () => {
         setMostrarModalError,
         setMostrarModalExito,
     } = useEvento(id);
-
-    console.log(formData)
     useEffect(() => {
         if (mostrarModalExito) {
             const timer = setTimeout(() => {
