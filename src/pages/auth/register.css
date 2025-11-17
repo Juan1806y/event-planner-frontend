@@ -1,0 +1,310 @@
+/* Register.css */
+
+.register-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #142B6F, #173578, #122548);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.register-card {
+  background: white;
+  border-radius: 1.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  padding: 2rem;
+  max-width: 35rem;
+  width: 100%;
+}
+
+.register-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.register-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+
+.register-logo img {
+  width: 200px;        /* ajusta a gusto: 80px, 100px, etc. */
+  height: auto;
+  object-fit: contain; /* mantiene proporción */
+  max-width: 100%;     /* se adapta a pantallas pequeñas */
+}
+
+.register-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.register-subtitle {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.role-selection {
+  margin-bottom: 1.5rem;
+}
+
+.role-selection-title {
+  font-size: 0.875rem;
+  color: #6b7280;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.register-role-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.role-button {
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 2px solid #e5e7eb;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.role-button:hover {
+  border-color: #d8b4fe;
+}
+
+.role-button.active {
+  border-color: #122548;
+  background-color: #faf5ff;
+}
+
+.role-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.role-button .role-icon {
+  background-color: #e5e7eb;
+}
+
+.role-button.active .role-icon {
+  background-color: #122548;
+}
+
+.role-icon svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #6b7280;
+}
+
+.role-button.active .role-icon svg {
+  color: white;
+}
+
+.role-name {
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.25rem;
+}
+
+.role-description {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.form-label .optional {
+  color: #9ca3af;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  width: 1.25rem;
+  height: 1.25rem;
+  pointer-events: none;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0 2px #122548;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.password-toggle:hover {
+  color: #4b5563;
+}
+
+.password-toggle svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.error-message {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  margin-top: 1rem;
+}
+
+.error-message p {
+  font-size: 0.875rem;
+  color: #dc2626;
+  margin: 0;
+}
+
+.submit-button {
+  width: 100%;
+  background: linear-gradient(135deg, #142B6F, #173578, #122548);
+  color: white;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  margin-top: 0.5rem;
+}
+
+.submit-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #142B6F, #173578, #122548);
+  transform: translateY(-1px);
+  box-shadow: 0 15px 20px -3px rgba(0, 0, 0, 0.15);
+}
+
+.submit-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.footer-text {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.footer-text p {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.footer-text a {
+  color: #122548;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-text a:hover {
+  color: #122548;
+}
+
+.success-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #142B6F, #173578, #122548);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.success-card {
+  background: white;
+  border-radius: 1.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  padding: 2rem;
+  max-width: 28rem;
+  width: 100%;
+  text-align: center;
+}
+
+.success-icon {
+  width: 4rem;
+  height: 4rem;
+  background-color: #dcfce7;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+
+.success-icon svg {
+  width: 2rem;
+  height: 2rem;
+  color: #16a34a;
+}
+
+.success-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.success-message {
+  color: #6b7280;
+  margin: 0;
+}

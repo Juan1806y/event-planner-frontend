@@ -1,0 +1,411 @@
+/* Fondo y contenedor */
+
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #142B6F, #173578, #122548);
+  padding: 2rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.login-card {
+  background: #fff;
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 600px;
+  padding: 2.5rem;
+  text-align: center;
+  overflow: hidden;
+  /* evita desbordes */
+}
+
+/* Encabezado */
+.login-header .logo-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+
+  /* 🔽 nuevo */
+  overflow: hidden;
+  /* evita que se salga del borde */
+  max-width: 100%;
+  /* no más ancho que el contenedor */
+}
+
+.login-header .logo-box img {
+  width: 200px;
+  /* ajusta a gusto: 80px, 100px, etc. */
+  height: auto;
+  object-fit: contain;
+  /* mantiene proporción */
+  max-width: 100%;
+  /* se adapta a pantallas pequeñas */
+}
+
+
+.logo-icon {
+  background: #122548;
+  border-radius: 0.8rem;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-text {
+  font-weight: 700;
+  color: #1e1e1e;
+  letter-spacing: 0.05em;
+}
+
+.subtitle {
+  color: #6b7280;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Roles */
+.role-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.role-card {
+  border: 2px solid #e5e7eb;
+  border-radius: 1rem;
+  padding: 1rem;
+  cursor: pointer;
+  position: relative;
+  transition: 0.3s ease;
+  background: #fff;
+}
+
+.role-card:hover {
+  border-color: #d1d5db;
+}
+
+.role-card.selected {
+  border-color: #122548;
+  background: #eef2ff;
+  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.15);
+}
+
+.role-icon {
+  background: #9ca3af;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin: 0 auto 0.7rem;
+  border-radius: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.role-icon.selected {
+  background: #122548;
+}
+
+.role-name {
+  color: #1f2937;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+
+.role-subtitle {
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+.checkmark {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #122548;
+  color: #fff;
+  font-size: 0.7rem;
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Error */
+.error-box {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  border-radius: 0.8rem;
+  padding: 0.7rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+/* Formulario */
+.form {
+  text-align: left;
+}
+
+label {
+  display: block;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.4rem;
+}
+
+.input-group {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 0.8rem 1rem 0.8rem 2.5rem;
+  border: 1.8px solid #d1d5db;
+  border-radius: 0.8rem;
+  outline: none;
+  transition: 0.3s;
+  font-size: 0.95rem;
+  background-color: #fff;
+  box-sizing: border-box;
+  /* ✅ evita que sobresalga */
+}
+
+.input-group input:focus {
+  border-color: #122548;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+}
+
+.input-group .icon {
+  position: absolute;
+  left: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+}
+
+.toggle-pass {
+  position: absolute;
+  right: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+/* Recordarme y link */
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.remember {
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.forgot {
+  font-size: 0.9rem;
+  color: #122548;
+  text-decoration: none;
+}
+
+.forgot:hover {
+  text-decoration: underline;
+}
+
+/* Botón */
+.login-button {
+  width: 100%;
+  background: #122548;
+  color: white;
+  border: none;
+  padding: 0.9rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 0.8rem;
+  cursor: pointer;
+  transition: 0.3s;
+  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+}
+
+.login-button:hover {
+  background: #122548;
+}
+
+/* Registro */
+.register-text {
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.95rem;
+  margin-top: 1rem;
+}
+
+.register-text a {
+  color: #122548;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.register-text a:hover {
+  text-decoration: underline;
+}
+
+/* Footer de Administrador */
+.admin-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.admin-footer svg {
+  color: #9ca3af;
+}
+
+.admin-footer a {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.admin-footer a:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+/* Modal Overlay */
+.admin-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Modal Container */
+.admin-modal {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  width: 90%;
+  max-width: 440px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  position: relative;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Botón de Cerrar */
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close:hover {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+/* Header del Modal */
+.admin-modal-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.admin-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 10px 15px -3px rgba(102, 126, 234, 0.3);
+}
+
+.admin-modal-header h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 8px 0;
+}
+
+.admin-modal-header p {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Botón de Admin */
+.admin-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  margin-top: 24px;
+}
+
+.admin-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -4px rgba(102, 126, 234, 0.4);
+}

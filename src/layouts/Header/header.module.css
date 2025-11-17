@@ -1,0 +1,113 @@
+.header {
+  --header-height: 80px;
+  --logo-size: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  box-sizing: border-box;
+  overflow: visible;
+  height: var(--header-height);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: #F2E6CF;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 100%;
+}
+
+.logoButton {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  margin-left: 60px; 
+  position: relative;
+  z-index: 5; 
+}
+
+
+
+.logoButton:hover {
+  transform: scale(1.05);
+  opacity: 0.8;
+}
+
+.logoImg {
+  height: 80px;
+  width: auto;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .header {
+    --header-height: 60px;
+    --logo-size: 60px;
+  }
+}
+
+.title {
+  font-weight: 700;
+  color: #0b66b2;
+  letter-spacing: 1px;
+  font-size: 18px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.bellBtn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #6b4f3a;
+  transition: color 0.2s;
+}
+
+.bellBtn:hover {
+  color: #2b9af3;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.2;
+  flex-shrink: 0;
+}
+
+.role {
+  font-size: 20px;
+  font-weight: 600;
+  color: #6b4f3a;
+}
+
+.email {
+  font-size: 20px;
+  color: #6b4f3a;
+  opacity: 0.9;
+}
+
+.avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #2b9af3;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+}

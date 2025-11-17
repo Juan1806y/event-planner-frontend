@@ -1,0 +1,83 @@
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: relative;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    color: #374151;
+    font-size: 0.95rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.badge-sin-cambios,
+.badge-modificado {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 0.3rem 0.7rem;
+    border-radius: 12px;
+    margin-left: 0.75rem;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.badge-sin-cambios {
+    background-color: #e3f2fd;
+    color: #1565c0;
+}
+
+.badge-modificado {
+    background-color: #ffebee;
+    color: #c62828;
+    animation: badgePulse 0.5s ease-in-out;
+}
+
+@keyframes badgePulse {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.form-group input {
+    padding: 0.9rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background: white;
+    color: #1f2937;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.form-group input.error {
+    border-color: #ef4444;
+}
+
+.error-message {
+    color: #ef4444;
+    font-size: 0.85rem;
+    margin-top: -0.3rem;
+}

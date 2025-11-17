@@ -1,0 +1,309 @@
+/* ============================= */
+/* 🌙 ESTILOS BASE DE LA PÁGINA */
+/* ============================= */
+.crearOrganizadorPage {
+  display: flex;
+  min-height: 100vh;
+  background: #f9fafb;
+  font-family: 'Inter', sans-serif;
+  color: #1f2937;
+}
+
+.pageContainer {
+  flex: 1;
+  padding: 40px 60px;
+  background: #F2E6CF;
+  overflow-y: auto;
+  transition: margin-left 0.3s ease;
+}
+
+/* ✅ Estados del sidebar */
+.sidebarExpanded {
+  margin-left: 300px;
+}
+
+.sidebarCollapsed {
+  margin-left: 80px;
+}
+
+.contentContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  padding: 24px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.headerTitle {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pageHeader h1 {
+  font-size: 32px;
+  font-weight: 600;
+  color: #2C5F7C;
+  margin: 0;
+}
+
+.empresaInfo {
+  margin: 0;
+  color: #666;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* ============================= */
+/* 🧾 FORMULARIO PRINCIPAL */
+/* ============================= */
+
+.formContainer {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f3f4f6;
+}
+
+.organizerForm {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.formLabel {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.formInput {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  background-color: white;
+  box-sizing: border-box;
+}
+
+.formInput:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.formInput::placeholder {
+  color: #9ca3af;
+}
+
+.formInput:disabled {
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.inputError {
+  border-color: #ef4444;
+}
+
+.inputError:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+/* ============================= */
+/* ⚠️ ALERTAS */
+/* ============================= */
+
+.alert {
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.alertError {
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+}
+
+.alertSuccess {
+  background: #dcfce7;
+  border: 1px solid #86efac;
+  color: #166534;
+}
+
+/* ============================= */
+/* 💬 MENSAJES DE ERROR Y AYUDA */
+/* ============================= */
+
+.errorMessage {
+  font-size: 12px;
+  color: #dc2626;
+  margin-top: 6px;
+}
+
+.formHint {
+  display: block;
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 6px;
+}
+
+/* ============================= */
+/* 🎯 BOTONES DE ACCIÓN */
+/* ============================= */
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 30px;
+  padding-top: 24px;
+  border-top: 1px solid #e9ecef;
+}
+
+.btnSecondary, .btnPrimary {
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  min-width: 120px;
+}
+
+.btnSecondary:disabled, .btnPrimary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btnSecondary {
+  background: #f3f4f6;
+  color: #374151;
+  border: 2px solid #e5e7eb;
+}
+
+.btnSecondary:hover:not(:disabled) {
+  background: #e5e7eb;
+}
+
+.btnPrimary {
+  background: linear-gradient(135deg, #142B6F, #173578, #122548);
+  color: white;
+}
+
+.btnPrimary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+}
+
+/* ============================= */
+/* 🔄 SPINNER */
+/* ============================= */
+
+.spinnerSmall {
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ============================= */
+/* 📱 RESPONSIVIDAD */
+/* ============================= */
+
+@media (max-width: 768px) {
+  .pageContainer {
+    padding: 20px;
+    margin-left: 0 !important;
+  }
+
+  .formContainer {
+    padding: 24px;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+
+  .formActions {
+    flex-direction: column-reverse;
+  }
+
+  .btnSecondary, .btnPrimary {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .pageHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .pageHeader h1 {
+    font-size: 24px;
+  }
+}
+
+/* ============================= */
+/* 🌈 ANIMACIONES */
+/* ============================= */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(15px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.formContainer {
+  animation: slideUp 0.3s ease-out;
+}
+
+.alert {
+  animation: fadeIn 0.3s ease-out;
+}

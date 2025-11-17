@@ -1,0 +1,57 @@
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #F3F3F2;
+  z-index: 100;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.teGustaraRegistrarContainer {
+  width: calc(100% - 80px);
+  margin: 40px 40px 20px 40px;
+  font-size: 16px;
+  color: #6b6969;
+  text-align: center;
+  display: inline-block;
+}
+
+.teGustaraRegistrarTuEmpre {
+  margin: 0;
+}
+
+.teGustaraRegistrar {
+  font-family: 'Montserrat', sans-serif;
+}
+
+.span {
+  font-weight: 500;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.clicAqu {
+  text-decoration: underline;
+  font-family: 'Montserrat', sans-serif;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  outline: none;
+}
+
+.clicAqu:hover {
+  color: #2b9af3;
+}
+
+.clicAqu:active {
+  color: #0b66b2;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .teGustaraRegistrarContainer {
+    width: calc(100% - 40px);
+    margin: 20px 20px 10px 20px;
+    font-size: 14px;
+    padding: 15px 0;
+  }
+}

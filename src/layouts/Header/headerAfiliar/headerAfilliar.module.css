@@ -1,0 +1,125 @@
+.header {
+  --header-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 60px;
+  box-sizing: border-box;
+  height: var(--header-height);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100vw;
+  z-index: 100;
+  background-color: #F2E6CF;
+  margin: 0;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 100%;
+  flex-shrink: 0;
+}
+
+.logoButton {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  position: relative;
+  z-index: 5;
+}
+
+.logoButton:hover {
+  transform: scale(1.05);
+  opacity: 0.8;
+}
+
+.logoImg {
+  height: 90px;
+  width: auto;
+  display: block;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  flex-shrink: 0;
+}
+
+.logoBox {
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  object-fit: contain;
+}
+
+.logoBox:hover {
+  transform: scale(1.1);
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.2;
+  flex-shrink: 0;
+}
+
+.role {
+  font-size: 20px;
+  font-weight: 600;
+  color: #6b4f3a;
+}
+
+.email {
+  font-size: 20px;
+  color: #6b4f3a;
+  opacity: 0.9;
+}
+
+.avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #2b9af3;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .header {
+    --header-height: 60px;
+    padding: 10px 20px;
+  }
+
+  .logoImg {
+    height: 60px;
+  }
+
+  .role,
+  .email {
+    font-size: 14px;
+  }
+
+  .avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+
+  .right {
+    gap: 12px;
+  }
+}

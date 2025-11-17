@@ -1,0 +1,26 @@
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=Jaldi:wght@400;700&family=Arimo:wght@400;500;600;700&display=swap');
+
+/* Minimal global reset for the app. Keep this small to avoid overriding component styles */
+:root {
+	--app-font: Inter, Arial, Helvetica, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #root {
+	height: 100%;
+}
+
+body {
+	margin: 0;
+	font-family: var(--app-font);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	line-height: 1.2;
+	background: #f2e6cf; /* Background color from Figma design */
+}
+
+/* Don't add broad element selectors here (h1, p...) — prefer component styles */
+
