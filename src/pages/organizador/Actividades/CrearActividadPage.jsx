@@ -42,7 +42,7 @@ const CrearActividadPage = () => {
         hora_inicio: '',
         hora_fin: '',
         tipo: 'presencial',
-        id_lugar: '',
+        id_lugares: [], // Cambiado a arreglo
         link_virtual: '',
     });
 
@@ -77,7 +77,7 @@ const CrearActividadPage = () => {
     useEffect(() => {
         if (!empresa?.id || !ubicacionSeleccionada) {
             setLugares([]);
-            setFormData(prev => ({ ...prev, id_lugar: '' }));
+            setFormData(prev => ({ ...prev, id_lugares: [] }));
             return;
         }
 
@@ -88,11 +88,11 @@ const CrearActividadPage = () => {
                     ? data.data.filter(l => String(l.id_ubicacion) === String(ubicacionSeleccionada))
                     : [];
                 setLugares(filtrados);
-                setFormData(prev => ({ ...prev, id_lugar: '' }));
+                setFormData(prev => ({ ...prev, id_lugares: [] }));
             } catch (error) {
                 console.error('Error cargando lugares:', error);
                 setLugares([]);
-                setFormData(prev => ({ ...prev, id_lugar: '' }));
+                setFormData(prev => ({ ...prev, id_lugares: [] }));
             }
         };
         cargarLugares();
@@ -107,7 +107,7 @@ const CrearActividadPage = () => {
         setFormData(prev => ({
             ...prev,
             tipo: valor,
-            id_lugar: valor === 'virtual' ? '' : prev.id_lugar,
+            lugares: (formData.tipo === 'virtual') ? [] : formData.id_lugares,
             link_virtual: valor === 'presencial' ? '' : prev.link_virtual
         }));
         if (valor === 'virtual') setUbicacionSeleccionada('');
@@ -115,12 +115,23 @@ const CrearActividadPage = () => {
 
     const handleUbicacionChange = (valor) => {
         setUbicacionSeleccionada(valor);
-        setFormData(prev => ({ ...prev, id_lugar: '' }));
+        setFormData(prev => ({ ...prev, id_lugares: [] }));
+    };
+
+    // Nueva función para manejar selección múltiple de lugares
+    const handleLugarToggle = (lugarId) => {
+        setFormData(prev => {
+            const nuevosLugares = prev.id_lugares.includes(lugarId)
+                ? prev.id_lugares.filter(id => id !== lugarId)
+                : [...prev.id_lugares, lugarId];
+            return { ...prev, id_lugares: nuevosLugares };
+        });
+        if (errores.id_lugares) setErrores(prev => ({ ...prev, id_lugares: '' }));
     };
 
     const validarFormulario = () => {
         const nuevosErrores = {};
-        const { titulo, descripcion, fecha_actividad, hora_inicio, hora_fin, tipo, id_lugar, link_virtual } = formData;
+        const { titulo, descripcion, fecha_actividad, hora_inicio, hora_fin, tipo, id_lugares, link_virtual } = formData;
 
         if (!titulo.trim()) nuevosErrores.titulo = 'El título es obligatorio';
         if (!descripcion.trim()) nuevosErrores.descripcion = 'La descripción es obligatoria';
@@ -128,20 +139,28 @@ const CrearActividadPage = () => {
         if (!hora_inicio) nuevosErrores.hora_inicio = 'La hora de inicio es obligatoria';
         if (!hora_fin) nuevosErrores.hora_fin = 'La hora de fin es obligatoria';
 
-        if (tipo === 'presencial' && !id_lugar) nuevosErrores.id_lugar = 'El lugar es obligatorio para actividades presenciales';
-        if (tipo === 'virtual' && !link_virtual.trim()) nuevosErrores.link_virtual = 'El link es obligatorio para actividades virtuales';
+        if (tipo === 'presencial' && id_lugares.length === 0) {
+            nuevosErrores.id_lugares = 'Debes seleccionar al menos un lugar para actividades presenciales';
+        }
+        if (tipo === 'virtual' && !link_virtual.trim()) {
+            nuevosErrores.link_virtual = 'El link es obligatorio para actividades virtuales';
+        }
         if (tipo === 'hibrida') {
-            if (!id_lugar) nuevosErrores.id_lugar = 'El lugar es obligatorio para actividades híbridas';
+            if (id_lugares.length === 0) nuevosErrores.id_lugares = 'Debes seleccionar al menos un lugar para actividades híbridas';
             if (!link_virtual.trim()) nuevosErrores.link_virtual = 'El link es obligatorio para actividades híbridas';
         }
 
-        if (hora_inicio && hora_fin && hora_inicio >= hora_fin) nuevosErrores.hora_fin = 'La hora de fin debe ser posterior a la hora de inicio';
+        if (hora_inicio && hora_fin && hora_inicio >= hora_fin) {
+            nuevosErrores.hora_fin = 'La hora de fin debe ser posterior a la hora de inicio';
+        }
 
         if (fecha_actividad && evento) {
             const fechaSel = new Date(fecha_actividad);
             const inicio = new Date(evento.fecha_inicio);
             const fin = new Date(evento.fecha_fin);
-            if (fechaSel < inicio || fechaSel > fin) nuevosErrores.fecha_actividad = 'La fecha debe estar dentro del rango del evento';
+            if (fechaSel < inicio || fechaSel > fin) {
+                nuevosErrores.fecha_actividad = 'La fecha debe estar dentro del rango del evento';
+            }
         }
 
         setErrores(nuevosErrores);
@@ -155,10 +174,21 @@ const CrearActividadPage = () => {
         try {
             setGuardando(true);
             const datosEnviar = {
-                ...formData,
-                id_lugar: formData.tipo === 'virtual' ? null : formData.id_lugar || null,
-                link_virtual: (formData.tipo === 'virtual' || formData.tipo === 'hibrida') ? formData.link_virtual : null
+                titulo: formData.titulo,
+                descripcion: formData.descripcion,
+                ponente: formData.ponente || null,
+                fecha_actividad: formData.fecha_actividad,
+                hora_inicio: formData.hora_inicio,
+                hora_fin: formData.hora_fin,
+                tipo: formData.tipo,
+                lugares: (formData.tipo === 'virtual') ? [] : formData.id_lugares,
+                url: (formData.tipo === 'virtual' || formData.tipo === 'hibrida')
+                    ? formData.link_virtual
+                    : null
             };
+
+            console.log('Datos a enviar:', datosEnviar); // Para debug
+
             await crearActividad(eventoId, datosEnviar);
             navigate(`/organizador/eventos/${eventoId}/agenda`);
         } catch (error) {
@@ -187,7 +217,7 @@ const CrearActividadPage = () => {
                     <FileText size={20} />
                     <p>
                         Completa los datos para agregar una actividad al evento.
-                        El sistema validará que las horas y fechas estén dentro del rango permitido.
+                        Puedes seleccionar múltiples lugares si la actividad se realizará en varios espacios simultáneamente.
                     </p>
                 </div>
 
@@ -314,6 +344,7 @@ const CrearActividadPage = () => {
                                     value={formData.link_virtual}
                                     onChange={(e) => handleInputChange('link_virtual', e.target.value)}
                                     className={`form-input-actividad ${errores.link_virtual ? 'input-error' : ''}`}
+                                    placeholder="https://..."
                                 />
                                 {errores.link_virtual && <span className="error-message">{errores.link_virtual}</span>}
                             </div>
@@ -322,7 +353,7 @@ const CrearActividadPage = () => {
 
                     {mostrarCampoLugar && (
                         <div className="form-section-actividad">
-                            <h2 className="section-title-actividad">Ubicación y Lugar</h2>
+                            <h2 className="section-title-actividad">Ubicación y Lugares</h2>
 
                             <div className="form-group-actividad">
                                 <label className="form-label-actividad">
@@ -344,24 +375,61 @@ const CrearActividadPage = () => {
                             <div className="form-group-actividad">
                                 <label className="form-label-actividad">
                                     <Building2 size={18} />
-                                    Lugar <span className="required">*</span>
+                                    Lugares <span className="required">*</span>
+                                    <span style={{ fontSize: '0.85em', fontWeight: 'normal', marginLeft: '8px' }}>
+                                        (Puedes seleccionar varios)
+                                    </span>
                                 </label>
-                                <select
-                                    value={formData.id_lugar}
-                                    onChange={(e) => handleInputChange('id_lugar', e.target.value)}
-                                    className={`form-input-actividad ${errores.id_lugar ? 'input-error' : ''}`}
-                                    disabled={!ubicacionSeleccionada}
-                                >
-                                    <option value="">
-                                        {!ubicacionSeleccionada ? 'Primero selecciona una ubicación' : 'Selecciona un lugar'}
-                                    </option>
-                                    {lugares.map((lugar) => (
-                                        <option key={lugar.id} value={lugar.id}>
-                                            {lugar.nombre} - Capacidad: {lugar.ubicacion?.capacidad}
-                                        </option>
-                                    ))}
-                                </select>
-                                {errores.id_lugar && <span className="error-message">{errores.id_lugar}</span>}
+
+                                {!ubicacionSeleccionada ? (
+                                    <p style={{ color: '#666', fontSize: '0.9em', marginTop: '8px' }}>
+                                        Primero selecciona una ubicación
+                                    </p>
+                                ) : lugares.length === 0 ? (
+                                    <p style={{ color: '#666', fontSize: '0.9em', marginTop: '8px' }}>
+                                        No hay lugares disponibles en esta ubicación
+                                    </p>
+                                ) : (
+                                    <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                        {lugares.map((lugar) => (
+                                            <label
+                                                key={lugar.id}
+                                                style={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    padding: '12px',
+                                                    border: '1px solid #ddd',
+                                                    borderRadius: '8px',
+                                                    cursor: 'pointer',
+                                                    backgroundColor: formData.id_lugares.includes(lugar.id) ? '#e3f2fd' : '#fff',
+                                                    transition: 'all 0.2s'
+                                                }}
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    checked={formData.id_lugares.includes(lugar.id)}
+                                                    onChange={() => handleLugarToggle(lugar.id)}
+                                                    style={{ marginRight: '12px', width: '18px', height: '18px' }}
+                                                />
+                                                <div>
+                                                    <div style={{ fontWeight: '500' }}>{lugar.nombre}</div>
+                                                    <div style={{ fontSize: '0.85em', color: '#666' }}>
+                                                        Capacidad: {lugar.ubicacion?.capacidad || 'N/A'}
+                                                        {lugar.descripcion && ` - ${lugar.descripcion}`}
+                                                    </div>
+                                                </div>
+                                            </label>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {errores.id_lugares && <span className="error-message">{errores.id_lugares}</span>}
+
+                                {formData.id_lugares.length > 0 && (
+                                    <div style={{ marginTop: '12px', padding: '10px', backgroundColor: '#f0f9ff', borderRadius: '6px' }}>
+                                        <strong>Lugares seleccionados:</strong> {formData.id_lugares.length}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}

@@ -18,13 +18,6 @@ import {
 import './GestionarAgendaPage.css';
 import Sidebar from '../Sidebar';
 
-const TIPO_ACTIVIDAD = {
-    'Conferencia': { color: '#e0f2fe', textColor: '#0369a1' },
-    'Taller': { color: '#f3e8ff', textColor: '#7e22ce' },
-    'Panel': { color: '#fef3c7', textColor: '#92400e' },
-    'Networking': { color: '#d1fae5', textColor: '#065f46' }
-};
-
 const GestionarAgendaPage = () => {
     const navigate = useNavigate();
     const { eventoId } = useParams();
@@ -44,7 +37,6 @@ const GestionarAgendaPage = () => {
             const acts = Array.isArray(actividadesData.data)
                 ? actividadesData.data
                 : [actividadesData.data];
-
             setActividades(acts);
             agruparActividadesPorFecha(acts);
         } catch (error) {
@@ -187,20 +179,8 @@ const GestionarAgendaPage = () => {
                                     <div className="col-sala">
                                         <div className="sala-info">
                                             <MapPin size={16} />
-                                            <span>{actividad.sala || 'Sin sala'}</span>
+                                            <span>{actividad.lugares?.[0]?.nombre || 'Sin sala'}</span>
                                         </div>
-                                    </div>
-
-                                    <div className="col-tipo">
-                                        <span
-                                            className="tipo-badge"
-                                            style={{
-                                                backgroundColor: TIPO_ACTIVIDAD[actividad.tipo_actividad]?.color || '#f3f4f6',
-                                                color: TIPO_ACTIVIDAD[actividad.tipo_actividad]?.textColor || '#374151'
-                                            }}
-                                        >
-                                            {actividad.tipo_actividad || 'Sin tipo'}
-                                        </span>
                                     </div>
 
                                     <div className="col-acciones">
