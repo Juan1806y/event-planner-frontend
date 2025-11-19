@@ -27,7 +27,7 @@ const CrearEventoPage = () => {
     } = useEvento(null);
 
     const handleHoraInicio = (value) => {
-        handleInputChange("hora_inicio", value);
+        handleInputChange("hora", value);
     };
 
     if (loading) {
