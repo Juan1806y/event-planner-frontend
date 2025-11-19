@@ -30,7 +30,8 @@ export const useEvento = (idEvento = null) => {
         cupos: '',
         estado: 0,
         url_virtual: '',
-        descripcion_adicional: ''
+        descripcion_adicional: '',
+        hora: "",
     });
 
     const [actividades, setActividades] = useState([
@@ -57,6 +58,11 @@ export const useEvento = (idEvento = null) => {
     const obtenerCapacidadLugar = (idLugar) => {
         const lugar = lugares.find(l => String(l.id) === String(idLugar));
         return lugar?.capacidad ?? null;
+    };
+
+    const formatearHora = (h) => {
+        if (!h) return "";
+        return h.slice(0, 5);
     };
 
     const validarCuposContraCapacidad = (idLugar, cupos) => {
@@ -118,7 +124,10 @@ export const useEvento = (idEvento = null) => {
                 cupos: evento.cupos ?? "",
                 estado: evento.estado ?? 0,
                 url_virtual: evento.url_virtual ?? "",
+                descripcion_adicional: evento.descripcion_adicional ?? "",
+                hora: formatearHora(evento.hora),
             });
+
 
             if (evento.id_lugar && lugares.length) {
                 const lugar = lugares.find(
@@ -196,10 +205,16 @@ export const useEvento = (idEvento = null) => {
         setGuardando(true);
         setEnviando(true);
 
+        const dataAEnviar = {
+            ...formData,
+            hora: formatearHora(formData.hora),
+        };
+
         try {
             const eventoGuardado = idEvento
-                ? await actualizarEvento(idEvento, formData)
-                : await crearEvento({ ...formData, id_empresa: empresa.id });
+                ? await actualizarEvento(idEvento, dataAEnviar)
+                : await crearEvento({ ...dataAEnviar, id_empresa: empresa.id });
+
 
             const eventoId = idEvento || eventoGuardado?.data?.id;
 

@@ -173,11 +173,16 @@ const CrearActividadPage = () => {
 
         try {
             setGuardando(true);
+
+            // Formatear la fecha correctamente para evitar problemas de zona horaria
+            const fechaLocal = new Date(formData.fecha_actividad + 'T00:00:00');
+            const fechaFormateada = fechaLocal.toISOString().split('T')[0];
+
             const datosEnviar = {
                 titulo: formData.titulo,
                 descripcion: formData.descripcion,
                 ponente: formData.ponente || null,
-                fecha_actividad: formData.fecha_actividad,
+                fecha_actividad: fechaFormateada,
                 hora_inicio: formData.hora_inicio,
                 hora_fin: formData.hora_fin,
                 tipo: formData.tipo,
@@ -187,7 +192,7 @@ const CrearActividadPage = () => {
                     : null
             };
 
-            console.log('Datos a enviar:', datosEnviar); // Para debug
+            console.log('Datos a enviar:', datosEnviar);
 
             await crearActividad(eventoId, datosEnviar);
             navigate(`/organizador/eventos/${eventoId}/agenda`);

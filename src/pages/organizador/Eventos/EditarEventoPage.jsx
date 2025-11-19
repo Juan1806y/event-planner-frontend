@@ -130,6 +130,8 @@ const EditarEventoPage = () => {
                         </div>
 
                         <div className="form-row-crear">
+
+                            {/* FECHA DE INICIO */}
                             <div className="form-group-crear">
                                 <label className="form-label-crear">
                                     <Calendar size={18} /> Fecha de Inicio <span className="required">*</span>
@@ -143,6 +145,24 @@ const EditarEventoPage = () => {
                                 />
                             </div>
 
+                            {/* HORA DE INICIO */}
+                            <div className="form-group-crear">
+                                <label className="form-label-crear">
+                                    Hora de Inicio <span className="required">*</span>
+                                </label>
+                                <input
+                                    type="time"
+                                    value={formData.hora}
+                                    onChange={(e) => handleInputChange('hora', e.target.value)}
+                                    className="form-input-crear"
+                                    required
+                                />
+                            </div>
+
+                        </div>
+
+                        {/* FECHA DE FIN (VA ABAJO) */}
+                        <div className="form-row-crear">
                             <div className="form-group-crear">
                                 <label className="form-label-crear">
                                     <Calendar size={18} /> Fecha de Fin <span className="required">*</span>

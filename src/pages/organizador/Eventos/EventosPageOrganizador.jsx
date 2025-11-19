@@ -31,7 +31,6 @@ const EventosPageOrganizador = () => {
             const eventosDelCreador = Array.isArray(data.data)
                 ? data.data.filter(e => String(e.id_creador) === String(idCreador))
                 : [];
-
             setEventos(eventosDelCreador);
         } catch (error) {
             alert("Error al cargar eventos.");
@@ -49,6 +48,7 @@ const EventosPageOrganizador = () => {
 
     const verEvento = (evento) => {
         setEventoAVer(evento);
+        console.log(evento)
         setModalVerVisible(true);
     };
 
@@ -268,6 +268,19 @@ const EventosPageOrganizador = () => {
                                             })}
                                         </span>
                                     </div>
+
+                                    <div className="info-box">
+                                        <span className="info-label">Hora</span>
+                                        <span className="info-value">
+                                            {eventoAVer.hora
+                                                ? new Date(`1970-01-01T${eventoAVer.hora}`).toLocaleTimeString('es-ES', {
+                                                    hour: '2-digit',
+                                                    minute: '2-digit'
+                                                })
+                                                : "Sin hora"}
+                                        </span>
+                                    </div>
+
                                 </div>
                             </div>
 
