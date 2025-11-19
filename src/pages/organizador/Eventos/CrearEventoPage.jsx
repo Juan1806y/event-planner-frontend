@@ -178,6 +178,18 @@ const CrearEventoPage = () => {
                             required
                         />
                     </div>
+                    {/* Cupos */}
+                    <div className="form-group-crear">
+                        <label className="form-label-crear">Cupos</label>
+                        <input
+                            type="number"
+                            min="0"
+                            value={formData.cupos || ""}
+                            onChange={(e) => handleInputChange("cupos", e.target.value)}
+                            placeholder="Ej: 100"
+                            className="form-input-crear"
+                        />
+                    </div>
 
                     {/* Descripción adicional */}
                     <div className="form-group-crear">
