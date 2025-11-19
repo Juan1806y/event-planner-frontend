@@ -10,6 +10,7 @@ import Dashboard from './components/Dashboard/Dashboard';
 import Agenda from './components/Agenda/Agenda';
 import AttendanceModal from './components/AttendanceModal/AttendanceModal';
 import eventService from '../../services/eventService';
+import Footer from '../../layouts/FooterAsistente/footer';
 import { useEvents } from './hooks/useEvents';
 import { useInscriptions } from './hooks/useInscriptions';
 import { formatFecha, formatHora, formatFechaCompleta } from './utils/dateUtils';
@@ -469,6 +470,7 @@ const AsistentePanel = () => {
                     </button>
                 </div>
             )}
+            <Footer/>
         </div>
     );
 };
