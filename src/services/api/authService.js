@@ -16,20 +16,6 @@ export const isAuthenticated = () => {
 
 export class AuthService extends BaseService {
   // Intenta parsear la respuesta: JSON cuando corresponda, si no retorna texto crudo
-  async parseResponse(response) {
-    const contentType = response.headers.get('content-type') || '';
-    if (contentType.includes('application/json')) {
-      try {
-        return await response.json();
-      } catch (e) {
-        const txt = await response.text();
-        return { __rawText: txt };
-      }
-    }
-
-    const text = await response.text();
-    return { __rawText: text };
-  }
   async login(email, password, selectedRole) {
     try {
       const payload = { correo: email, contraseña: password};
@@ -117,6 +103,36 @@ export class AuthService extends BaseService {
     }
   }
 
+  async promoverGerente(id_usuario, id_empresa) {
+    try {
+      const token = localStorage.getItem('access_token');
+      console.debug('authService.promoverGerente called with', { id_usuario, id_empresa, tokenExists: !!token });
+
+      const response = await fetch(`${this.baseURL}/api/auth/promover-gerente`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ id_usuario, id_empresa })
+      });
+
+      const data = await this.parseResponse(response);
+
+      if (!response.ok) {
+        const message = this.getErrorMessage(data);
+        console.warn('promoverGerente response not ok', { status: response.status, message, data });
+        return { success: false, status: response.status, message, data };
+      }
+
+      console.debug('promoverGerente succeeded', data);
+      return { success: true, data: data.data };
+    } catch (error) {
+      console.error('Error promoviendo a gerente:', error);
+      return { success: false, status: 500, message: error.message };
+    }
+  }
+
   logout() {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
@@ -125,24 +141,8 @@ export class AuthService extends BaseService {
   }
 
   getErrorMessage(data) {
-    if (!data) return 'Error durante la operación';
-    if (typeof data === 'string') return data;
-    if (data.__rawText) return data.__rawText;
-    if (data.message) return data.message;
-    if (data.error) return typeof data.error === 'string' ? data.error : data.error.message;
-    if (Array.isArray(data.errors)) return data.errors.join(', ');
-    
-    const errorMessages = [];
-    if (typeof data === 'object') {
-      Object.entries(data).forEach(([key, value]) => {
-      if (key === 'data' || key === 'status' || key === 'statusCode') return;
-      if (Array.isArray(value)) errorMessages.push(...value);
-      else if (typeof value === 'string') errorMessages.push(value);
-      else if (typeof value === 'object' && value.message) errorMessages.push(value.message);
-      });
-    }
-
-    return errorMessages.length > 0 ? errorMessages.join(', ') : 'Error durante la operación';
+    // Delegate to BaseService implementation
+    return super.getErrorMessage(data);
   }
 }
 

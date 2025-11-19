@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
-// Configuración de la API
-const API_BASE_URL = 'http://localhost:3000';
 
 export const useAdminLogin = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [adminEmail, setAdminEmail] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
   const [showAdminPassword, setShowAdminPassword] = useState(false);
@@ -25,69 +25,17 @@ export const useAdminLogin = () => {
         throw new Error('Por favor completa todos los campos');
       }
 
-      // Enviar con los nombres de campos que espera el backend
-      const payload = { correo: adminEmail, contraseña: adminPassword };
-      console.log('Enviando login de admin al backend:', payload);
-      
-      // Usar el mismo endpoint de login normal
-      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload)
-      });
+      // Delegar al AuthContext para actualizar el estado global
+      const result = await login(adminEmail, adminPassword, 'admin');
+      console.log('Respuesta del AuthContext login (admin):', result);
 
-      const data = await response.json();
-      console.log('Respuesta del backend (admin):', data);
-
-      if (!response.ok) {
-        // Manejo de errores
-        let errorMessages = [];
-        if (typeof data === 'object') {
-          for (const messages of Object.values(data)) {
-            if (Array.isArray(messages)) {
-              errorMessages = errorMessages.concat(messages);
-            } else if (typeof messages === 'string') {
-              errorMessages.push(messages);
-            }
-          }
-        } else if (typeof data === 'string') {
-          errorMessages.push(data);
-        }
-        const errorMessage = errorMessages.join(', ') || 'Error durante el inicio de sesión de administrador';
-        throw new Error(errorMessage);
+      if (!result.success) {
+        throw new Error(result.error || 'Error durante el inicio de sesión de administrador');
       }
 
-      // Los tokens están en data.data según la respuesta del backend
-      const token = data.data?.accessToken;
-      const refreshToken = data.data?.refreshToken;
-      const usuario = data.data?.usuario;
-
-      if (token) {
-        // Verificar que el usuario sea administrador
-        if (usuario?.rol !== 'admin' && usuario?.rol !== 'administrador') {
-          throw new Error('Acceso denegado: No tienes permisos de administrador');
-        }
-
-        localStorage.setItem('access_token', token);
-        if (refreshToken) {
-          localStorage.setItem('refresh_token', refreshToken);
-        }
-        // Guardar información del usuario admin
-        if (usuario) {
-          localStorage.setItem('user', JSON.stringify(usuario));
-        }
-        // Marcar explícitamente como admin
-        localStorage.setItem('selected_role', 'admin');
-        
-        console.log('Login de administrador exitoso!');
-        
-        // Redirigir al panel de administrador
-        navigate('/admin');
-      } else {
-        throw new Error('No se recibió el token de acceso');
-      }
+      const redirectPath = result.redirectPath || '/admin';
+      console.log('Login de administrador exitoso! Redirigiendo a:', redirectPath);
+      navigate(redirectPath);
       
     } catch (err) {
       console.error('Error durante el inicio de sesión de admin:', err);

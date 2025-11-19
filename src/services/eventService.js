@@ -1,5 +1,6 @@
 // services/eventoService.js - CORREGIDO
-const API_BASE = 'http://localhost:3000/api';
+import { API_PREFIX } from '../config/apiConfig';
+const API_BASE = API_PREFIX;
 
 export const eventService = {
     async getAvailableEvents(token) {

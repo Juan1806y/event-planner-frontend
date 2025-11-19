@@ -1,4 +1,6 @@
 import { useState, useCallback } from 'react';
+import { adminService } from '../services/adminService';
+import { API_PREFIX } from '../config/apiConfig';
 
 export const useEmpresas = () => {
     const [empresas, setEmpresas] = useState([]);
@@ -27,7 +29,7 @@ export const useEmpresas = () => {
                 return;
             }
 
-            const response = await fetch(`http://localhost:3000/api/${endpoint}`, {
+            const response = await fetch(`${API_PREFIX}/${endpoint}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -67,24 +69,15 @@ export const useEmpresas = () => {
     const handleAprobarEmpresa = useCallback(async (id, nombre) => {
         // ✅ ELIMINAR el window.confirm - ya tienes tu modal personalizado
         try {
-            const token = localStorage.getItem('access_token');
+            const result = await adminService.aprobarEmpresaYPromover(id);
 
-            const response = await fetch(`http://localhost:3000/api/empresas/${id}/aprobar`, {
-                method: 'PATCH',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ aprobar: true })
-            });
-
-            if (response.ok) {
-                return true;
-            } else {
-                const result = await response.json();
-                const cleanError = cleanErrorMessage(result.message || 'Error al aprobar empresa');
-                throw new Error(cleanError);
+            // result.aprobar contiene la respuesta de aprobación; si hubo promoción, queda en result.promote
+            if (!result || !result.aprobar) {
+                throw new Error('No se pudo aprobar la empresa');
             }
+
+            // Si el backend devolvió error dentro de aprobar, request wrapper lanzará error.
+            return true;
         } catch (error) {
             console.error('Error:', error);
             const cleanError = cleanErrorMessage(error.message);
@@ -100,7 +93,7 @@ export const useEmpresas = () => {
         try {
             const token = localStorage.getItem('access_token');
 
-            const response = await fetch(`http://localhost:3000/api/empresas/${id}/aprobar`, {
+            const response = await fetch(`${API_PREFIX}/empresas/${id}/aprobar`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
