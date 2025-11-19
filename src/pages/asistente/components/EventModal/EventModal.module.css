@@ -1,0 +1,95 @@
+.modalBody {
+    padding: 0 28px 28px;
+}
+
+.eventInfoGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.infoSection {
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 12px;
+    border-left: 4px solid #2C5F7C;
+}
+
+.infoSection h4 {
+    margin: 0 0 16px 0;
+    color: #2C5F7C;
+    font-size: 1rem;
+    font-weight: 600;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 8px;
+}
+
+.infoItem {
+    margin-bottom: 12px;
+}
+
+.infoItem:last-child {
+    margin-bottom: 0;
+}
+
+.infoItem label {
+    display: block;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 4px;
+    font-size: 0.85rem;
+}
+
+.infoItem span,
+.infoItem p {
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.5;
+    font-size: 0.9rem;
+}
+
+.infoItem p {
+    background: white;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.modalActions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    padding: 24px 28px;
+    border-top: 1px solid #e5e7eb;
+    background: #fafbfc;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+}
+
+.btnCancel {
+    padding: 12px 28px;
+    border: 2px solid #d1d5db;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #6b7280;
+    transition: all 0.3s ease;
+}
+
+.btnCancel:hover {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+}
+
+@media (max-width: 768px) {
+    .eventInfoGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .infoSection {
+        padding: 16px;
+    }
+}

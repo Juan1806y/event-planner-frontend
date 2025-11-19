@@ -1,0 +1,13 @@
+/* En DashboardSection.module.css - agrega esto */
+.emptySubtitle {
+    color: #666;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.loading {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+    font-size: 1.1rem;
+}

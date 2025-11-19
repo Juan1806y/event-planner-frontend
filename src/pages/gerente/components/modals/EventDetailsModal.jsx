@@ -6,12 +6,39 @@ const EventDetailsModal = ({
     onClose,
     formatFecha,
     formatHora,
-    getLugarTexto,
     getEstadoEvento
 }) => {
     const estado = getEstadoEvento(evento);
     const fechaInicio = formatFecha(evento.fecha_inicio || evento.fecha);
     const hora = formatHora(evento.hora);
+
+    const getNombreCreador = () => {
+        if (!evento.creador) return 'No especificado';
+
+        if (typeof evento.creador === 'string') {
+            return evento.creador;
+        }
+
+        if (typeof evento.creador === 'object' && evento.creador !== null) {
+            return evento.creador.nombre || 'No especificado';
+        }
+
+        return 'No especificado';
+    };
+
+    const getNombreEmpresa = () => {
+        if (!evento.empresa) return 'No especificada';
+
+        if (typeof evento.empresa === 'string') {
+            return evento.empresa;
+        }
+
+        if (typeof evento.empresa === 'object' && evento.empresa !== null) {
+            return evento.empresa.nombre || 'No especificada';
+        }
+
+        return 'No especificada';
+    };
 
     return (
         <div className={styles.modalOverlay} onClick={onClose}>
@@ -39,66 +66,81 @@ const EventDetailsModal = ({
                                 <span>{evento.modalidad || 'Presencial'}</span>
                             </div>
                             <div className={styles.infoItem}>
-                                <label>Categoría:</label>
-                                <span>{evento.categoria || 'General'}</span>
-                            </div>
-                            <div className={styles.infoItem}>
-                                <label>Estado:</label>
-                                <span className={`${styles.eventStatus} ${styles[estado.clase]}`}>
-                                    {estado.texto}
-                                </span>
+                                <label>Organizador:</label>
+                                <span>{getNombreCreador()}</span>
                             </div>
                         </div>
 
                         <div className={styles.infoSection}>
-                            <h4>Fecha y Ubicación</h4>
+                            <h4>Fecha y Horario</h4>
                             <div className={styles.infoItem}>
-                                <label>Fecha:</label>
+                                <label>Fecha de inicio:</label>
                                 <span>{fechaInicio}</span>
                             </div>
+                            {evento.fecha_fin && (
+                                <div className={styles.infoItem}>
+                                    <label>Fecha de fin:</label>
+                                    <span>{formatFecha(evento.fecha_fin)}</span>
+                                </div>
+                            )}
                             <div className={styles.infoItem}>
                                 <label>Hora:</label>
                                 <span>{hora || 'Por definir'}</span>
                             </div>
-                            <div className={styles.infoItem}>
-                                <label>Ubicación:</label>
-                                <span>{getLugarTexto(evento)}</span>
-                            </div>
                         </div>
 
                         <div className={styles.infoSection}>
-                            <h4>Capacidad</h4>
+                            <h4>Capacidad y Ocupación</h4>
                             <div className={styles.infoItem}>
-                                <label>Cupos disponibles:</label>
-                                <span>{evento.cupos_disponibles || evento.cupo_disponible || 0} / {evento.cupos || 'N/A'}</span>
+                                <label>Cupos totales:</label>
+                                <span>{estado.cuposTotales > 0 ? estado.cuposTotales : 'Sin límite'}</span>
                             </div>
-                            <div className={styles.infoItem}>
-                                <label>Porcentaje de ocupación:</label>
-                                <span>{estado.porcentaje}%</span>
-                            </div>
-                            {evento.creador && (
+                            {estado.cuposDisponibles !== null && (
                                 <div className={styles.infoItem}>
-                                    <label>Organizador:</label>
-                                    <span>{evento.creador}</span>
+                                    <label>Cupos disponibles:</label>
+                                    <span>{estado.cuposDisponibles}</span>
+                                </div>
+                            )}
+                            {estado.cuposOcupados !== null && (
+                                <div className={styles.infoItem}>
+                                    <label>Cupos ocupados:</label>
+                                    <span>{estado.cuposOcupados}</span>
+                                </div>
+                            )}
+                            {estado.porcentaje > 0 && (
+                                <div className={styles.infoItem}>
+                                    <label>Porcentaje de ocupación:</label>
+                                    <span>{estado.porcentaje}%</span>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className={styles.infoSection}>
+                            <h4>Información Adicional</h4>
+                            <div className={styles.infoItem}>
+                                <label>Empresa:</label>
+                                <span>{getNombreEmpresa()}</span>
+                            </div>
+                            {evento.fecha_creacion && (
+                                <div className={styles.infoItem}>
+                                    <label>Fecha de creación:</label>
+                                    <span>{formatFecha(evento.fecha_creacion)}</span>
+                                </div>
+                            )}
+                            {evento.fecha_actualizacion && (
+                                <div className={styles.infoItem}>
+                                    <label>Última actualización:</label>
+                                    <span>{formatFecha(evento.fecha_actualizacion)}</span>
                                 </div>
                             )}
                         </div>
                     </div>
 
-                    {evento.descripcion && evento.descripcion !== 'null' && (
+                    {evento.descripcion && evento.descripcion !== 'null' && evento.descripcion !== 'Sin descripción disponible' && (
                         <div className={styles.infoSection}>
                             <h4>Descripción</h4>
                             <div className={styles.infoItem}>
                                 <p>{evento.descripcion}</p>
-                            </div>
-                        </div>
-                    )}
-
-                    {evento.observaciones && evento.observaciones !== 'null' && (
-                        <div className={styles.infoSection}>
-                            <h4>Observaciones</h4>
-                            <div className={styles.infoItem}>
-                                <p>{evento.observaciones}</p>
                             </div>
                         </div>
                     )}

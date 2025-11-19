@@ -19,10 +19,12 @@ import CrearOrganizadorContainer from './pages/gerente/containers/CrearOrganizad
 import UbicacionesContainer from './pages/gerente/containers/UbicacionesContainer';
 import LugaresContainer from './pages/gerente/containers/LugaresContainer';
 import EditarEventoPage from './pages/organizador/EditarEventoPage';
-import Asistente from './pages/asistente/asistente';
+import Asistente from './pages/asistente/AsistentePanel';
 
 import OrganizerDashboard from './pages/organizador/OrganizerDashboard';
 import CrearEventoPage from './pages/organizador/CrearEventoPage';
+import PonenteDashboard from './pages/ponente/containers/PonenteDashboard';
+
 function App() {
   return (
     <AuthProvider>
@@ -46,7 +48,7 @@ function App() {
 
           {/* Ruta del panel de administración */}
           <Route
-            path="/admin*"
+            path="/admin/*"
             element={
               <AdminRoute>
                 <Admin />
@@ -54,6 +56,7 @@ function App() {
             }
           />
 
+          {/* Rutas de Gerente */}
           <Route
             path="/gerente"
             element={
@@ -103,13 +106,51 @@ function App() {
             }
           />
 
-          {/* Ruta para asistentes */}
-          <Route path="/asistente" element={<Asistente />} />
-          <Route path="/asistente/eventos" element={<Asistente />} />
+          {/* Rutas para Asistente - CORREGIDAS */}
+          <Route
+            path="/asistente/*"
+            element={
+              <PrivateRoute>
+                <Asistente />
+              </PrivateRoute>
+            }
+          />
 
+          {/* Rutas específicas del asistente para mantener compatibilidad */}
+          <Route
+            path="/asistente/dashboard"
+            element={
+              <PrivateRoute>
+                <Asistente />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/asistente/eventos"
+            element={
+              <PrivateRoute>
+                <Asistente />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/asistente/agenda"
+            element={
+              <PrivateRoute>
+                <Asistente />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/asistente/inscripciones"
+            element={
+              <PrivateRoute>
+                <Asistente />
+              </PrivateRoute>
+            }
+          />
 
-
-          {/*Ruta para gestión de empresa*/}
+          {/* Ruta para gestión de empresa */}
           <Route
             path="/empresa"
             element={
@@ -119,7 +160,7 @@ function App() {
             }
           />
 
-          {/*Rutas para gestión de afiliaciones*/}
+          {/* Rutas para gestión de afiliaciones */}
           <Route
             path="/empresa/afiliaciones-aprobadas"
             element={
@@ -145,7 +186,7 @@ function App() {
             }
           />
 
-          {/*Rutas Organizador)*/}
+          {/* Rutas Organizador */}
           <Route
             path="/organizador"
             element={
@@ -154,19 +195,88 @@ function App() {
               </PrivateRoute>
             }
           />
-          <Route path="/eventos/crear" element={<CrearEventoPage />} />
-          <Route path="/eventos/editar/:id" element={<EditarEventoPage />} />
+          <Route
+            path="/eventos/crear"
+            element={
+              <PrivateRoute>
+                <CrearEventoPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/eventos/editar/:id"
+            element={
+              <PrivateRoute>
+                <EditarEventoPage />
+              </PrivateRoute>
+            }
+          />
 
-          {/*Gestion de roles (subruta de asistente)*/}
+          {/* Rutas Ponente */}
+          <Route
+            path="/ponente"
+            element={
+              <PrivateRoute>
+                <PonenteDashboard />
+              </PrivateRoute>
+            }
+          />
 
+          <Route 
+            path="/ponente/dashboard"
+            element={
+              <PrivateRoute>  
+                <PonenteDashboard />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/ponente/eventos"
+            element={
+              <PrivateRoute>
+                <PonenteDashboard />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/ponente/agenda"
+            element={ 
+              <PrivateRoute>
+                <PonenteDashboard />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/ponente/actividades"
+            element={
+              <PrivateRoute>
+                <PonenteDashboard />
+              </PrivateRoute>
+            }
+          />
+
+          {/* Ruta por defecto */}
           <Route
             path="/"
             element={<Navigate to="/login" replace />}
           />
+
+          {/* Ruta 404 - Página no encontrada */}
+          <Route
+            path="*"
+            element={
+              <div style={{ padding: '20px', textAlign: 'center' }}>
+                <h2>404 - Página no encontrada</h2>
+                <p>La página que buscas no existe.</p>
+              </div>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
-
   );
 }
 

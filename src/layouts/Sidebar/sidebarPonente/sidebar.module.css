@@ -1,0 +1,214 @@
+.rectangleParent {
+    width: 288px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    text-align: left;
+    font-size: 18px;
+    color: #f8fdff;
+    font-family: 'Inter', sans-serif;
+    z-index: 998;
+    overflow-y: auto;
+    transition: all 0.3s ease;
+    background-color: #122548;
+}
+
+.rectangleParent.collapsed {
+    width: 80px;
+}
+
+.groupChild {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #122548;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.hamburgerIcon {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 1002;
+}
+
+.hamburgerIcon:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+.hamburgerIcon img {
+    width: 24px;
+    height: 24px;
+    filter: brightness(0) invert(1);
+}
+
+.logoSection {
+    position: absolute;
+    top: 80px;
+    left: 0;
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    box-sizing: border-box;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.panelDeAdministracin {
+    font-size: 16px;
+    font-weight: bold;
+    color: #f8fdff;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.logoCollapsed {
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+}
+
+.menuContainer {
+    position: absolute;
+    top: 160px;
+    left: 0;
+    width: 100%;
+    padding: 20px 0;
+    box-sizing: border-box;
+}
+
+.menuItem {
+    margin-bottom: 5px;
+}
+
+.menuItemContent {
+    display: flex;
+    align-items: center;
+    padding: 12px 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    justify-content: flex-start;
+    border: none;
+    background: none;
+    width: 100%;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+.menuItemContent:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.activeMenuItem {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-left: 4px solid #60a5fa;
+}
+
+.activeMenuItem .menuLabel {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.menuIcon {
+    width: 22px;
+    height: 22px;
+    margin-right: 15px;
+    object-fit: contain;
+    display: block;
+    flex-shrink: 0;
+    filter: brightness(0) invert(1);
+}
+
+.menuLabel {
+    flex: 1;
+    font-size: 16px;
+    color: #ffffff;
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.logoutButton {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    padding: 12px 20px;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: background-color 0.2s ease;
+    font-size: 14px;
+    font-family: inherit;
+}
+
+.logoutButton:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.logoutIcon {
+    min-width: 20px;
+    color: #ffffff;
+}
+
+.rectangleParent.collapsed .menuLabel,
+.rectangleParent.collapsed .panelDeAdministracin {
+    display: none;
+}
+
+.rectangleParent.collapsed .menuItemContent {
+    justify-content: center;
+    padding: 12px;
+}
+
+.rectangleParent.collapsed .menuIcon {
+    margin-right: 0;
+}
+
+.rectangleParent.collapsed .logoutButton {
+    justify-content: center;
+    padding: 12px;
+}
+
+.rectangleParent.collapsed .logoutButton span {
+    display: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .rectangleParent {
+        width: 288px;
+        transform: translateX(-100%);
+    }
+    
+    .rectangleParent.collapsed {
+        transform: translateX(0);
+        width: 80px;
+    }
+}

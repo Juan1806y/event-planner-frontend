@@ -5,6 +5,7 @@ class EventsAPI extends BaseService {
         super();
         this.obtenerEventos = this.obtenerEventos.bind(this);
         this.getEventsByEmpresa = this.getEventsByEmpresa.bind(this);
+        this.obtenerEventosDisponibles = this.obtenerEventosDisponibles.bind(this);
     }
 
     obtenerEventos = async () => {
@@ -19,6 +20,28 @@ class EventsAPI extends BaseService {
         } catch (error) {
             console.error('Error en obtenerEventos:', error);
             throw new Error(error.message || 'Error al cargar los eventos');
+        }
+    }
+
+    obtenerEventosDisponibles = async () => {
+        try {
+            console.log('🌐 Obteniendo eventos disponibles desde API...');
+            const response = await this.fetch('/api/inscripciones/eventos-disponibles');
+
+            console.log('📊 Respuesta completa de eventos disponibles:', response);
+
+            if (!response.success) {
+                console.warn('⚠️ La API no devolvié success=true para eventos disponibles:', response.message);
+                // No lanzar error, devolver estructura vacía
+                return { success: true, data: [] };
+            }
+
+            console.log(`✅ Encontrados ${response.data?.length || 0} eventos disponibles`);
+            return response;
+        } catch (error) {
+            console.error('❌ Error en obtenerEventosDisponibles:', error);
+            // En caso de error, devolver estructura vacía para no romper el flujo
+            return { success: true, data: [] };
         }
     }
 

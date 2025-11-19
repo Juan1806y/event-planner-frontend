@@ -1,21 +1,18 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
 import styles from './sidebar.module.css';
-import campana from '../../assets/notifications.png';
-import hamburgerIcon from '../../assets/hamburgerIcon.png';
-import logoIcon from '../../assets/evento-remove.png';
-import calendarEvento from '../../assets/calendarEvento.png'
+import campana from '../../../assets/calendar.png';
+import hamburgerIcon from '../../../assets/hamburgerIcon.png';
+import logoIcon from '../../../assets/evento-remove.png';
+import calendarEvento from '../../../assets/calendarEvento.png'
 
-const Sidebar = ({onToggle}) => {
-  const navigate = useNavigate();
-  const location = useLocation();
+const Sidebar = ({ onToggle, onNavigate, currentView }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const toggleSidebar = () => {
     const newCollapsedState = !isCollapsed;
     setIsCollapsed(newCollapsedState);
 
-    if(onToggle){
+    if (onToggle) {
       onToggle(newCollapsedState);
     }
   };
@@ -23,15 +20,15 @@ const Sidebar = ({onToggle}) => {
   const handleLogout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('token');
-    navigate('/login');
+    window.location.href = '/login';
   };
 
-  const isActive = (path) => location.pathname === path;
+  const isActive = (view) => currentView === view;
 
   return (
     <aside className={`${styles.rectangleParent} ${isCollapsed ? styles.collapsed : ''}`}>
       <div className={styles.groupChild} />
-      
+
       <button
         className={styles.hamburgerIcon}
         onClick={toggleSidebar}
@@ -56,7 +53,7 @@ const Sidebar = ({onToggle}) => {
           }}
         />
       </button>
-      
+
       <div className={styles.logoSection}>
         {!isCollapsed ? (
           <div className={styles.panelDeAdministracin}>Panel de Asistente</div>
@@ -71,11 +68,27 @@ const Sidebar = ({onToggle}) => {
 
       <div className={styles.menuContainer}>
         <div className={styles.menuItem}>
-          <div 
-            className={`${styles.menuItemContent} ${
-              isActive('/asistente/eventos') ? styles.activeMenuItem : ''
-            }`}
-            onClick={() => navigate('/asistente/eventos')}
+          <div
+            className={`${styles.menuItemContent} ${isActive('dashboard') ? styles.activeMenuItem : ''
+              }`}
+            onClick={() => onNavigate('dashboard')}
+            title={isCollapsed ? 'Dashboard' : ''}
+          >
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className={styles.menuIcon}>
+              <rect x="3" y="3" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
+              <rect x="11" y="3" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
+              <rect x="3" y="11" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
+              <rect x="11" y="11" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
+            </svg>
+            {!isCollapsed && <span className={styles.menuLabel}>Dashboard</span>}
+          </div>
+        </div>
+
+        <div className={styles.menuItem}>
+          <div
+            className={`${styles.menuItemContent} ${isActive('eventos') ? styles.activeMenuItem : ''
+              }`}
+            onClick={() => onNavigate('eventos')}
             title={isCollapsed ? 'Eventos' : ''}
           >
             <img src={calendarEvento} alt="Evento Icon" className={styles.menuIcon} />
@@ -84,11 +97,10 @@ const Sidebar = ({onToggle}) => {
         </div>
 
         <div className={styles.menuItem}>
-          <div 
-            className={`${styles.menuItemContent} ${
-              isActive('/asistente/agenda') ? styles.activeMenuItem : ''
-            }`}
-            onClick={() => navigate('/asistente/agenda')}
+          <div
+            className={`${styles.menuItemContent} ${isActive('agenda') ? styles.activeMenuItem : ''
+              }`}
+            onClick={() => onNavigate('agenda')}
             title={isCollapsed ? 'Agenda' : ''}
           >
             <img src={campana} alt="Agenda Icon" className={styles.menuIcon} />
@@ -97,7 +109,7 @@ const Sidebar = ({onToggle}) => {
         </div>
       </div>
 
-      <button 
+      <button
         className={styles.logoutButton}
         onClick={handleLogout}
         title="Cerrar Sesión"
@@ -108,7 +120,6 @@ const Sidebar = ({onToggle}) => {
         {!isCollapsed && <span>Cerrar Sesión</span>}
       </button>
     </aside>
-    
   );
 };
 

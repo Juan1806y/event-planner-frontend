@@ -1,0 +1,39 @@
+.dashboard {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.mainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  transition: margin-left 0.3s ease;
+  margin-left: 250px; /* Ancho del sidebar cuando está expandido */
+}
+
+.mainContent.menuCollapsed {
+  margin-left: 80px; /* Ancho del sidebar cuando está colapsado */
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background-color: #f8f9fa;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .mainContent {
+    margin-left: 0;
+  }
+  
+  .mainContent.menuCollapsed {
+    margin-left: 0;
+  }
+  
+  .content {
+    padding: 15px;
+  }
+}

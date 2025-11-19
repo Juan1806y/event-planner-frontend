@@ -1,0 +1,151 @@
+.modalBody {
+    padding: 0 28px 28px;
+}
+
+.eventInfo {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    border-left: 4px solid #2C5F7C;
+}
+
+.eventInfo h3 {
+    margin: 0 0 12px 0;
+    color: #2C5F7C;
+    font-size: 1.4rem;
+}
+
+.eventInfo p {
+    margin: 8px 0;
+    color: #6b7280;
+}
+
+.eventDescriptionModal {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.eventDescriptionModal strong {
+    color: #374151;
+}
+
+.eventDescriptionModal p {
+    margin: 8px 0 0 0;
+    line-height: 1.5;
+    color: #6b7280;
+}
+
+.formSection {
+    margin-bottom: 20px;
+}
+
+.formSection h4 {
+    margin-bottom: 20px;
+    color: #2C5F7C;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.formGroup {
+    margin-bottom: 20px;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.95rem;
+}
+
+.formInput {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+    box-sizing: border-box;
+}
+
+.formInput:focus {
+    outline: none;
+    border-color: #2C5F7C;
+    box-shadow: 0 0 0 3px rgba(44, 95, 124, 0.1);
+}
+
+.formInput::placeholder {
+    color: #9ca3af;
+}
+
+.formInput:disabled {
+    background: #f5f5f5;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.modalActions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 32px;
+}
+
+.btnCancel {
+    padding: 12px 28px;
+    border: 2px solid #d1d5db;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #6b7280;
+    transition: all 0.3s ease;
+}
+
+.btnCancel:hover:not(:disabled) {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+}
+
+.btnCancel:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btnConfirm {
+    padding: 12px 28px;
+    background: linear-gradient(135deg, #2C5F7C 0%, #1E4157 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btnConfirm:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(44, 95, 124, 0.4);
+}
+
+.btnConfirm:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+@media (max-width: 768px) {
+    .modalBody {
+        padding: 0 20px 20px;
+    }
+
+    .modalActions {
+        flex-direction: column;
+    }
+}

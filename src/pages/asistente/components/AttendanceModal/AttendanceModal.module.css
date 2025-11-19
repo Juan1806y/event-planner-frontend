@@ -1,0 +1,147 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background: white;
+    border-radius: 12px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.modalHeader h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.closeButton:hover {
+    color: #333;
+}
+
+.closeButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.modalBody {
+    padding: 1.5rem;
+}
+
+.eventInfo {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.eventInfo h3 {
+    margin: 0 0 0.5rem 0;
+    color: #333;
+}
+
+.eventInfo p {
+    margin: 0.25rem 0;
+    color: #666;
+}
+
+.attendanceForm {
+    margin-top: 1.5rem;
+}
+
+.formGroup {
+    margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.formGroup input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.formGroup input:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+.modalActions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+.cancelButton {
+    padding: 0.75rem 1.5rem;
+    border: 2px solid #e0e0e0;
+    background: white;
+    border-radius: 8px;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+}
+
+.cancelButton:hover {
+    border-color: #007bff;
+    color: #007bff;
+}
+
+.confirmButton {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    background: #007bff;
+    color: white;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.confirmButton:hover:not(:disabled) {
+    background: #0056b3;
+}
+
+.confirmButton:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+}

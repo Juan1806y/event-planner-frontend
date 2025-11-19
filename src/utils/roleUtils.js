@@ -145,6 +145,39 @@ export const isOrganizador = (user) => {
   return false;
 };
 
+export const isPonente = (user) => {
+  if (!user) return false;
+
+  const rawRole = user.rol ?? user.role ?? user.tipo ?? user.type ?? '';
+
+  if (Array.isArray(user.roles) && user.roles.length) {
+    for (const r of user.roles) {
+      const v = (r?.name || r?.role || r?.rol || r || '').toString().toLowerCase();
+      if (v.includes('ponente') || v.includes('speaker') || v.includes('presenter')) return true;
+    }
+  }
+
+  if (user.ponente) return true;
+
+  if (typeof rawRole === 'string') {
+    const role = rawRole.toLowerCase();
+    if (role.includes('ponente') || role.includes('speaker') || role.includes('presenter')) return true;
+  }
+
+  if (typeof rawRole === 'number') {
+    return rawRole === 5;
+  }
+
+  try {
+    const dump = JSON.stringify(user).toLowerCase();
+    if (dump.includes('ponente') || dump.includes('speaker') || dump.includes('presenter')) return true;
+  } catch (e) {
+    // ignore
+  }
+
+  return false;
+};
+
 /**
  * Obtiene la ruta de redirección según el rol del usuario
  * @param {Object} user - Objeto usuario del localStorage
@@ -155,12 +188,14 @@ export const getRedirectPath = (user) => {
   if (isGerente(user)) return '/gerente';
   if (isAsistente(user)) return '/asistente';
   if (isOrganizador(user)) return '/organizador';
+  if (isPonente(user)) return '/ponente';
 
   // También verifica por correo en caso de fallback
   const email = (user?.email || user?.correo || user?.username || '').toString().toLowerCase();
   if (email.includes('gerente') || email.includes('manager')) return '/gerente';
   if (email.includes('asistente')) return '/asistente';
   if (email.includes('organizador') || email.includes('organizer')) return '/organizador';
+  if (email.includes('ponente') || email.includes('speaker')) return '/ponente';
 
   return '/dashboard';
 };
@@ -177,6 +212,7 @@ export const getRoleName = (user) => {
   if (isGerente(user)) return 'Gerente';
   if (isAsistente(user)) return 'Asistente';
   if (isOrganizador(user)) return 'Organizador';
+  if (isPonente(user)) return 'Ponente';
 
   const role = user.rol || user.role;
 

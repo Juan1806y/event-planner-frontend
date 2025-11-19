@@ -1,0 +1,130 @@
+.eventos {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.eventos h2 {
+    color: #2C5F7C;
+    margin-bottom: 8px;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.subtitle {
+    color: #6b7280;
+    margin-bottom: 24px;
+    font-size: 1rem;
+}
+
+.loading {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6b7280;
+    font-size: 1.1rem;
+}
+
+.error {
+    text-align: center;
+    padding: 40px 20px;
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+    color: #dc2626;
+}
+
+.retryButton {
+    margin-top: 16px;
+    padding: 10px 20px;
+    background: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.retryButton:hover {
+    background: #b91c1c;
+}
+
+.emptyState {
+    text-align: center;
+    padding: 60px 20px;
+    background: #f8fafc;
+    border: 2px dashed #d1d5db;
+    border-radius: 12px;
+    color: #6b7280;
+}
+
+.emptyState p {
+    margin: 0 0 8px 0;
+    font-size: 1.1rem;
+}
+
+.emptySubtitle {
+    font-size: 0.9rem !important;
+    color: #9ca3af !important;
+}
+
+.eventosInfo {
+    margin-bottom: 20px;
+}
+
+.eventosCount {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.eventosGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 24px;
+    margin-top: 20px;
+}
+
+/* Modal Styles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modal {
+    background: white;
+    border-radius: 16px;
+    max-width: 900px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+    .eventos {
+        padding: 16px;
+    }
+
+    .eventosGrid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .modal {
+        max-width: 95%;
+        margin: 0 auto;
+    }
+
+    .modalOverlay {
+        padding: 10px;
+    }
+}
