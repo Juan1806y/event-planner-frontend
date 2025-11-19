@@ -20,16 +20,16 @@ import EventosPage from './pages/gerente/eventosPage';
 import CrearOrganizador from './pages/gerente/CrearOrganizadorPage';
 import Ubicaciones from './pages/gerente/ubicaciones';
 import Lugares from './pages/gerente/lugares';
-import EditarEventoPage from './pages/organizador/EditarEventoPage';
+import EditarEventoPage from './pages/organizador/Eventos/EditarEventoPage';
 import Asistente from './pages/asistente/asistente';
 
 import OrganizerDashboard from './pages/organizador/OrganizerDashboard';
-import CrearEventoPage from './pages/organizador/CrearEventoPage';
-import GestionarAgendaPage from './pages/organizador/GestionarAgendaPage';
-import CrearActividadPage from './pages/organizador/CrearActividadPage';
-import EditarActividadPage from './pages/organizador/EditarActividadPage';
-import ActividadesPage from './pages/organizador/ActividadesPage';
-import EventosPageOrganizador from './pages/organizador/EventosPageOrganizador';
+import CrearEventoPage from './pages/organizador/Eventos/CrearEventoPage';
+import GestionarAgendaPage from './pages/organizador/Agenda/GestionarAgendaPage';
+import CrearActividadPage from './pages/organizador/Actividades/CrearActividadPage';
+import EditarActividadPage from './pages/organizador/Actividades/EditarActividadPage';
+import ActividadesPage from './pages/organizador/Actividades/ActividadesPage';
+import EventosPageOrganizador from './pages/organizador/Eventos/EventosPageOrganizador';
 function App() {
   return (
     <BrowserRouter>

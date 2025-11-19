@@ -1,129 +1,57 @@
 const API_BASE_URL = 'http://localhost:3000/api';
 
-
 const getAuthToken = () => {
     try {
         const accessToken = localStorage.getItem('access_token');
-
-        const user = localStorage.getItem('user');
-        const parsedUser = user ? JSON.parse(user) : null;
-
-        const token = accessToken || parsedUser?.token || parsedUser?.access_token;
-
-        if (!token) {
-            console.warn('⚠️ No se encontró ningún token en localStorage.');
-            return null;
-        }
-        return token;
-    } catch (error) {
-        console.error('❌ Error al obtener token del localStorage:', error);
+        const parsedUser = JSON.parse(localStorage.getItem('user') || '{}');
+        return accessToken || parsedUser.token || parsedUser.access_token || null;
+    } catch {
         return null;
     }
 };
-
 
 const getHeaders = () => {
     const token = getAuthToken();
     return {
         'Content-Type': 'application/json',
-        ...(token && { 'Authorization': `Bearer ${token}` })
+        ...(token && { Authorization: `Bearer ${token}` })
     };
 };
 
-
 const handleResponse = async (response) => {
+    const data = await response.json().catch(() => ({}));
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.error('Error en la respuesta:', errorData);
-        throw new Error(
-            errorData.message ||
-            errorData.error ||
-            `Error ${response.status}: ${response.statusText}`
-        );
+        throw new Error(data.message || data.error || `Error ${response.status}`);
     }
-    return response.json();
+    return data;
+};
+
+const handleRequest = async (url, options = {}) => {
+    const response = await fetch(url, { headers: getHeaders(), ...options });
+    return handleResponse(response);
 };
 
 const empresaService = {
-    obtenerEmpresaGerente: async () => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/empresas`, {
-                method: 'GET',
-                headers: getHeaders()
-            });
-            return await handleResponse(response);
-        } catch (error) {
-            console.error('Error al obtener empresa del gerente:', error);
-            throw error;
-        }
-    },
+    obtenerEmpresaGerente: () =>
+        handleRequest(`${API_BASE_URL}/empresas`),
 
-    obtenerTodasCiudades: async () => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/ciudades`, {
-                method: 'GET',
-                headers: getHeaders()
-            });
-            return await handleResponse(response);
-        } catch (error) {
-            console.error('Error al obtener todas las ciudades:', error);
-            throw error;
-        }
-    },
+    obtenerTodasCiudades: () =>
+        handleRequest(`${API_BASE_URL}/ciudades`),
 
-    obtenerEmpresaPorId: async (id) => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/empresas/${id}`, {
-                method: 'GET',
-                headers: getHeaders()
-            });
-            return await handleResponse(response);
-        } catch (error) {
-            console.error('Error al obtener empresa por ID:', error);
-            throw error;
-        }
-    },
+    obtenerEmpresaPorId: (id) =>
+        handleRequest(`${API_BASE_URL}/empresas/${id}`),
 
-    actualizarEmpresa: async (id, datos) => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/empresas/${id}`, {
-                method: 'PUT',
-                headers: getHeaders(),
-                body: JSON.stringify(datos)
-            });
-            return await handleResponse(response);
-        } catch (error) {
-            console.error('Error al actualizar empresa:', error);
-            throw error;
-        }
-    },
+    actualizarEmpresa: (id, datos) =>
+        handleRequest(`${API_BASE_URL}/empresas/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(datos)
+        }),
 
-    obtenerCiudadPorId: async (idCiudad) => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/ciudades/${idCiudad}`, {
-                method: 'GET',
-                headers: getHeaders()
-            });
-            return await handleResponse(response);
-        } catch (error) {
-            console.error('Error al obtener ciudad por ID:', error);
-            throw error;
-        }
-    },
+    obtenerCiudadPorId: (idCiudad) =>
+        handleRequest(`${API_BASE_URL}/ciudades/${idCiudad}`),
 
-    obtenerPaisPorId: async (idPais) => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/paises/${idPais}`, {
-                method: 'GET',
-                headers: getHeaders()
-            });
-            return await handleResponse(response);
-        } catch (error) {
-            console.error('Error al obtener país por ID:', error);
-            throw error;
-        }
-    }
-
+    obtenerPaisPorId: (idPais) =>
+        handleRequest(`${API_BASE_URL}/paises/${idPais}`)
 };
 
 export default empresaService;

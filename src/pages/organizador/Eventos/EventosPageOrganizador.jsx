@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Plus, Search, Edit, Eye, Trash2, X, MapPin, Users, Clock, FileText } from 'lucide-react';
-import {
-    obtenerEventos, eliminarEvento, obtenerPerfil
-} from "../../components/eventosService";
+import { Calendar, Plus, Search, Edit, Eye, Trash2, X, MapPin, Users, FileText } from 'lucide-react';
+import { obtenerEventos, eliminarEvento, obtenerPerfil } from "../../../components/eventosService";
 import './EventosPage.css';
-import Sidebar from './Sidebar'
+import Sidebar from '../Sidebar';
 
 const ESTADOS_EVENTO = {
     0: { texto: 'Borrador', clase: 'inactivo' },
@@ -27,15 +25,15 @@ const EventosPageOrganizador = () => {
     const cargarEventos = async () => {
         try {
             const perfil = await obtenerPerfil();
-            const idCreador =
-                perfil?.data?.usuario?.id || perfil?.data?.id || null;
+            const idCreador = perfil?.data?.usuario?.id || perfil?.data?.id || null;
+
             const data = await obtenerEventos();
             const eventosDelCreador = Array.isArray(data.data)
                 ? data.data.filter(e => String(e.id_creador) === String(idCreador))
                 : [];
             setEventos(eventosDelCreador);
         } catch (error) {
-            console.error("❌ Error al cargar eventos:", error);
+            alert("Error al cargar eventos.");
         }
     };
 
@@ -43,54 +41,37 @@ const EventosPageOrganizador = () => {
         cargarEventos();
     }, []);
 
-    // 🟡 Mostrar modal de confirmación eliminar
     const confirmarEliminar = (evento) => {
         setEventoAEliminar(evento);
         setModalVisible(true);
     };
 
-    // 👁️ Mostrar modal de visualización
     const verEvento = (evento) => {
         setEventoAVer(evento);
+        console.log(evento)
         setModalVerVisible(true);
     };
 
-    // 🔴 Ejecutar eliminación
     const handleEliminar = async () => {
         if (!eventoAEliminar) return;
 
         try {
             setLoadingEliminar(true);
-            console.log('🗑️ Eliminando evento ID:', eventoAEliminar.id);
-
-            const resultado = await eliminarEvento(eventoAEliminar.id);
-            console.log('📥 Respuesta del servidor:', resultado);
+            await eliminarEvento(eventoAEliminar.id);
 
             setModalVisible(false);
             setEventoAEliminar(null);
 
-            console.log('🔄 Recargando lista de eventos...');
             const eventosActualizados = await obtenerEventos();
-            console.log('📋 Eventos después de eliminar:', eventosActualizados.data.length);
-
-            const eventoEliminado = eventosActualizados.data.find(e => e.id === eventoAEliminar.id);
-
             setEventos(eventosActualizados.data);
-
-        } catch (error) {
-            console.error("❌ Error al eliminar evento:", error);
-            console.error("Detalles completos:", {
-                message: error.message,
-                response: error.response?.data,
-                status: error.response?.status
-            });
-            alert('Error al eliminar: ' + (error.message || 'Error desconocido'));
+        } catch {
+            alert('Error al eliminar el evento.');
         } finally {
             setLoadingEliminar(false);
         }
     };
 
-    const eventosFiltrados = eventos.filter(evento =>
+    const eventosVisibles = eventos.filter(evento =>
         evento.titulo.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -98,7 +79,7 @@ const EventosPageOrganizador = () => {
         <div className="eventos-page">
             <Sidebar />
             <div className="eventos-container">
-                {/* Header */}
+
                 <div className="page-header">
                     <div className="header-content">
                         <div className="header-left">
@@ -108,7 +89,6 @@ const EventosPageOrganizador = () => {
                     </div>
                 </div>
 
-                {/* Search and Actions Bar */}
                 <div className="action-bar">
                     <div className="search-container">
                         <Search size={20} className="search-icon" />
@@ -120,6 +100,7 @@ const EventosPageOrganizador = () => {
                             className="search-input"
                         />
                     </div>
+
                     <button
                         onClick={() => navigate('/eventos/crear')}
                         className="btn-crear-evento"
@@ -129,7 +110,6 @@ const EventosPageOrganizador = () => {
                     </button>
                 </div>
 
-                {/* Tabla */}
                 <div className="table-container">
                     <table className="eventos-table">
                         <thead>
@@ -144,9 +124,7 @@ const EventosPageOrganizador = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {eventos.filter(evento =>
-                                evento.titulo.toLowerCase().includes(searchTerm.toLowerCase())
-                            ).length === 0 ? (
+                            {eventosVisibles.length === 0 ? (
                                 <tr>
                                     <td colSpan="7" className="empty-state">
                                         <Calendar size={48} className="empty-icon" />
@@ -160,35 +138,25 @@ const EventosPageOrganizador = () => {
                                     </td>
                                 </tr>
                             ) : (
-                                eventos.filter(evento =>
-                                    evento.titulo.toLowerCase().includes(searchTerm.toLowerCase())
-                                ).map((evento) => (
+                                eventosVisibles.map((evento) => (
                                     <tr key={evento.id}>
                                         <td className="evento-nombre">{evento.titulo}</td>
                                         <td>{new Date(evento.fecha_inicio).toLocaleDateString('es-ES')}</td>
                                         <td>{new Date(evento.fecha_fin).toLocaleDateString('es-ES')}</td>
                                         <td>{evento.modalidad}</td>
                                         <td>
-                                            <span className="inscritos-badge">
-                                                0/{evento.cupos}
-                                            </span>
+                                            <span className="inscritos-badge">0/{evento.cupos}</span>
                                         </td>
                                         <td>
-                                            {(() => {
-                                                const estadoInfo = ESTADOS_EVENTO[evento.estado] || { texto: 'Desconocido', clase: 'desconocido' };
-                                                return (
-                                                    <span className={`estado-badge estado-${estadoInfo.clase}`}>
-                                                        {estadoInfo.texto}
-                                                    </span>
-                                                );
-                                            })()}
+                                            <span className={`estado-badge estado-${ESTADOS_EVENTO[evento.estado]?.clase}`}>
+                                                {ESTADOS_EVENTO[evento.estado]?.texto || 'Desconocido'}
+                                            </span>
                                         </td>
                                         <td>
                                             <div className="action-buttons">
                                                 <button
                                                     onClick={() => navigate(`/eventos/editar/${evento.id}`)}
                                                     className="btn-action btn-editar"
-                                                    title="Editar"
                                                 >
                                                     <Edit size={16} />
                                                     Editar
@@ -196,7 +164,6 @@ const EventosPageOrganizador = () => {
                                                 <button
                                                     onClick={() => verEvento(evento)}
                                                     className="btn-action btn-ver"
-                                                    title="Ver"
                                                 >
                                                     <Eye size={16} />
                                                     Ver
@@ -204,7 +171,6 @@ const EventosPageOrganizador = () => {
                                                 <button
                                                     onClick={() => confirmarEliminar(evento)}
                                                     className="btn-action btn-eliminar"
-                                                    title="Eliminar"
                                                 >
                                                     <Trash2 size={16} />
                                                     Cancelar
@@ -219,33 +185,24 @@ const EventosPageOrganizador = () => {
                 </div>
             </div>
 
-            {/* 🧩 Modal de confirmación eliminar */}
+            {/* Modal eliminar */}
             {modalVisible && (
                 <div className="modal-overlay">
                     <div className="modal-content">
-                        <button
-                            onClick={() => setModalVisible(false)}
-                            className="modal-close"
-                        >
+                        <button onClick={() => setModalVisible(false)} className="modal-close">
                             <X size={20} />
                         </button>
+
                         <h2 className="modal-title">Confirmar eliminación</h2>
                         <p className="modal-text">
-                            ¿Estás seguro de que deseas eliminar el evento{" "}
-                            <strong>{eventoAEliminar?.titulo}</strong>? Esta acción no se puede deshacer.
+                            ¿Deseas eliminar el evento <strong>{eventoAEliminar?.titulo}</strong>? Esta acción no se puede deshacer.
                         </p>
+
                         <div className="modal-actions">
-                            <button
-                                onClick={() => setModalVisible(false)}
-                                className="btn-cancelar"
-                            >
+                            <button onClick={() => setModalVisible(false)} className="btn-cancelar">
                                 Cancelar
                             </button>
-                            <button
-                                onClick={handleEliminar}
-                                className="btn-confirmar"
-                                disabled={loadingEliminar}
-                            >
+                            <button onClick={handleEliminar} className="btn-confirmar" disabled={loadingEliminar}>
                                 {loadingEliminar ? "Eliminando..." : "Sí, eliminar"}
                             </button>
                         </div>
@@ -253,20 +210,18 @@ const EventosPageOrganizador = () => {
                 </div>
             )}
 
+            {/* Modal ver evento */}
             {modalVerVisible && eventoAVer && (
                 <div className="modal-overlay">
                     <div className="modal-content modal-ver-evento">
-                        <button
-                            onClick={() => setModalVerVisible(false)}
-                            className="modal-close"
-                        >
+                        <button onClick={() => setModalVerVisible(false)} className="modal-close">
                             <X size={20} />
                         </button>
 
                         <div className="modal-header-ver">
                             <h2 className="modal-title-ver">{eventoAVer.titulo}</h2>
-                            <span className={`estado-badge-modal estado-${ESTADOS_EVENTO[eventoAVer.estado]?.clase || 'desconocido'}`}>
-                                {ESTADOS_EVENTO[eventoAVer.estado]?.texto || 'Desconocido'}
+                            <span className={`estado-badge-modal estado-${ESTADOS_EVENTO[eventoAVer.estado]?.clase}`}>
+                                {ESTADOS_EVENTO[eventoAVer.estado]?.texto}
                             </span>
                         </div>
 
@@ -290,6 +245,7 @@ const EventosPageOrganizador = () => {
                                     </div>
                                     <h3>Fechas del Evento</h3>
                                 </div>
+
                                 <div className="detalle-grid-two">
                                     <div className="info-box">
                                         <span className="info-label">Inicio</span>
@@ -301,6 +257,7 @@ const EventosPageOrganizador = () => {
                                             })}
                                         </span>
                                     </div>
+
                                     <div className="info-box">
                                         <span className="info-label">Fin</span>
                                         <span className="info-value">
@@ -311,6 +268,19 @@ const EventosPageOrganizador = () => {
                                             })}
                                         </span>
                                     </div>
+
+                                    <div className="info-box">
+                                        <span className="info-label">Hora</span>
+                                        <span className="info-value">
+                                            {eventoAVer.hora
+                                                ? new Date(`1970-01-01T${eventoAVer.hora}`).toLocaleTimeString('es-ES', {
+                                                    hour: '2-digit',
+                                                    minute: '2-digit'
+                                                })
+                                                : "Sin hora"}
+                                        </span>
+                                    </div>
+
                                 </div>
                             </div>
 
@@ -321,15 +291,18 @@ const EventosPageOrganizador = () => {
                                     </div>
                                     <h3>Información de Asistencia</h3>
                                 </div>
+
                                 <div className="detalle-grid-three">
                                     <div className="info-box">
                                         <span className="info-label">Modalidad</span>
                                         <span className="info-badge">{eventoAVer.modalidad}</span>
                                     </div>
+
                                     <div className="info-box">
                                         <span className="info-label">Cupos totales</span>
                                         <span className="info-value">{eventoAVer.cupos}</span>
                                     </div>
+
                                     <div className="info-box">
                                         <span className="info-label">Inscritos</span>
                                         <span className="info-value">0/{eventoAVer.cupos}</span>
@@ -345,6 +318,7 @@ const EventosPageOrganizador = () => {
                                         </div>
                                         <h3>Ubicación</h3>
                                     </div>
+
                                     <p className="detalle-text location-text">
                                         <MapPin size={16} />
                                         {eventoAVer.lugar.nombre} - {eventoAVer.lugar.ubicacion?.direccion || 'Sin dirección'}
@@ -364,6 +338,7 @@ const EventosPageOrganizador = () => {
                                 <Edit size={16} />
                                 Editar Evento
                             </button>
+
                             <button
                                 onClick={() => setModalVerVisible(false)}
                                 className="btn-cerrar-modal"

@@ -26,7 +26,6 @@ export const useOrganizerDashboard = () => {
         confirmar: false
     });
 
-    // 🔹 Estados para los eventos dinámicos
     const [stats, setStats] = useState([]);
     const [recentEvents, setRecentEvents] = useState([]);
 
@@ -37,77 +36,73 @@ export const useOrganizerDashboard = () => {
         { id: 'configuracion', label: 'Configuración', icon: Settings }
     ];
 
-    // 🔹 Cargar usuario del localStorage
-    useEffect(() => {
+    const formatDate = (fecha) =>
+        new Date(fecha).toLocaleDateString('es-CO', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+        });
+
+    const filterEventosDelMes = (eventos) => {
+        const now = new Date();
+        return eventos.filter(ev => {
+            if (!ev.fecha_inicio) return false;
+            const fecha = new Date(ev.fecha_inicio);
+            return (
+                fecha.getUTCMonth() === now.getMonth() &&
+                fecha.getUTCFullYear() === now.getFullYear()
+            );
+        });
+    };
+
+    const getRecentEvents = (eventos) =>
+        eventos
+            .sort((a, b) => new Date(b.fecha_inicio) - new Date(a.fecha_inicio))
+            .slice(0, 5)
+            .map(ev => ({
+                name: ev.nombre || ev.titulo,
+                date: formatDate(ev.fecha_inicio),
+                status: ev.estado === 1 ? 'Publicado' : 'Borrador'
+            }));
+
+    const loadUserFromStorage = () => {
         const userData = JSON.parse(localStorage.getItem('user'));
         if (userData) {
             setUser(userData);
             setPasswordData(prev => ({ ...prev, correo: userData.correo || '' }));
         }
-    }, []);
+    };
 
-    // Mueve fetchEventos fuera del useEffect
     const fetchEventos = async () => {
         try {
             const perfil = await obtenerPerfil();
-            const idCreador = perfil?.data?.usuario?.id
+            const idCreador = perfil?.data?.usuario?.id;
             if (!idCreador) return;
 
             const data = await obtenerEventos();
             const eventos = Array.isArray(data?.data) ? data.data : [];
 
-            const eventosDelCreador = eventos.filter(ev =>
-                String(ev.id_creador) === String(idCreador)
+            const eventosDelCreador = eventos.filter(
+                ev => String(ev.id_creador) === String(idCreador)
             );
 
             const eventosPublicados = eventosDelCreador.filter(ev => ev.estado === 1);
-
-            const now = new Date();
-            const mesActual = now.getMonth();
-            const anioActual = now.getFullYear();
-
-            const eventosMes = eventosDelCreador.filter(ev => {
-                if (!ev.fecha_inicio) return false;
-                const fecha = new Date(ev.fecha_inicio);
-                return (
-                    fecha.getUTCMonth() === mesActual &&
-                    fecha.getUTCFullYear() === anioActual
-                );
-            });
-
-            const eventosRecientes = [...eventosPublicados]
-                .sort((a, b) => new Date(b.fecha_inicio) - new Date(a.fecha_inicio))
-                .slice(0, 5);
+            const eventosMes = filterEventosDelMes(eventosDelCreador);
 
             setStats([
                 { label: 'Eventos Activos', value: eventosPublicados.length, color: 'bg-blue' },
                 { label: 'Eventos del Mes', value: eventosMes.length, color: 'bg-purple' }
             ]);
 
-            setRecentEvents(
-                eventosRecientes.map(ev => ({
-                    name: ev.nombre || ev.titulo,
-                    date: new Date(ev.fecha_inicio).toLocaleDateString('es-CO', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric'
-                    }),
-                    status: ev.estado === 1 ? 'Publicado' : 'Borrador'
-                }))
-            );
-        } catch (error) {
-            console.error('❌ Error al cargar los eventos:', error);
-        }
+            setRecentEvents(getRecentEvents(eventosPublicados));
+        } catch { }
     };
 
-
-    // Llamada automática al montar
     useEffect(() => {
+        loadUserFromStorage();
         fetchEventos();
     }, []);
 
-
-    // ---------------- CONTRASEÑA ----------------
     const openPasswordModal = () => {
         setShowPasswordModal(true);
         setPasswordError('');
@@ -131,28 +126,30 @@ export const useOrganizerDashboard = () => {
         setPasswordError('');
     };
 
-    const togglePasswordVisibility = (field) => {
+    const togglePasswordVisibility = (field) =>
         setShowPasswords(prev => ({ ...prev, [field]: !prev[field] }));
+
+    const isPasswordValid = () => {
+        if (!passwordData.correo) {
+            setPasswordError('El correo es requerido');
+            return false;
+        }
+        if (passwordData.contraseñaNueva.length < 8) {
+            setPasswordError('La contraseña debe tener al menos 8 caracteres');
+            return false;
+        }
+        if (passwordData.contraseñaNueva !== passwordData.confirmarContraseña) {
+            setPasswordError('Las contraseñas no coinciden');
+            return false;
+        }
+        return true;
     };
 
     const handleSubmitPassword = async () => {
         setPasswordError('');
         setPasswordSuccess('');
 
-        if (!passwordData.correo) {
-            setPasswordError('El correo es requerido');
-            return;
-        }
-
-        if (passwordData.contraseñaNueva.length < 8) {
-            setPasswordError('La contraseña debe tener al menos 8 caracteres');
-            return;
-        }
-
-        if (passwordData.contraseñaNueva !== passwordData.confirmarContraseña) {
-            setPasswordError('Las contraseñas no coinciden');
-            return;
-        }
+        if (!isPasswordValid()) return;
 
         setIsLoading(true);
 
@@ -170,16 +167,10 @@ export const useOrganizerDashboard = () => {
             });
 
             const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Error al cambiar contraseña');
-            }
+            if (!response.ok) throw new Error(data.message || 'Error al cambiar contraseña');
 
             setPasswordSuccess('Contraseña cambiada exitosamente');
-            setTimeout(() => {
-                closePasswordModal();
-            }, 2000);
-
+            setTimeout(() => closePasswordModal(), 2000);
         } catch (error) {
             setPasswordError(error.message);
         } finally {
@@ -187,11 +178,10 @@ export const useOrganizerDashboard = () => {
         }
     };
 
-    // ---------------- LOGOUT ----------------
     const onLogout = () => {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        localStorage.removeItem('user');
+        ['access_token', 'refresh_token', 'user'].forEach(key =>
+            localStorage.removeItem(key)
+        );
         navigate('/login');
     };
 

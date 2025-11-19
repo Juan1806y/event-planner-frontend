@@ -30,8 +30,6 @@ export default function OrganizerDashboard() {
 
     return (
         <div className="dashboard-container">
-
-            {/* Sidebar totalmente autónomo */}
             <Sidebar />
 
             <div className="dashboard-main">

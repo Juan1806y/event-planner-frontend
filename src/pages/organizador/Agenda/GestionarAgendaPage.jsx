@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
     Calendar,
@@ -9,23 +9,14 @@ import {
     User,
     Clock,
     MapPin,
-    Users,
-    FileText,
 } from 'lucide-react';
 import {
     obtenerEventoPorId,
     obtenerActividadesEvento,
     eliminarActividad
-} from '../../components/eventosService';
+} from '../../../components/eventosService';
 import './GestionarAgendaPage.css';
-import Sidebar from './Sidebar';
-
-const TIPO_ACTIVIDAD = {
-    'Conferencia': { color: '#e0f2fe', textColor: '#0369a1' },
-    'Taller': { color: '#f3e8ff', textColor: '#7e22ce' },
-    'Panel': { color: '#fef3c7', textColor: '#92400e' },
-    'Networking': { color: '#d1fae5', textColor: '#065f46' }
-};
+import Sidebar from '../Sidebar';
 
 const GestionarAgendaPage = () => {
     const navigate = useNavigate();
@@ -35,18 +26,17 @@ const GestionarAgendaPage = () => {
     const [loading, setLoading] = useState(true);
     const [actividadesPorFecha, setActividadesPorFecha] = useState({});
 
-    useEffect(() => {
-        cargarDatos();
-    }, [eventoId]);
-
-    const cargarDatos = async () => {
+    const cargarDatos = useCallback(async () => {
         try {
             setLoading(true);
+
             const eventoData = await obtenerEventoPorId(eventoId);
             setEvento(eventoData.data);
 
             const actividadesData = await obtenerActividadesEvento(eventoId);
-            const acts = Array.isArray(actividadesData.data) ? actividadesData.data : [actividadesData.data];
+            const acts = Array.isArray(actividadesData.data)
+                ? actividadesData.data
+                : [actividadesData.data];
             setActividades(acts);
             agruparActividadesPorFecha(acts);
         } catch (error) {
@@ -54,32 +44,44 @@ const GestionarAgendaPage = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [eventoId]);
+
+    useEffect(() => {
+        cargarDatos();
+    }, [cargarDatos]);
 
     const agruparActividadesPorFecha = (acts) => {
         const agrupadas = acts.reduce((acc, actividad) => {
-            const fecha = new Date(actividad.fecha_actividad).toLocaleDateString('es-ES');
-            if (!acc[fecha]) {
-                acc[fecha] = [];
+            // Extraer la fecha sin conversión de zona horaria
+            const fecha = actividad.fecha_actividad.split('T')[0];
+            const [year, month, day] = fecha.split('-');
+            const fechaFormateada = `${day}/${month}/${year}`;
+
+            if (!acc[fechaFormateada]) {
+                acc[fechaFormateada] = [];
             }
-            acc[fecha].push(actividad);
+            acc[fechaFormateada].push(actividad);
             return acc;
         }, {});
         setActividadesPorFecha(agrupadas);
-    };
-
-    const contarPorTipo = (tipo) => {
-        return actividades.filter(a => a.tipo_actividad === tipo).length;
     };
 
     const handleEliminar = async (actividadId) => {
         if (!window.confirm('¿Estás seguro de eliminar esta actividad?')) return;
 
         try {
-            await eliminarActividad(actividadId);
+            console.log('Eliminando actividad con ID:', actividadId);
+            const resultado = await eliminarActividad(actividadId);
+            console.log('Resultado de eliminación:', resultado);
+
+            // Recargar los datos después de eliminar
             await cargarDatos();
         } catch (error) {
-            console.error('Error al eliminar:', error);
+            console.error('Error completo:', error);
+            console.error('Error response:', error.response);
+            console.error('Error data:', error.response?.data);
+            console.error('Error status:', error.response?.status);
+            alert(`Error al eliminar: ${error.response?.data?.message || error.message}`);
         }
     };
 
@@ -111,7 +113,7 @@ const GestionarAgendaPage = () => {
                 <div className="evento-info-card">
                     <h2>{evento?.titulo}</h2>
                     <p className="evento-fechas">
-                        {new Date(evento?.fecha_inicio).toLocaleDateString('es-ES')} - {new Date(evento?.fecha_fin).toLocaleDateString('es-ES')}
+                        {evento?.fecha_inicio?.split('T')[0].split('-').reverse().join('/')} - {evento?.fecha_fin?.split('T')[0].split('-').reverse().join('/')}
                     </p>
                 </div>
 
@@ -162,7 +164,7 @@ const GestionarAgendaPage = () => {
                             </div>
 
                             {acts.map((actividad) => (
-                                <div key={actividad.id} className="tabla-row">
+                                <div key={actividad.id_actividad} className="tabla-row">
                                     <div className="col-titulo">
                                         <div className="actividad-titulo-info">
                                             <h4>{actividad.titulo}</h4>
@@ -189,27 +191,16 @@ const GestionarAgendaPage = () => {
                                     <div className="col-sala">
                                         <div className="sala-info">
                                             <MapPin size={16} />
-                                            <span>{actividad.sala || 'Sin sala'}</span>
+                                            <span>{actividad.lugares?.[0]?.nombre || 'Sin sala'}</span>
                                         </div>
-                                    </div>
-
-                                    <div className="col-tipo">
-                                        <span
-                                            className="tipo-badge"
-                                            style={{
-                                                backgroundColor: TIPO_ACTIVIDAD[actividad.tipo_actividad]?.color || '#f3f4f6',
-                                                color: TIPO_ACTIVIDAD[actividad.tipo_actividad]?.textColor || '#374151'
-                                            }}
-                                        >
-                                            {actividad.tipo_actividad || 'Sin tipo'}
-                                        </span>
                                     </div>
 
                                     <div className="col-acciones">
                                         <button
                                             onClick={() => {
                                                 sessionStorage.setItem('currentEventoId', eventoId);
-                                                console.log("este es el evento id", eventoId)
+                                                console.log("ID del evento:", eventoId);
+                                                console.log("ID de la actividad:", actividad.id_actividad);
                                                 navigate(`/organizador/actividades/${actividad.id_actividad}/editar`);
                                             }}
                                             className="btn-accion btn-editar-accion"

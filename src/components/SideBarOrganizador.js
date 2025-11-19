@@ -32,8 +32,6 @@ export const useSidebar = () => {
         { id: 'configuracion', label: 'Configuración', icon: Settings, path: '/organizador/configuracion' }
     ];
 
-
-    // Cargar usuario al montar
     useEffect(() => {
         const userData = JSON.parse(localStorage.getItem('user'));
         if (userData) {
@@ -42,7 +40,6 @@ export const useSidebar = () => {
         }
     }, []);
 
-    // Detectar sección activa desde la URL
     useEffect(() => {
         const path = location.pathname;
         const section = path.split('/').pop();
@@ -53,13 +50,9 @@ export const useSidebar = () => {
 
     const handleMenuClick = (sectionId) => {
         setActiveSection(sectionId);
-
         const item = menuItems.find(m => m.id === sectionId);
-        if (item) {
-            navigate(item.path);
-        }
+        if (item) navigate(item.path);
     };
-
 
     const toggleSidebar = () => setIsOpen(!isOpen);
 
@@ -125,15 +118,10 @@ export const useSidebar = () => {
             });
 
             const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Error al cambiar contraseña');
-            }
+            if (!response.ok) throw new Error(data.message || 'Error al cambiar contraseña');
 
             setPasswordSuccess('Contraseña cambiada exitosamente');
-            setTimeout(() => {
-                closePasswordModal();
-            }, 2000);
+            setTimeout(() => closePasswordModal(), 2000);
 
         } catch (error) {
             setPasswordError(error.message);

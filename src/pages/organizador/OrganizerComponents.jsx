@@ -1,11 +1,10 @@
 // components/OrganizerComponents.jsx
 import React from 'react';
-import { Lock, X, Eye, EyeOff, Menu, LogOut } from 'lucide-react';
-import EventosPage from './EventosPageOrganizador'; // Ajusta la ruta según tu estructura
+import { Lock, X, Eye, EyeOff, Menu } from 'lucide-react';
+import EventosPage from './Eventos/EventosPageOrganizador';
 import './OrganizerDashboard.css';
-import ActividadesPage from './ActividadesPage';
+import ActividadesPage from './Actividades/ActividadesPage';
 
-// Modal de Contraseña
 export const PasswordModal = ({
     isOpen,
     onClose,
@@ -34,7 +33,6 @@ export const PasswordModal = ({
                 </div>
 
                 <div className="modal-content">
-                    {/* Campo de Correo */}
                     <div className="form-group">
                         <label className="form-label">Correo Electrónico</label>
                         <input
@@ -46,7 +44,6 @@ export const PasswordModal = ({
                         />
                     </div>
 
-                    {/* Nueva Contraseña */}
                     <div className="form-group">
                         <label className="form-label">Nueva Contraseña</label>
                         <div className="input-wrapper">
@@ -67,7 +64,6 @@ export const PasswordModal = ({
                         </div>
                     </div>
 
-                    {/* Confirmar Contraseña */}
                     <div className="form-group">
                         <label className="form-label">Confirmar Nueva Contraseña</label>
                         <div className="input-wrapper">
@@ -88,17 +84,15 @@ export const PasswordModal = ({
                         </div>
                     </div>
 
-                    {/* Requisitos */}
                     <div className="requirements-box">
                         <p className="requirements-title">Requisitos de la contraseña:</p>
                         <ul className="requirements-list">
-                            <li>• Mínimo 8 caracteres</li>
-                            <li>• Al menos una letra mayúscula</li>
-                            <li>• Al menos un número</li>
+                            <li>Mínimo 8 caracteres</li>
+                            <li>Al menos una letra mayúscula</li>
+                            <li>Al menos un número</li>
                         </ul>
                     </div>
 
-                    {/* Mensajes */}
                     {passwordError && (
                         <div className="alert alert-error">
                             <p>{passwordError}</p>
@@ -111,7 +105,6 @@ export const PasswordModal = ({
                         </div>
                     )}
 
-                    {/* Botones */}
                     <div className="modal-actions">
                         <button onClick={onClose} className="btn btn-secondary" disabled={isLoading}>
                             Cancelar
@@ -126,7 +119,6 @@ export const PasswordModal = ({
     );
 };
 
-// Tarjeta estadística
 export const StatCard = ({ label, value, color }) => (
     <div className="stat-card">
         <div className="stat-content">
@@ -139,7 +131,6 @@ export const StatCard = ({ label, value, color }) => (
     </div>
 );
 
-// Fila de evento
 export const EventRow = ({ event }) => (
     <div className="event-row">
         <div>
@@ -152,20 +143,16 @@ export const EventRow = ({ event }) => (
     </div>
 );
 
-// Contenido principal
 export const MainContent = ({ activeSection, stats, recentEvents }) => (
     <div className="main-content">
-
         {activeSection === 'inicio' && (
             <div>
-                {/* Estadísticas */}
                 <div className="stats-grid">
                     {stats.map((stat, index) => (
                         <StatCard key={index} {...stat} />
                     ))}
                 </div>
 
-                {/* Eventos recientes */}
                 <div className="events-container">
                     <h2 className="events-title">Eventos Recientes</h2>
                     <div>
@@ -188,7 +175,6 @@ export const MainContent = ({ activeSection, stats, recentEvents }) => (
     </div>
 );
 
-// Encabezado
 export const Header = ({ isSidebarOpen, onToggleSidebar }) => (
     <header className="header">
         <button onClick={onToggleSidebar} className="toggle-sidebar-btn">

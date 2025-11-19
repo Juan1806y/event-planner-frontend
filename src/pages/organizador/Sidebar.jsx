@@ -25,17 +25,13 @@ const Sidebar = ({ onSectionChange }) => {
         handleLogout
     } = useSidebar();
 
-    // Notificar al padre cuando cambie la sección
     const onMenuClickHandler = (sectionId) => {
         handleMenuClick(sectionId);
-        if (onSectionChange) {
-            onSectionChange(sectionId);
-        }
+        if (onSectionChange) onSectionChange(sectionId);
     };
 
     return (
         <>
-            {/* Toggle button para móvil */}
             <button
                 onClick={toggleSidebar}
                 className="sidebar-toggle-btn"
@@ -44,7 +40,6 @@ const Sidebar = ({ onSectionChange }) => {
                 {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
 
-            {/* Sidebar */}
             <div className={`sidebar ${isOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
                 <div className="sidebar-header">
                     <div className="user-info">
@@ -87,10 +82,9 @@ const Sidebar = ({ onSectionChange }) => {
                 </div>
             </div>
 
-            {/* Modal de cambio de contraseña */}
             {showPasswordModal && (
                 <div className="modal-overlay" onClick={closePasswordModal}>
-                    <div className="modal-content" onClick={e => e.stopPropagation()}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                         <h2 className="modal-title">Cambiar Contraseña</h2>
 
                         <div className="form-group">
@@ -109,7 +103,9 @@ const Sidebar = ({ onSectionChange }) => {
                                 <input
                                     type={showPasswords.nueva ? 'text' : 'password'}
                                     value={passwordData.contraseñaNueva}
-                                    onChange={(e) => handlePasswordChange('contraseñaNueva', e.target.value)}
+                                    onChange={(e) =>
+                                        handlePasswordChange('contraseñaNueva', e.target.value)
+                                    }
                                     className="form-input"
                                     placeholder="Mínimo 8 caracteres"
                                 />
@@ -130,7 +126,9 @@ const Sidebar = ({ onSectionChange }) => {
                                 <input
                                     type={showPasswords.confirmar ? 'text' : 'password'}
                                     value={passwordData.confirmarContraseña}
-                                    onChange={(e) => handlePasswordChange('confirmarContraseña', e.target.value)}
+                                    onChange={(e) =>
+                                        handlePasswordChange('confirmarContraseña', e.target.value)
+                                    }
                                     className="form-input"
                                     placeholder="Repite la contraseña"
                                 />
@@ -146,15 +144,11 @@ const Sidebar = ({ onSectionChange }) => {
                         </div>
 
                         {passwordError && (
-                            <div className="alert alert-error">
-                                {passwordError}
-                            </div>
+                            <div className="alert alert-error">{passwordError}</div>
                         )}
 
                         {passwordSuccess && (
-                            <div className="alert alert-success">
-                                {passwordSuccess}
-                            </div>
+                            <div className="alert alert-success">{passwordSuccess}</div>
                         )}
 
                         <div className="modal-actions">
@@ -165,6 +159,7 @@ const Sidebar = ({ onSectionChange }) => {
                             >
                                 Cancelar
                             </button>
+
                             <button
                                 onClick={handleSubmitPassword}
                                 disabled={isLoading}
