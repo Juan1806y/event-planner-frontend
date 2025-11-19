@@ -18,7 +18,7 @@ import EventosContainer from './pages/gerente/containers/EventosContainer';
 import CrearOrganizadorContainer from './pages/gerente/containers/CrearOrganizadorContainer';
 import UbicacionesContainer from './pages/gerente/containers/UbicacionesContainer';
 import LugaresContainer from './pages/gerente/containers/LugaresContainer';
-import EditarEventoPage from './pages/organizador/EditarEventoPage';
+import EditarEventoPage from './pages/organizador/Eventos/EditarEventoPage';
 import Asistente from './pages/asistente/AsistentePanel';
 
 import OrganizerDashboard from './pages/organizador/OrganizerDashboard';
@@ -191,7 +191,7 @@ function App() {
             }
           />
 
-        {/*Rutas Organizador)*/}
+          {/*Rutas Organizador)*/}
           <Route
             path="/organizador"
             element={
@@ -230,10 +230,10 @@ function App() {
             }
           />
 
-          <Route 
+          <Route
             path="/ponente/dashboard"
             element={
-              <PrivateRoute>  
+              <PrivateRoute>
                 <PonenteDashboard />
               </PrivateRoute>
             }
@@ -250,7 +250,7 @@ function App() {
 
           <Route
             path="/ponente/agenda"
-            element={ 
+            element={
               <PrivateRoute>
                 <PonenteDashboard />
               </PrivateRoute>
