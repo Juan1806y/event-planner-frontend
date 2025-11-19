@@ -42,7 +42,7 @@ const CrearActividadPage = () => {
         hora_inicio: '',
         hora_fin: '',
         tipo: 'presencial',
-        id_lugares: [], // Cambiado a arreglo
+        id_lugares: [],
         link_virtual: '',
     });
 
@@ -118,7 +118,6 @@ const CrearActividadPage = () => {
         setFormData(prev => ({ ...prev, id_lugares: [] }));
     };
 
-    // Nueva función para manejar selección múltiple de lugares
     const handleLugarToggle = (lugarId) => {
         setFormData(prev => {
             const nuevosLugares = prev.id_lugares.includes(lugarId)
@@ -155,10 +154,11 @@ const CrearActividadPage = () => {
         }
 
         if (fecha_actividad && evento) {
-            const fechaSel = new Date(fecha_actividad);
-            const inicio = new Date(evento.fecha_inicio);
-            const fin = new Date(evento.fecha_fin);
-            if (fechaSel < inicio || fechaSel > fin) {
+            // Comparar las fechas sin conversión de zona horaria
+            const fechaInicio = evento.fecha_inicio.split('T')[0];
+            const fechaFin = evento.fecha_fin.split('T')[0];
+
+            if (fecha_actividad < fechaInicio || fecha_actividad > fechaFin) {
                 nuevosErrores.fecha_actividad = 'La fecha debe estar dentro del rango del evento';
             }
         }
@@ -174,15 +174,11 @@ const CrearActividadPage = () => {
         try {
             setGuardando(true);
 
-            // Formatear la fecha correctamente para evitar problemas de zona horaria
-            const fechaLocal = new Date(formData.fecha_actividad + 'T00:00:00');
-            const fechaFormateada = fechaLocal.toISOString().split('T')[0];
-
             const datosEnviar = {
                 titulo: formData.titulo,
                 descripcion: formData.descripcion,
                 ponente: formData.ponente || null,
-                fecha_actividad: fechaFormateada,
+                fecha_actividad: formData.fecha_actividad, // Ya está en formato YYYY-MM-DD
                 hora_inicio: formData.hora_inicio,
                 hora_fin: formData.hora_fin,
                 tipo: formData.tipo,
@@ -197,8 +193,11 @@ const CrearActividadPage = () => {
             await crearActividad(eventoId, datosEnviar);
             navigate(`/organizador/eventos/${eventoId}/agenda`);
         } catch (error) {
-            console.error('Error creando actividad:', error);
-            alert('Error al crear la actividad. Intenta nuevamente.');
+            console.error('Error completo:', error);
+            console.error('Error response:', error.response);
+            console.error('Error data:', error.response?.data);
+            console.error('Mensaje del servidor:', error.response?.data?.message);
+            alert(`Error: ${error.response?.data?.message || 'Error al crear la actividad'}`);
         } finally {
             setGuardando(false);
         }
@@ -209,6 +208,10 @@ const CrearActividadPage = () => {
     const mostrarCampoLugar = formData.tipo === 'presencial' || formData.tipo === 'hibrida';
     const mostrarCampoLink = formData.tipo === 'virtual' || formData.tipo === 'hibrida';
 
+    // Extraer las fechas sin conversión de zona horaria
+    const fechaInicioEvento = evento?.fecha_inicio?.split('T')[0];
+    const fechaFinEvento = evento?.fecha_fin?.split('T')[0];
+
     return (
         <div className="crear-actividad-page">
             <Sidebar />
@@ -216,6 +219,13 @@ const CrearActividadPage = () => {
                 <div className="page-header-actividad">
                     <Calendar size={28} className="header-icon-actividad" />
                     <h1>Crear Nueva Actividad</h1>
+                </div>
+
+                <div className="evento-info-card">
+                    <h2>Nombre del Evento: {evento?.titulo}</h2>
+                    <p className="evento-fechas">
+                        {fechaInicioEvento?.split('-').reverse().join('/')} - {fechaFinEvento?.split('-').reverse().join('/')}
+                    </p>
                 </div>
 
                 <div className="info-banner">
@@ -282,8 +292,8 @@ const CrearActividadPage = () => {
                                     type="date"
                                     value={formData.fecha_actividad}
                                     onChange={(e) => handleInputChange('fecha_actividad', e.target.value)}
-                                    min={evento?.fecha_inicio?.split('T')[0]}
-                                    max={evento?.fecha_fin?.split('T')[0]}
+                                    min={fechaInicioEvento}
+                                    max={fechaFinEvento}
                                     className={`form-input-actividad ${errores.fecha_actividad ? 'input-error' : ''}`}
                                 />
                                 {errores.fecha_actividad && <span className="error-message">{errores.fecha_actividad}</span>}

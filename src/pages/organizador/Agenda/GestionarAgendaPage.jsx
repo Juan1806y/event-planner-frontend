@@ -52,11 +52,15 @@ const GestionarAgendaPage = () => {
 
     const agruparActividadesPorFecha = (acts) => {
         const agrupadas = acts.reduce((acc, actividad) => {
-            const fecha = new Date(actividad.fecha_actividad).toLocaleDateString('es-ES');
-            if (!acc[fecha]) {
-                acc[fecha] = [];
+            // Extraer la fecha sin conversión de zona horaria
+            const fecha = actividad.fecha_actividad.split('T')[0];
+            const [year, month, day] = fecha.split('-');
+            const fechaFormateada = `${day}/${month}/${year}`;
+
+            if (!acc[fechaFormateada]) {
+                acc[fechaFormateada] = [];
             }
-            acc[fecha].push(actividad);
+            acc[fechaFormateada].push(actividad);
             return acc;
         }, {});
         setActividadesPorFecha(agrupadas);
@@ -66,10 +70,18 @@ const GestionarAgendaPage = () => {
         if (!window.confirm('¿Estás seguro de eliminar esta actividad?')) return;
 
         try {
-            await eliminarActividad(actividadId);
+            console.log('Eliminando actividad con ID:', actividadId);
+            const resultado = await eliminarActividad(actividadId);
+            console.log('Resultado de eliminación:', resultado);
+
+            // Recargar los datos después de eliminar
             await cargarDatos();
         } catch (error) {
-            console.error('Error al eliminar:', error);
+            console.error('Error completo:', error);
+            console.error('Error response:', error.response);
+            console.error('Error data:', error.response?.data);
+            console.error('Error status:', error.response?.status);
+            alert(`Error al eliminar: ${error.response?.data?.message || error.message}`);
         }
     };
 
@@ -101,7 +113,7 @@ const GestionarAgendaPage = () => {
                 <div className="evento-info-card">
                     <h2>{evento?.titulo}</h2>
                     <p className="evento-fechas">
-                        {new Date(evento?.fecha_inicio).toLocaleDateString('es-ES')} - {new Date(evento?.fecha_fin).toLocaleDateString('es-ES')}
+                        {evento?.fecha_inicio?.split('T')[0].split('-').reverse().join('/')} - {evento?.fecha_fin?.split('T')[0].split('-').reverse().join('/')}
                     </p>
                 </div>
 
@@ -152,7 +164,7 @@ const GestionarAgendaPage = () => {
                             </div>
 
                             {acts.map((actividad) => (
-                                <div key={actividad.id} className="tabla-row">
+                                <div key={actividad.id_actividad} className="tabla-row">
                                     <div className="col-titulo">
                                         <div className="actividad-titulo-info">
                                             <h4>{actividad.titulo}</h4>
@@ -187,7 +199,8 @@ const GestionarAgendaPage = () => {
                                         <button
                                             onClick={() => {
                                                 sessionStorage.setItem('currentEventoId', eventoId);
-                                                console.log("este es el evento id", eventoId)
+                                                console.log("ID del evento:", eventoId);
+                                                console.log("ID de la actividad:", actividad.id_actividad);
                                                 navigate(`/organizador/actividades/${actividad.id_actividad}/editar`);
                                             }}
                                             className="btn-accion btn-editar-accion"

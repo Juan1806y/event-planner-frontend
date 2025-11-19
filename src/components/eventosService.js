@@ -14,7 +14,13 @@ api.interceptors.request.use((config) => {
 });
 
 const request = async (method, url, data = null, params = null) => {
-    const response = await api({ method, url, data, params });
+    const config = { method, url, params };
+
+    if (data !== null && method.toLowerCase() !== 'delete') {
+        config.data = data;
+    }
+
+    const response = await api(config);
     return response.data;
 };
 
@@ -48,8 +54,8 @@ export const obtenerActividadesEvento = (eventoId) =>
 export const crearActividad = (eventoId, actividadData) =>
     request("post", `/eventos/${eventoId}/actividades`, actividadData);
 
-export const actualizarActividad = (actividadId, datos) =>
-    request("put", `/actividades/${actividadId}`, datos);
+export const actualizarActividad = (id_actividad, datos) =>
+    request("put", `/actividades/${id_actividad}`, datos);
 
-export const eliminarActividad = (actividadId) =>
-    request("delete", `/actividades/${actividadId}`);
+export const eliminarActividad = (id_actividad) =>
+    request("delete", `/actividades/${id_actividad}`);
