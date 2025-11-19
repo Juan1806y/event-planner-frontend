@@ -1,0 +1,1057 @@
+.agendaContainer {
+    max-width: 1800px;
+    padding: 20px;
+}
+
+.headerSection {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.mainTitle {
+    color: #2C5F7C;
+    font-size: 2.5rem;
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
+.subtitle {
+    color: #6c757d;
+    font-size: 1.2rem;
+}
+
+/* Filtros */
+.filtersSection {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+}
+
+.filterGroup {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.filterButton {
+    padding: 0.75rem 1.5rem;
+    border: 2px solid #e0e0e0;
+    background: white;
+    border-radius: 8px;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filterButton:hover {
+    border-color: #007bff;
+    color: #007bff;
+}
+
+.filterActive {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.activitiesCount {
+    font-weight: 600;
+    color: #2C5F7C;
+    font-size: 1.1rem;
+}
+
+/* Grid de actividades */
+.agendaGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.agendaCard {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #e9ecef;
+    position: relative;
+    overflow: hidden;
+}
+
+.agendaCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    gap: 12px;
+}
+
+.eventTitleSection {
+    flex: 1;
+}
+
+.eventTitle {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #2C5F7C;
+    margin: 0 0 8px 0;
+    line-height: 1.3;
+}
+
+.eventCategory {
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.headerRight {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.eventModality {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.eventModality.virtual {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.eventModality.presencial {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.eventModality.hibrido {
+    background: #e8f5e8;
+    color: #2e7d32;
+}
+
+.estadoActividad {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.estadoActividad.enCurso {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.estadoActividad.proxima {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.estadoActividad.pasada {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.cardContent {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex-grow: 1;
+}
+
+.eventDescription {
+    color: #4b5563;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.eventDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.detailItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.detailIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.iconImage {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+    opacity: 0.7;
+}
+
+.detailContent {
+    display: flex;
+    flex-direction: column;
+}
+
+.detailLabel {
+    font-size: 0.8rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.detailValue {
+    font-size: 0.9rem;
+    color: #374151;
+    font-weight: 600;
+}
+
+.locationInfo {
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: #495057;
+    border-left: 4px solid #2C5F7C;
+}
+
+.urlSection {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.urlLink {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.urlLink:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+/* Estados de carga y vacío */
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #2C5F7C;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+/* En tu Agenda.module.css - Mantén solo estos estilos para ponentes */
+.ponenteCard {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    background: #fafafa;
+}
+
+.ponenteHeader {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.ponenteIcon {
+    width: 24px;
+    height: 24px;
+    opacity: 0.7;
+}
+
+.ponenteInfo {
+    flex: 1;
+}
+
+.ponenteNombre {
+    margin: 0 0 4px 0;
+    font-size: 1.1rem;
+    color: #2c3e50;
+}
+
+.ponenteEspecialidad {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #7f8c8d;
+    font-style: italic;
+}
+
+.ponenteDescripcion {
+    margin: 8px 0 0 0;
+    font-size: 0.95rem;
+    color: #5d6d7e;
+    line-height: 1.4;
+}
+
+.ponentesLista {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ponenteCorreo {
+    font-size: 0.85rem;
+    color: #7f8c8d;
+    margin: 2px 0 0 0;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.noEvents {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    text-align: center;
+}
+
+.noEvents h3 {
+    color: #6b7280;
+    margin-bottom: 16px;
+    font-size: 1.4rem;
+    font-weight: 500;
+}
+
+.noEvents p {
+    color: #9ca3af;
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .agendaContainer {
+        padding: 16px;
+    }
+
+    .agendaGrid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .filtersSection {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    .filterGroup {
+        justify-content: center;
+    }
+
+    .cardHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .headerRight {
+        flex-direction: row;
+        align-items: center;
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+/* Estilos para los botones de detalles del lugar */
+.locationActions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.btnDetallesLugar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    width: 100%;
+}
+
+.btnDetallesLugar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modalContent {
+    background: white;
+    border-radius: 12px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e0e0e0;
+    background: linear-gradient(135deg, #2C5F7C 0%, #1a3d52 100%);
+    color: white !important;
+    border-radius: 12px 12px 0 0;
+}
+
+.modalHeader h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: white;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+}
+
+.closeButton:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.modalBody {
+    padding: 1.5rem;
+}
+
+.lugarInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.infoSection {
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.infoSection:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.infoSection h3 {
+    color: #2C5F7C;
+    margin: 0 0 0.5rem 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.infoSection h4 {
+    color: #2C5F7C;
+    margin: 0 0 0.75rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.lugarDescripcion {
+    color: #4b5563;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.actividadInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.infoItem {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.infoItem strong {
+    color: #374151;
+    min-width: 80px;
+}
+
+.modalActions {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btnCerrar {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btnCerrar:hover {
+    background: #5a6268;
+}
+
+/* Responsive para el modal */
+@media (max-width: 768px) {
+    .modalOverlay {
+        padding: 10px;
+    }
+
+    .modalContent {
+        max-width: 100%;
+        margin: 0 10px;
+    }
+
+    .modalHeader {
+        padding: 1rem;
+    }
+
+    .modalBody {
+        padding: 1rem;
+    }
+
+    .infoItem {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .infoItem strong {
+        min-width: auto;
+    }
+}
+
+/* Ajustes para múltiples botones de lugar */
+.locationActions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.btnDetallesLugar {
+    background: linear-gradient(135deg, #2C5F7C 0%, #1E4157 100%);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    width: 100%;
+}
+
+.btnDetallesLugar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* Si hay múltiples lugares, diferenciar los botones */
+.btnDetallesLugar:nth-child(1) {
+    background: linear-gradient(135deg, #2C5F7C 0%, #1E4157 100%);
+}
+
+.btnDetallesLugar:nth-child(2) {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.btnDetallesLugar:nth-child(3) {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+/* Botón de ver detalles */
+.detallesActions {
+    margin-top: 16px;
+}
+
+.btnVerDetalles {
+    background: linear-gradient(135deg, #2C5F7C 0%, #1a3d52 100%);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btnVerDetalles:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(44, 95, 124, 0.4);
+}
+
+/* Modal de detalles completos */
+.detallesCompletos {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.infoSection {
+    background: #f8f9fa;
+    padding: 1.25rem;
+    border-radius: 8px;
+    border-left: 4px solid #2C5F7C;
+}
+
+.infoSection h3 {
+    color: #2C5F7C;
+    margin: 0 0 1rem 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.infoGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.infoItem {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.infoItem strong {
+    color: #374151;
+    font-size: 0.9rem;
+}
+
+.infoItem span {
+    color: #4b5563;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.descripcionTexto {
+    color: #4b5563;
+    line-height: 1.6;
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+/* Estilos para lugares */
+.lugaresLista {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.lugarItem {
+    background: white;
+    padding: 1rem;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+}
+
+.lugarNombre {
+    color: #2C5F7C;
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.lugarDescripcion {
+    color: #6c757d;
+    margin: 0 0 0.75rem 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.lugarDetalles {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.lugarDetalles span {
+    font-size: 0.85rem;
+    color: #495057;
+}
+
+.lugarDetalles strong {
+    color: #374151;
+}
+
+/* Estilos para ponentes */
+.ponentesLista {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.ponenteCard {
+    background: white;
+    padding: 1.25rem;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+.ponenteCard:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.ponenteHeader {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.ponenteIcon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #e3f2fd;
+    padding: 8px;
+}
+
+.ponenteInfo {
+    flex: 1;
+}
+
+.ponenteNombre {
+    color: #2C5F7C;
+    margin: 0 0 0.25rem 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.ponenteEspecialidad {
+    color: #6c757d;
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.ponenteDescripcion {
+    color: #4b5563;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0 0 0.75rem 0;
+}
+
+.ponenteExperiencia {
+    background: #e7f3ff;
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: #0066cc;
+    border-left: 3px solid #007bff;
+}
+
+.ponenteExperiencia strong {
+    color: #0056b3;
+}
+
+/* Horario */
+.horarioInfo {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.horarioItem {
+    font-size: 1rem;
+    color: #495057;
+}
+
+.horarioItem strong {
+    color: #374151;
+}
+
+/* Enlace de actividad */
+.enlaceActividad {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0.75rem 1rem;
+    background: #e7f3ff;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.enlaceActividad:hover {
+    background: #d1e7ff;
+    color: #0056b3;
+    text-decoration: none;
+}
+
+/* Estados de carga */
+.cargandoDetalles {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    text-align: center;
+}
+
+.cargandoDetalles .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #2C5F7C;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+/* Ajustes para el modal más grande */
+.modalContent.large {
+    max-width: 700px;
+}
+
+/* Estilos para los filtros de la derecha */
+.filtersRight {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.eventFilterGroup {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    position: relative;
+}
+
+.filterLabel {
+    font-weight: 600;
+    color: #2C5F7C;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.eventFilterSelect {
+    padding: 0.75rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    background: white;
+    min-width: 250px;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+.eventFilterSelect:focus {
+    outline: none;
+    border-color: #2C5F7C;
+}
+
+.eventFilterSelect:disabled {
+    background: #f8f9fa;
+    cursor: not-allowed;
+}
+
+.clearEventFilter {
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: background-color 0.3s ease;
+}
+
+.clearEventFilter:hover {
+    background: #5a6268;
+}
+
+.filteredCount {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-left: 0.5rem;
+    font-weight: normal;
+}
+
+/* Botón para mostrar todos */
+.btnShowAll {
+    background: #2C5F7C;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 1rem;
+}
+
+.btnShowAll:hover {
+    background: #1E4157;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .filtersRight {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+
+    .eventFilterGroup {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+
+    .eventFilterSelect {
+        min-width: auto;
+        width: 100%;
+    }
+
+    .activitiesCount {
+        text-align: center;
+    }
+}
+
+/* Responsive para detalles */
+@media (max-width: 768px) {
+    .infoGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .horarioInfo {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .lugarDetalles {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .ponenteHeader {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem;
+    }
+
+    .modalContent.large {
+        max-width: 100%;
+        margin: 0 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .infoSection {
+        padding: 1rem;
+    }
+
+    .ponenteCard {
+        padding: 1rem;
+    }
+
+    .lugarItem {
+        padding: 0.75rem;
+    }
+}

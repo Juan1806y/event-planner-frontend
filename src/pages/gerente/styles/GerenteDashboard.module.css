@@ -1,0 +1,565 @@
+.gerenteLayout {
+  display: flex;
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.gerenteContent {
+  margin-left: 280px;
+  flex: 1;
+  min-height: 100vh;
+  transition: margin-left 0.3s ease;
+}
+
+.gerenteMain {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Welcome Card */
+.welcomeCard {
+  background: linear-gradient(135deg, #2C5F7C 0%, #1E4157 100%);
+  color: white;
+  padding: 2.5rem;
+  border-radius: 20px;
+  margin-bottom: 2rem;
+  box-shadow: 0 10px 30px rgba(44, 95, 124, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.welcomeCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+}
+
+.welcomeCard h2 {
+  font-size: 2.25rem;
+  margin: 0 0 0.75rem 0;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.welcomeCard p {
+  font-size: 1.2rem;
+  margin: 0;
+  opacity: 0.9;
+  font-weight: 400;
+}
+
+/* Stats Container */
+.statsContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.statBox {
+  background: white;
+  padding: 1.75rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  transition: all 0.3s ease;
+  border: 1px solid #f1f5f9;
+}
+
+.statBox:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.statIcon {
+  font-size: 2.5rem;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  flex-shrink: 0;
+}
+
+.statBlue .statIcon {
+  background: #3b82f6;
+}
+
+.statGreen .statIcon {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.statOrange .statIcon {
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.statPurple .statIcon {
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.statDetails {
+  flex: 1;
+}
+
+.statLabel {
+  display: block;
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.statValue {
+  display: block;
+  color: #1e293b;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Quick Actions */
+.quickActionsSection {
+  margin-bottom: 2rem;
+}
+
+.quickActionsSection h3 {
+  color: #1e293b;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+}
+
+.quickActionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.quickActionCard {
+  background: white;
+  padding: 1.75rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.quickActionCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.actionBlue::before {
+  background: #3b82f6;
+}
+
+.actionGreen::before {
+  background: #10b981;
+}
+
+.actionPurple::before {
+  background: #8b5cf6;
+}
+
+.actionOrange::before {
+  background: #f59e0b;
+}
+
+.actionIndigo::before {
+  background: #6366f1;
+}
+
+.quickActionCard:hover::before {
+  width: 8px;
+}
+
+.quickActionCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.actionBlue:hover {
+  border-color: #3b82f6;
+}
+
+.actionGreen:hover {
+  border-color: #10b981;
+}
+
+.actionPurple:hover {
+  border-color: #8b5cf6;
+}
+
+.actionOrange:hover {
+  border-color: #f59e0b;
+}
+
+.actionIndigo:hover {
+  border-color: #6366f1;
+}
+
+.actionIcon {
+  font-size: 2.25rem;
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.actionBlue .actionIcon {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.actionGreen .actionIcon {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.actionPurple .actionIcon {
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.actionOrange .actionIcon {
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.actionIndigo .actionIcon {
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.actionContent {
+  flex: 1;
+}
+
+.actionContent h4 {
+  color: #1e293b;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+}
+
+.actionContent p {
+  color: #64748b;
+  font-size: 0.95rem;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.actionArrow {
+  color: #94a3b8;
+  font-size: 1.5rem;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.quickActionCard:hover .actionArrow {
+  transform: translateX(6px);
+  color: #2C5F7C;
+}
+
+/* Dashboard Grid */
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+/* Info Cards (Team & Activities) */
+.infoCard {
+  background: white;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f1f5f9;
+}
+
+.infoCard h3 {
+  color: #1e293b;
+  font-size: 1.4rem;
+  margin: 0 0 1.5rem 0;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Team Card */
+.teamList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.teamMember {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.teamMember:hover {
+  background: #f1f5f9;
+  transform: translateX(4px);
+}
+
+.memberAvatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2C5F7C 0%, #1E4157 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.memberInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.memberName {
+  color: #1e293b;
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
+  font-size: 1rem;
+}
+
+.memberRole {
+  color: #64748b;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.memberContact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+.memberEmail {
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+.memberPhone {
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+/* Activities Card */
+.activityList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.activityItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  border-left: 4px solid #2C5F7C;
+}
+
+.activityDot {
+  width: 8px;
+  height: 8px;
+  background: #2C5F7C;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 0.5rem;
+}
+
+.activityInfo {
+  flex: 1;
+}
+
+.activityText {
+  color: #1e293b;
+  font-weight: 500;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.4;
+}
+
+.activityTime {
+  color: #64748b;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* Estados de carga y error */
+.loadingState,
+.errorState,
+.emptyState {
+  padding: 3rem 2rem;
+  text-align: center;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 2px dashed #e2e8f0;
+}
+
+.loadingState p,
+.errorState p,
+.emptyState p {
+  color: #64748b;
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+}
+
+.retryButton {
+  background: #2C5F7C;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.retryButton:hover {
+  background: #1E4157;
+  transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 1400px) {
+  .gerenteContent {
+    margin-left: 80px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .dashboardGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .quickActionsGrid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+
+  .statsContainer {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .gerenteContent {
+    margin-left: 0;
+  }
+
+  .gerenteMain {
+    padding: 1rem;
+  }
+
+  .quickActionsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .statsContainer {
+    grid-template-columns: 1fr;
+  }
+
+  .welcomeCard {
+    padding: 1.5rem;
+  }
+
+  .welcomeCard h2 {
+    font-size: 1.75rem;
+  }
+
+  .infoCard {
+    padding: 1.5rem;
+  }
+
+  .teamMember {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .memberContact {
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .statBox {
+    padding: 1.5rem;
+  }
+
+  .quickActionCard {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .gerenteMain {
+    padding: 0.75rem;
+  }
+
+  .welcomeCard {
+    padding: 1.25rem;
+  }
+
+  .welcomeCard h2 {
+    font-size: 1.5rem;
+  }
+
+  .infoCard {
+    padding: 1.25rem;
+  }
+
+  .statBox {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .quickActionCard {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .actionContent h4 {
+    font-size: 1.1rem;
+  }
+}

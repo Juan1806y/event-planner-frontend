@@ -2,40 +2,79 @@
 
 const API_URL = 'http://localhost:3000';
 
-const getAuthToken = () => localStorage.getItem('access_token');
+/**
+ * Obtiene el token de autenticación del localStorage
+ */
+const getAuthToken = () => {
+  return localStorage.getItem('access_token');
+};
 
-const getHeaders = () => ({
-  headers: {
-    Authorization: `Bearer ${getAuthToken()}`,
-    'Content-Type': 'application/json'
-  }
-});
+/**
+ * Headers comunes para las peticiones
+ */
+const getHeaders = () => {
+  const token = getAuthToken();
+  const headers = {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  };
+  console.log('📤 Headers a enviar:', headers);
+  return headers;
+};
+
+/**
+ * Crea un nuevo organizador
+ * @param {Object} organizadorData - Datos del organizador
+ * @param {string} organizadorData.nombre - Nombre completo
+ * @param {string} organizadorData.cedula - Número de cédula
+ * @param {string} organizadorData.telefono - Teléfono (opcional)
+ * @param {string} organizadorData.correo - Correo electrónico
+ * @param {string} organizadorData.contraseña - Contraseña temporal
+ * @param {number} organizadorData.id_empresa - ID de la empresa
+ * @returns {Promise<Object>} Respuesta con los datos del organizador creado
+ */
 
 export const crearOrganizador = async (organizadorData) => {
   try {
     const response = await fetch(`${API_URL}/api/auth/crear-organizador`, {
       method: 'POST',
-      headers: getHeaders().headers,
+      headers: getHeaders(),
       body: JSON.stringify(organizadorData)
     });
 
     const data = await response.json();
-    if (!response.ok) throw new Error(data.message || 'Error al crear organizador');
+    if (!response.ok) {
+      throw new Error(data.message || 'Error al crear organizador');
+    }
 
-    return { success: true, data: data.data, message: data.message };
+    return {
+      success: true,
+      data: data.data,
+      message: data.message
+    };
   } catch (error) {
+    console.error('Error en crearOrganizador:', error);
     throw error;
   }
 };
 
+
+/**
+ * Obtiene el equipo de una empresa
+ * @param {number} idEmpresa - ID de la empresa
+ * @returns {Promise<Array>} Lista de miembros del equipo
+ */
 export const obtenerEquipo = async (idEmpresa) => {
   try {
     const response = await fetch(`${API_URL}/api/empresas/${idEmpresa}/equipo`, {
       method: 'GET',
-      headers: getHeaders().headers
+      headers: getHeaders()
     });
 
     if (response.status === 401) {
+      // Token inválido, limpiar localStorage
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
       localStorage.removeItem('user');
@@ -47,51 +86,109 @@ export const obtenerEquipo = async (idEmpresa) => {
 
     return { success: true, data: data.data || [] };
   } catch (error) {
-    throw error;
+
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Error al obtener el equipo');
+      console.error('Error en obtenerEquipo:', error);
+    }
+
+    return {
+      success: true,
+      data: data.data || []
+    };
+
   }
 };
 
+/**
+ * Valida los datos del organizador antes de enviar
+ * @param {Object} data - Datos a validar
+ * @returns {Object} { isValid: boolean, errors: Object }
+ */
 export const validarDatosOrganizador = (data) => {
   const errors = {};
 
-  if (!data.nombre || data.nombre.trim().length < 3) errors.nombre = 'El nombre debe tener al menos 3 caracteres';
-  if (!data.cedula || data.cedula.trim().length < 6) errors.cedula = 'La cédula debe tener al menos 6 caracteres';
-  if (!data.correo || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.correo)) errors.correo = 'El correo electrónico no es válido';
-  if (!data.contraseña || data.contraseña.length < 6) errors.contraseña = 'La contraseña debe tener al menos 6 caracteres';
-  if (!data.id_empresa) errors.id_empresa = 'ID de empresa es requerido';
+  if (!data.nombre || data.nombre.trim().length < 3) {
+    errors.nombre = 'El nombre debe tener al menos 3 caracteres';
+  }
 
-  return { isValid: Object.keys(errors).length === 0, errors };
+  if (!data.cedula || data.cedula.trim().length < 6) {
+    errors.cedula = 'La cédula debe tener al menos 6 caracteres';
+  }
+
+  if (!data.correo || !data.correo.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+    errors.correo = 'El correo electrónico no es válido';
+  }
+
+  if (!data.contraseña || data.contraseña.length < 6) {
+    errors.contraseña = 'La contraseña debe tener al menos 6 caracteres';
+  }
+
+  if (!data.id_empresa) {
+    errors.id_empresa = 'ID de empresa es requerido';
+  }
+
+  return {
+    isValid: Object.keys(errors).length === 0,
+    errors
+  };
 };
 
+/**
+ * Actualiza un organizador (puedes expandir esto según necesites)
+ * @param {number} id - ID del organizador
+ * @param {Object} datosActualizados - Datos a actualizar
+ * @returns {Promise<Object>}
+ */
 export const actualizarOrganizador = async (id, datosActualizados) => {
   try {
     const response = await fetch(`${API_URL}/api/organizadores/${id}`, {
       method: 'PUT',
-      headers: getHeaders().headers,
+      headers: getHeaders(),
       body: JSON.stringify(datosActualizados)
     });
 
     const data = await response.json();
-    if (!response.ok) throw new Error(data.message || 'Error al actualizar organizador');
+    if (!response.ok) {
+      throw new Error(data.message || 'Error al actualizar organizador');
+    }
 
-    return { success: true, data: data.data, message: data.message };
+    return {
+      success: true,
+      data: data.data,
+      message: data.message
+    };
   } catch (error) {
+    console.error('Error en actualizarOrganizador:', error);
     throw error;
   }
 };
 
+/**
+ * Elimina un organizador
+ * @param {number} id - ID del organizador
+ * @returns {Promise<Object>}
+ */
 export const eliminarOrganizador = async (id) => {
   try {
     const response = await fetch(`${API_URL}/api/organizadores/${id}`, {
       method: 'DELETE',
-      headers: getHeaders().headers
+      headers: getHeaders()
     });
 
     const data = await response.json();
-    if (!response.ok) throw new Error(data.message || 'Error al eliminar organizador');
 
-    return { success: true, message: data.message };
+    if (!response.ok) {
+      throw new Error(data.message || 'Error al eliminar organizador');
+    }
+
+    return {
+      success: true,
+      message: data.message
+    };
   } catch (error) {
+    console.error('Error en eliminarOrganizador:', error);
     throw error;
   }
 };

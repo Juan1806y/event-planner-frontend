@@ -1,0 +1,575 @@
+.dashboardContainer {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+/* Header Section */
+.headerSection {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.mainTitle {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: #7f8c8d;
+    margin: 0;
+}
+
+/* Metrics Grid */
+.metricsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.metricCard {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-left: 4px solid #3498db;
+}
+
+.metricCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.metricIcon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.iconImage {
+    width: 30px;
+    height: 30px;
+    filter: brightness(0) invert(1);
+}
+
+.metricContent {
+    flex: 1;
+}
+
+.metricValue {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0;
+    line-height: 1;
+}
+
+.metricLabel {
+    font-size: 0.95rem;
+    color: #7f8c8d;
+    margin: 5px 0 0 0;
+    font-weight: 500;
+}
+
+/* Main Content Layout */
+.mainContent {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+}
+
+.leftColumn,
+.rightColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+/* Section Cards */
+.sectionCard {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #ecf0f1;
+}
+
+.sectionHeader h2 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.badge {
+    background: #3498db;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Activities List */
+.activitiesList {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.activityItem {
+    border: 1px solid #ecf0f1;
+    border-radius: 8px;
+    padding: 18px;
+    transition: all 0.2s ease;
+    background: #fafbfc;
+}
+
+.activityItem:hover {
+    border-color: #3498db;
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.15);
+}
+
+.activityHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.activityTitle {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+    flex: 1;
+    margin-right: 15px;
+}
+
+.activityStatus {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.enCurso {
+    background: #e8f6f3;
+    color: #27ae60;
+    border: 1px solid #a3e4d7;
+}
+
+.proxima {
+    background: #e8f4fd;
+    color: #3498db;
+    border: 1px solid #aed6f1;
+}
+
+.pasada {
+    background: #f2f3f4;
+    color: #7f8c8d;
+    border: 1px solid #d5dbdb;
+}
+
+.activityDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.detailRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    color: #5d6d7e;
+}
+
+.detailIcon {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.iconSmall {
+    width: 14px;
+    height: 14px;
+    opacity: 0.7;
+}
+
+.eventInfo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px solid #ecf0f1;
+}
+
+.eventName {
+    font-size: 0.9rem;
+    color: #3498db;
+    font-weight: 500;
+}
+
+.eventModality {
+    font-size: 0.8rem;
+    background: #ecf0f1;
+    color: #7f8c8d;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+/* Today Activities */
+.todayActivities {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.todayActivity {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #3498db;
+}
+
+.todayActivityTime {
+    background: #3498db;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    min-width: 70px;
+    text-align: center;
+}
+
+.todayActivityInfo {
+    flex: 1;
+}
+
+.todayActivityInfo h5 {
+    margin: 0 0 4px 0;
+    font-size: 1rem;
+    color: #2c3e50;
+}
+
+.todayEvent {
+    font-size: 0.85rem;
+    color: #7f8c8d;
+}
+
+.todayStatus {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 10px;
+    text-transform: uppercase;
+}
+
+/* Inscriptions List */
+.inscriptionsList {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.inscriptionItem {
+    border: 1px solid #ecf0f1;
+    border-radius: 8px;
+    padding: 16px;
+    background: #fafbfc;
+}
+
+.inscriptionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.inscriptionHeader h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+    flex: 1;
+    margin-right: 15px;
+}
+
+.inscriptionStatus {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 10px;
+    text-transform: uppercase;
+}
+
+.statusConfirmed {
+    background: #e8f6f3;
+    color: #27ae60;
+    border: 1px solid #a3e4d7;
+}
+
+.statusPending {
+    background: #fef9e7;
+    color: #f39c12;
+    border: 1px solid #fad7a0;
+}
+
+.inscriptionDetails {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.inscriptionCode {
+    font-size: 0.85rem;
+    color: #7f8c8d;
+    font-family: 'Courier New', monospace;
+}
+
+.inscriptionDate {
+    font-size: 0.85rem;
+    color: #7f8c8d;
+}
+
+.attendanceCount {
+    font-size: 0.8rem;
+    color: #3498db;
+    font-weight: 500;
+}
+
+/* Events List */
+.eventsList {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.eventItem {
+    border: 1px solid #ecf0f1;
+    border-radius: 8px;
+    padding: 16px;
+    background: #fafbfc;
+}
+
+.eventHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.eventHeader h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+    flex: 1;
+    margin-right: 15px;
+}
+
+.eventModality {
+    font-size: 0.75rem;
+    background: #e8f4fd;
+    color: #3498db;
+    padding: 4px 10px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.eventDetails {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+    color: #7f8c8d;
+}
+
+.eventCapacity {
+    color: #27ae60;
+    font-weight: 500;
+}
+
+.eventCompany {
+    font-size: 0.85rem;
+    color: #e67e22;
+    font-weight: 500;
+    font-style: italic;
+}
+
+/* Quick Stats */
+.quickStats {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.quickStat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.quickStat:last-child {
+    border-bottom: none;
+}
+
+.statLabel {
+    font-size: 0.9rem;
+    color: #5d6d7e;
+}
+
+.statValue {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+/* Empty States */
+.emptyState {
+    text-align: center;
+    padding: 40px 20px;
+    color: #7f8c8d;
+}
+
+.emptyState p {
+    margin: 0;
+    font-size: 1rem;
+}
+
+/* Loading States */
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    color: #7f8c8d;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #ecf0f1;
+    border-left: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .mainContent {
+        grid-template-columns: 1fr;
+    }
+    
+    .metricsGrid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboardContainer {
+        padding: 15px;
+    }
+    
+    .mainTitle {
+        font-size: 2rem;
+    }
+    
+    .metricsGrid {
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+    
+    .metricCard {
+        padding: 20px;
+    }
+    
+    .metricValue {
+        font-size: 2rem;
+    }
+    
+    .activityHeader,
+    .inscriptionHeader,
+    .eventHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .todayActivity {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .todayActivityTime {
+        align-self: flex-start;
+    }
+}
+
+@media (max-width: 480px) {
+    .metricsGrid {
+        grid-template-columns: 1fr;
+    }
+    
+    .metricCard {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+    
+    .inscriptionDetails {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .eventDetails {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+}

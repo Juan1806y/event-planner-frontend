@@ -1,10 +1,11 @@
 import { useNavigate } from 'react-router-dom';
-import { isAdmin, isAsistente, getRoleName, isGerente, isOrganizador } from '../../utils/roleUtils';
+import { isAdmin, isAsistente, getRoleName, isGerente, isOrganizador, isPonente } from '../../utils/roleUtils';
 import headerStyles from './header.module.css';
 import notificationsIcon from '../../assets/notifications.png';
 import logoIcon from '../../assets/evento-remove.png';
+import NotificacionesDropdown from '../../contexts/NotificacionesDropdown'; 
 
-const Header = ({ isMenuCollapsed }) => { 
+const Header = ({ isMenuCollapsed }) => {
   const navigate = useNavigate();
 
   let user = null;
@@ -18,7 +19,7 @@ const Header = ({ isMenuCollapsed }) => {
   else if (isAsistente(user)) displayRole = 'Asistente';
   else if (isOrganizador(user)) displayRole = 'Organizador';
   else if (isGerente(user)) displayRole = 'Gerente';
-
+  else if (isPonente(user)) displayRole = 'Ponente';
 
   const nameSource = (email).toString();
   const initials = nameSource
@@ -48,7 +49,7 @@ const Header = ({ isMenuCollapsed }) => {
       </div>
 
       <div className={headerStyles.right}>
-        <img className={headerStyles.logoBox} src={notificationsIcon} alt="Notificaciones" />
+        <NotificacionesDropdown notificationsIcon={notificationsIcon} />
 
         <div className={headerStyles.userInfo}>
           <div className={headerStyles.role}>{displayRole}</div>

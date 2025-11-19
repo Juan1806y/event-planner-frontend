@@ -1,0 +1,423 @@
+.inscripcionesContainer {
+    max-width: 1800px;
+    padding: 20px;
+}
+
+.inscripcionesHeader {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.inscripcionesHeader h2 {
+    color: #2C5F7C;
+    font-size: 2.5rem;
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
+.inscripcionesHeader p {
+    color: #6c757d;
+    font-size: 1.2rem;
+}
+
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #2C5F7C;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.noInscripciones {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    text-align: center;
+}
+
+.noInscripciones h3 {
+    color: #6b7280;
+    margin-bottom: 24px;
+    font-size: 1.4rem;
+    font-weight: 500;
+}
+
+.btnShowAll {
+    background: #2C5F7C;
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btnShowAll:hover {
+    background: #1E4157;
+    transform: translateY(-2px);
+}
+
+.inscripcionesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.inscripcionCard {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #e9ecef;
+    position: relative;
+    overflow: hidden;
+}
+
+.inscripcionCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.inscripcionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    gap: 12px;
+}
+
+.inscripcionTitle {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #2C5F7C;
+    margin: 0;
+    flex: 1;
+    line-height: 1.3;
+}
+
+.inscripcionStatus {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.statusConfirmed {
+    background: #d1fae5;
+    color: #065f46;
+    border: 2px solid #10b981;
+}
+
+.statusPending {
+    background: #fef3c7;
+    color: #92400e;
+    border: 2px solid #f59e0b;
+}
+
+.inscripcionDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-grow: 1;
+}
+
+.detailItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #4b5563;
+    font-size: 0.95rem;
+}
+
+.detailIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.iconImage {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+    opacity: 0.7;
+}
+
+.codigoText {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    color: #2C5F7C;
+}
+
+.asistenciasSection {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.asistenciasSection h4 {
+    margin: 0 0 12px 0;
+    color: #2C5F7C;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.asistenciaItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.asistenciaItem:last-child {
+    border-bottom: none;
+}
+
+.asistenciaStatus {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.asistenciaPresent {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.asistenciaAbsent {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.inscripcionActions {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.btnRegistrarAsistencia {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.btnRegistrarAsistencia:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+}
+
+.btnRegistrarAsistencia:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btnRegistrando {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+}
+
+.asistenciaRegistrada {
+    background: #d1fae5;
+    color: #065f46;
+    padding: 12px 16px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 600;
+    border: 2px solid #10b981;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.asistenciaRegistrada::before {
+    content: "✓";
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.inscripcionNotConfirmed {
+    background: #fef3c7;
+    color: #92400e;
+    padding: 12px 16px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 600;
+    border: 2px solid #f59e0b;
+    width: 100%;
+}
+
+.fueraDeFechas {
+    background: #fef3c7;
+    color: #92400e;
+    padding: 12px 16px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 600;
+    border: 2px solid #f59e0b;
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .inscripcionesContainer {
+        padding: 16px;
+    }
+
+    .inscripcionesGrid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .inscripcionHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .asistenciaItem {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+}
+
+.statusRegistered {
+    background: #d1fae5;
+    color: #065f46;
+    border: 2px solid #10b981;
+}
+
+.statusConfirmed {
+    background: #dbeafe;
+    color: #1e40af;
+    border: 2px solid #3b82f6;
+}
+
+.statusPending {
+    background: #fef3c7;
+    color: #92400e;
+    border: 2px solid #f59e0b;
+}
+
+.mensajeEstado {
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    border: none;
+    width: 100%;
+}
+
+.mensajeAsistenciaRegistrada {
+    background: linear-gradient(135deg, #5f99db 0%, #4975dd 100%);
+    color: white;
+    border: 2px solid #10b981;
+}
+
+/* Evento no iniciado - NARANJA */
+.mensajeEventoNoIniciado {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+    border: 2px solid #f59e0b;
+}
+
+/* Evento finalizado - GRIS */
+.mensajeEventoFinalizado {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+    color: white;
+    border: 2px solid #6b7280;
+}
+
+/* Otros estados - ROJO (como antes) */
+.mensajeEstadoDefault {
+    background: linear-gradient(135deg, #f3755f 0%, #e76c57 100%);
+    color: white;
+    border: 2px solid #ef4444;
+}
+
+.eventoInfo {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.asistenciasSection {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.asistenciasSection h4 {
+    margin: 0 0 8px 0;
+    font-size: 0.9rem;
+    color: #374151;
+    font-weight: 600;
+}
+
+.asistenciaItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    font-size: 0.85rem;
+}
+
+.asistenciaItem:not(:last-child) {
+    border-bottom: 1px solid #f3f4f6;
+}

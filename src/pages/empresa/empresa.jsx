@@ -314,7 +314,6 @@ const Empresa = () => {
                 placeholder="Ingrese el teléfono"
               />
             </div>
-
             <div className={styles.formGroup}>
               <label htmlFor="correo">
                 Correo Electrónico<span className={styles.required}>*</span>

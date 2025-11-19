@@ -1,0 +1,444 @@
+.eventCard {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #e9ecef;
+    position: relative;
+    overflow: hidden;
+}
+
+.eventCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.eventCardHeader {
+    background: linear-gradient(135deg, #2C5F7C 0%, #1E4157 100%);
+    padding: 20px 24px;
+    color: white;
+}
+
+.eventHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.eventTitleSection {
+    flex: 1;
+    min-width: 0;
+}
+
+.eventTitle {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 8px 0;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.eventCategory {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 16px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+    backdrop-filter: blur(10px);
+}
+
+.eventStatus {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.estadoDisponible {
+    background: #d1fae5;
+    color: #065f46;
+    border: 2px solid #10b981;
+}
+
+.estadoLleno {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 2px solid #ef4444;
+}
+
+.estadoCerrado {
+    background: #e5e7eb;
+    color: #374151;
+    border: 2px solid #9ca3af;
+}
+
+.estadoInscrito {
+    background: #dbeafe;
+    color: #1e40af;
+    border: 2px solid #3b82f6;
+}
+
+.estadoPorComenzar {
+    background: #ceeb9b;
+    color: #616302;
+    border: 1px solid #f1952c;
+}
+
+.eventCardContent {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 20px;
+}
+
+.cuposProgress {
+    background: #f8f9fa;
+    padding: 16px;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+}
+
+.progressHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.progressLabel {
+    font-size: 0.8rem;
+    color: #6b7280;
+    font-weight: 600;
+}
+
+.progressPercentage {
+    font-size: 0.8rem;
+    color: #2C5F7C;
+    font-weight: 700;
+}
+
+.progressBar {
+    width: 100%;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+.progressFill {
+    height: 100%;
+    border-radius: 8px;
+    transition: width 0.3s ease;
+}
+
+.progressFill.estadoDisponible {
+    background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+}
+
+.progressFill.estadoLleno {
+    background: linear-gradient(135deg, #f44336 0%, #c62828 100%);
+}
+
+.progressFill.estadoInscrito {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+}
+
+.progressText {
+    font-size: 0.75rem;
+    color: #6b7280;
+    text-align: center;
+    display: block;
+    font-weight: 500;
+}
+
+.eventDescription {
+    color: #6b7280;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.9rem;
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    border-left: 3px solid #2C5F7C;
+    margin: 0;
+}
+
+.eventDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.detailItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 8px 0;
+}
+
+.detailItem:not(:last-child) {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.detailIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    background: #f0f7ff;
+    border-radius: 6px;
+    padding: 4px;
+}
+
+.iconImage {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+    opacity: 0.7;
+}
+
+.detailContent {
+    flex: 1;
+    min-width: 0;
+}
+
+.detailLabel {
+    display: block;
+    font-size: 0.75rem;
+    color: #6b7280;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.detailValue {
+    display: block;
+    font-size: 0.9rem;
+    color: #374151;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.eventActions {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    gap: 12px;
+}
+
+.btnVerDetalles {
+    flex: 1;
+    background: transparent;
+    color: #2C5F7C;
+    border: 2px solid #2C5F7C;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.btnVerDetalles:hover {
+    background: #2C5F7C;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.btnInscribirse {
+    flex: 1;
+    background: linear-gradient(135deg, #2C5F7C 0%, #1E4157 100%);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.btnInscribirse:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(44, 95, 124, 0.3);
+}
+
+.btnInscrito {
+    background: linear-gradient(135deg, #3b73cd 0%, #516cb8 100%) !important;
+    cursor: default !important;
+}
+
+.btnInscrito:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.btnDisabled {
+    background: linear-gradient(135deg, #6d7c95 0%, #546288 100%) !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+@media (max-width: 768px) {
+    .eventActions {
+        flex-direction: column;
+    }
+
+    .eventCardHeader {
+        padding: 16px 20px;
+    }
+
+    .eventCardContent {
+        padding: 20px;
+    }
+
+    .eventHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}
+
+.cuposProgressBar {
+    height: 8px;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.cuposProgressBar.normal {
+    background-color: #28a745;
+}
+
+.cuposProgressBar.advertencia {
+    background-color: #ffc107;
+}
+
+.cuposProgressBar.critico {
+    background-color: #dc3545;
+}
+
+.estadoEvento {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    background: #f8f9fa;
+    color: #495057;
+}
+
+.statusMessage {
+    padding: 0.75rem;
+    text-align: center;
+    border-radius: 8px;
+    font-weight: 600;
+    margin-top: 1rem;
+}
+
+.statusMessage.inscrito {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.statusMessage.agotado {
+    background: #ffebee;
+    color: #d32f2f;
+}
+
+.statusMessage.finalizado {
+    background: #f5f5f5;
+    color: #757575;
+}
+
+.statusMessage.disponible {
+    background: #e8f5e8;
+    color: #2e7d32;
+}
+
+.progressFill.estadoDisponible {
+    background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+}
+
+.progressFill.estadoAdvertencia {
+    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+}
+
+.progressFill.estadoLleno {
+    background: linear-gradient(135deg, #f44336 0%, #c62828 100%);
+}
+
+.progressFill.estadoInscrito {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+}
+
+/* Badges de estado */
+.eventStatus.estadoDisponible {
+    background: #d1fae5;
+    color: #065f46;
+    border: 2px solid #10b981;
+}
+
+.eventStatus.estadoAdvertencia {
+    background: #fef3c7;
+    color: #92400e;
+    border: 2px solid #f59e0b;
+}
+
+.eventStatus.estadoLleno {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 2px solid #ef4444;
+}
+
+.eventStatus.estadoInscrito {
+    background: #dbeafe;
+    color: #1e40af;
+    border: 2px solid #3b82f6;
+}
+
+.eventStatus.estadoCerrado {
+    background: #e5e7eb;
+    color: #374151;
+    border: 2px solid #9ca3af;
+}
+
+/* Botones */
+.btnInscribirse.estadoDisponible {
+    background: linear-gradient(135deg, #2C5F7C 0%, #1E4157 100%);
+}
+
+.btnInscribirse.estadoAdvertencia {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.btnInscribirse.estadoLleno {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}

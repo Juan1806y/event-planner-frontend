@@ -26,6 +26,33 @@
 }
 
 /* Estilos mejorados para el dashboard */
+.dashboardContainer {
+  padding: 30px 30px 30px 50px; 
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.dashboardTitle {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0 0 8px 0;
+  text-align: left;
+  letter-spacing: -0.5px;
+  padding-left: 20px; 
+}
+
+.dashboardSubtitle {
+  font-size: 1.125rem;
+  color: #6b7280;
+  margin: 0 0 40px 0;
+  text-align: left;
+  font-weight: 400;
+  line-height: 1.6;
+  max-width: 600px;
+  padding-left: 20px; 
+}
+
 .dashboardGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -820,7 +847,6 @@
     grid-template-columns: 1fr;
     gap: 24px;
   }
-  
   .dashboardContent {
     padding: 30px 40px;
   }
@@ -834,7 +860,6 @@
   .mainContent.menuCollapsed {
     margin-left: 0;
   }
-  
   .dashboardContent {
     padding: 20px;
   }
@@ -1811,6 +1836,581 @@
   color: #666;
 }
 
+/* Admin Layout */
+.adminLayout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #F2E6CF;
+  font-family: 'Inter', sans-serif;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  z-index: 1000;
+  transition: transform 0.3s ease;
+}
+
+.mainContent {
+  flex: 1;
+  margin-left: 279px;
+  display: flex;
+  flex-direction: column;
+  transition: margin-left 0.3s ease;
+  min-height: 100vh;
+  background-color: #f8fafc;
+}
+
+.mainContent.menuCollapsed {
+  margin-left: 0;
+}
+
+
+
+/* Breadcrumb */
+.breadcrumb {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px 0;
+  margin-bottom: 20px;
+}
+
+.breadcrumbNav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.breadcrumbItem {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.breadcrumbSeparator {
+  color: #d1d5db;
+}
+
+.breadcrumbItemActive {
+  color: #3c6baa;
+  font-weight: 600;
+}
+
+/* Quick Actions */
+.quickActionsContainer {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.quickActionBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.quickActionBtn:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.quickActionBtn:active {
+  transform: translateY(0);
+}
+
+.quickActionIcon {
+  font-size: 16px;
+}
+
+.quickActionLabel {
+  white-space: nowrap;
+}
+
+/* Main Area */
+.mainArea {
+  flex: 1;
+  padding: 0 30px 30px;
+  overflow-y: auto;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .breadcrumb {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .quickActionsContainer {
+    width: 100%;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .mainContent {
+    margin-left: 0;
+  }
+  
+  .mainContent.menuCollapsed {
+    margin-left: 0;
+  }
+  
+  .breadcrumb {
+    padding: 15px 20px 0;
+  }
+  
+  .mainArea {
+    padding: 0 20px 20px;
+  }
+  
+  .quickActionBtn {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+  
+  .quickActionLabel {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .breadcrumbNav {
+    font-size: 13px;
+  }
+  
+  .mainArea {
+    padding: 0 15px 15px;
+  }
+}
+
+/* Loading States */
+.skeletonLoader {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 6px;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Empty States */
+.emptyState {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6b7280;
+}
+
+.emptyStateIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.emptyStateTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #374151;
+}
+
+.emptyStateDescription {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Estados de carga y error del Admin */
+.adminLoading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f8fafc;
+}
+
+.loadingContainer {
+  text-align: center;
+  padding: 3rem;
+}
+
+.loadingContainer h2 {
+  margin: 1.5rem 0 0.5rem 0;
+  color: #1a1a1a;
+}
+
+.loadingContainer p {
+  color: #6b7280;
+  margin: 0;
+}
+
+.accessError {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f8fafc;
+  padding: 2rem;
+}
+
+.errorContainer {
+  text-align: center;
+  max-width: 500px;
+  padding: 3rem;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.errorIcon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+}
+
+.errorContainer h1 {
+  color: #dc2626;
+  margin: 0 0 1rem 0;
+}
+
+.errorMessage {
+  color: #6b7280;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.errorActions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Sección no encontrada */
+.sectionNotFound {
+  text-align: center;
+  padding: 4rem 2rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.notFoundIcon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+}
+
+.sectionNotFound h2 {
+  color: #1a1a1a;
+  margin: 0 0 1rem 0;
+}
+
+.sectionNotFound p {
+  color: #6b7280;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.notFoundActions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+/* Sección no autorizada */
+.unauthorizedSection {
+  text-align: center;
+  padding: 4rem 2rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.unauthorizedIcon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+}
+
+.unauthorizedSection h2 {
+  color: #dc2626;
+  margin: 0 0 1rem 0;
+}
+
+.unauthorizedSection p {
+  color: #6b7280;
+  margin-bottom: 2rem;
+}
+
+/* Carga de sección */
+.sectionLoading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.sectionLoading p {
+  margin-top: 1rem;
+  color: #6b7280;
+}
+
+/* Configuración Section */
+.configuracionContainer {
+  padding: 2rem;
+  min-height: 100vh;
+  background-color: #f8fafc;
+}
+
+.configuracionHeader {
+  margin-bottom: 2rem;
+}
+
+.configuracionTitle {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0 0 0.5rem 0;
+}
+
+.configuracionSubtitle {
+  font-size: 1.125rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.configuracionGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.configCard {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.configCard .cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f8fafc;
+}
+
+.configCard .cardIcon {
+  font-size: 1.5rem;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #3c6baa;
+  color: white;
+  border-radius: 8px;
+}
+
+.configCard .cardTitle {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #1a1a1a;
+}
+
+.configCard .cardContent {
+  padding: 1.5rem;
+}
+
+.settingGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.settingLabel {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  cursor: pointer;
+  padding: 0.75rem;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.settingLabel:hover {
+  background-color: #f8fafc;
+}
+
+.settingCheckbox {
+  margin-top: 0.25rem;
+}
+
+.settingText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.settingText small {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.settingRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.settingInput {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  width: 100px;
+  text-align: center;
+}
+
+.systemInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.infoItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.infoLabel {
+  font-weight: 500;
+  color: #374151;
+}
+
+.infoValue {
+  color: #6b7280;
+  font-family: monospace;
+}
+
+.configuracionActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 2rem 0;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Mensajes */
+.message {
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  font-weight: 500;
+}
+
+.message.success {
+  background-color: #d1fae5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.message.error {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+/* Botones */
+.btnPrimary {
+  background: linear-gradient(135deg, #3c6baa 0%, #5a8ac9 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btnPrimary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(60, 107, 170, 0.3);
+}
+
+.btnPrimary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btnSecondary {
+  background: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btnSecondary:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .configuracionContainer {
+    padding: 1rem;
+  }
+
+  .configuracionGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .configuracionActions {
+    flex-direction: column;
+  }
+
+  .settingRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .settingInput {
+    width: 100%;
+  }
+}
 /* Responsive */
 @media (max-width: 768px) {
   .dashboardGrid {

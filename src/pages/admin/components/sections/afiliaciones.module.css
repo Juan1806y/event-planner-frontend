@@ -1,0 +1,666 @@
+
+.container {
+  padding: 20px;
+  min-height: 100vh;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.tab {
+  padding: 12px 24px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+  color: #757575;
+  transition: all 0.3s ease;
+}
+
+.tab:hover {
+  color: #1976d2;
+  background-color: rgba(25, 118, 210, 0.05);
+}
+
+.tabActive {
+  color: #1976d2;
+  border-bottom-color: #1976d2;
+  font-weight: 600;
+}
+
+/* Alert Banner */
+.alertBanner {
+  background-color: #fff8e1;
+  border: 1px solid #ffd54f;
+  border-radius: 8px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.alertIcon {
+  flex-shrink: 0;
+}
+
+.alertText {
+  color: #f57c00;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* Controls */
+.controls {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  align-items: center;
+}
+
+.searchContainer {
+  flex: 1;
+  position: relative;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 40px 12px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: white;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.searchInput:focus {
+  border-color: #1976d2;
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+}
+
+.searchIcon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.filterBadge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background-color: #fff8e1;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #f57c00;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filterBadge:hover {
+  background-color: #ffecb3;
+}
+
+/* Lista de empresas */
+.empresasList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.empresaCard {
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.empresaCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.empresaInfo {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  flex: 1;
+}
+
+.infoRow {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 13px;
+  color: #757575;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.value {
+  font-size: 15px;
+  color: #212121;
+  font-weight: 400;
+  word-break: break-word;
+}
+
+/* Actions */
+.empresaActions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 130px;
+  margin-left: 24px;
+}
+
+.btnAprobar {
+  padding: 10px 24px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.btnAprobar:hover {
+  background-color: #45a049;
+  transform: scale(1.02);
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+}
+
+.btnAprobar:active {
+  transform: scale(0.98);
+}
+
+.btnRechazar {
+  padding: 10px 24px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.btnRechazar:hover {
+  background-color: #da190b;
+  transform: scale(1.02);
+  box-shadow: 0 4px 8px rgba(244, 67, 54, 0.3);
+}
+
+.btnRechazar:active {
+  transform: scale(0.98);
+}
+
+/* Status Badge */
+.statusBadge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #e8f5e9;
+  border-radius: 20px;
+  color: #2e7d32;
+  font-weight: 600;
+  font-size: 14px;
+  margin-left: 24px;
+  white-space: nowrap;
+}
+
+/* Loading & No Results */
+.loading {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 16px;
+  color: #757575;
+}
+
+.noResults {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: white;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  color: #757575;
+}
+
+.noResults p {
+  margin: 0;
+  font-size: 16px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .empresaInfo {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+
+  .tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tab {
+    white-space: nowrap;
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  .empresaCard {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 20px;
+  }
+
+  .empresaInfo {
+    grid-template-columns: 1fr;
+    margin-bottom: 20px;
+  }
+
+  .empresaActions {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .statusBadge {
+    margin-left: 0;
+    justify-content: center;
+  }
+
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filterBadge {
+    justify-content: center;
+  }
+}
+
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  min-width: 300px;
+  animation: slideInRight 0.3s ease-out;
+  border-left: 4px solid;
+}
+
+.notification.success {
+  border-left-color: #4caf50;
+}
+
+.notification.error {
+  border-left-color: #f44336;
+}
+
+.notificationContent {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  gap: 0.75rem;
+}
+
+.notificationIcon {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.notification.success .notificationIcon {
+  color: #4caf50;
+}
+
+.notification.error .notificationIcon {
+  color: #f44336;
+}
+
+.notificationMessage {
+  flex: 1;
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.notificationClose {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.notificationClose:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Status Badges */
+.statusBadgeSuccess,
+.statusBadgeWarning,
+.statusBadgeDanger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  margin-left: 24px;
+  white-space: nowrap;
+}
+
+.statusBadgeSuccess {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.statusBadgeWarning {
+  background-color: #fff3e0;
+  color: #f57c00;
+}
+
+.statusBadgeDanger {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+/* Rejection Info */
+.rejectionInfo {
+  margin-left: 24px;
+  min-width: 200px;
+}
+
+.rejectionReason {
+  background-color: #fff3f3;
+  border: 1px solid #ffcdd2;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+}
+
+.rejectionReason strong {
+  display: block;
+  color: #c62828;
+  margin-bottom: 4px;
+}
+
+.rejectionReason p {
+  margin: 0;
+  color: #666;
+  line-height: 1.4;
+}
+
+/* Modal Styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modalContent {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  max-width: 500px;
+  width: 100%;
+  animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 24px 0 24px;
+}
+
+.modalIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+}
+
+.modalTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.modalBody {
+  padding: 20px 24px;
+}
+
+.modalBody p {
+  margin: 0 0 16px 0;
+  color: #666;
+  line-height: 1.5;
+}
+
+.motivoInput {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.motivoInput:focus {
+  border-color: #1976d2;
+}
+
+.modalActions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding: 0 24px 24px 24px;
+}
+
+.btnCancel {
+  padding: 10px 20px;
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  color: #666;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btnCancel:hover {
+  background: #eeeeee;
+}
+
+.btnConfirm {
+  padding: 10px 20px;
+  background: #4caf50;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btnConfirm:hover {
+  background: #45a049;
+}
+
+.btnDanger {
+  padding: 10px 20px;
+  background: #f44336;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btnDanger:hover:not(:disabled) {
+  background: #da190b;
+}
+
+.btnDanger:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* Responsive para modales */
+@media (max-width: 768px) {
+  .modalContent {
+    margin: 20px;
+    max-width: none;
+  }
+  
+  .modalHeader {
+    padding: 20px 20px 0 20px;
+  }
+  
+  .modalBody {
+    padding: 16px 20px;
+  }
+  
+  .modalActions {
+    padding: 0 20px 20px 20px;
+    flex-direction: column;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .notification {
+    left: 1rem;
+    right: 1rem;
+    min-width: auto;
+  }
+
+  .statusBadgeSuccess,
+  .statusBadgeWarning,
+  .statusBadgeDanger {
+    margin-left: 0;
+    margin-top: 1rem;
+    justify-content: center;
+  }
+
+  .rejectionInfo {
+    margin-left: 0;
+    margin-top: 1rem;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .alertBanner {
+    padding: 12px 16px;
+  }
+
+  .alertText {
+    font-size: 14px;
+  }
+
+  .btnAprobar,
+  .btnRechazar {
+    font-size: 13px;
+    padding: 8px 16px;
+  }
+}

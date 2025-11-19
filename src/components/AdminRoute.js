@@ -1,14 +1,16 @@
+// src/components/AdminRoute.js
+import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { isAuthenticated } from '../services/authService';
+import { useAuth } from '../contexts/AuthContext';
 import { isAdmin } from '../utils/roleUtils';
 
 const AdminRoute = ({ children }) => {
-  if (!isAuthenticated()) {
+  const { isAuthenticated, user } = useAuth(); // ✅ Usar hook
+
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
-  
   if (!isAdmin(user)) {
     return <Navigate to="/dashboard" replace />;
   }

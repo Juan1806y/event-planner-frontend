@@ -4,7 +4,6 @@ import { Lock, X, Eye, EyeOff, Menu } from 'lucide-react';
 import EventosPage from './Eventos/EventosPageOrganizador';
 import './OrganizerDashboard.css';
 import ActividadesPage from './Actividades/ActividadesPage';
-
 export const PasswordModal = ({
     isOpen,
     onClose,
@@ -43,7 +42,6 @@ export const PasswordModal = ({
                             placeholder="Ej: usuario@ejemplo.com"
                         />
                     </div>
-
                     <div className="form-group">
                         <label className="form-label">Nueva Contraseña</label>
                         <div className="input-wrapper">
@@ -63,7 +61,6 @@ export const PasswordModal = ({
                             </button>
                         </div>
                     </div>
-
                     <div className="form-group">
                         <label className="form-label">Confirmar Nueva Contraseña</label>
                         <div className="input-wrapper">
@@ -83,7 +80,6 @@ export const PasswordModal = ({
                             </button>
                         </div>
                     </div>
-
                     <div className="requirements-box">
                         <p className="requirements-title">Requisitos de la contraseña:</p>
                         <ul className="requirements-list">
@@ -93,6 +89,17 @@ export const PasswordModal = ({
                         </ul>
                     </div>
 
+                    {/* Requisitos */}
+                    <div className="requirements-box">
+                        <p className="requirements-title">Requisitos de la contraseña:</p>
+                        <ul className="requirements-list">
+                            <li>• Mínimo 8 caracteres</li>
+                            <li>• Al menos una letra mayúscula</li>
+                            <li>• Al menos un número</li>
+                        </ul>
+                    </div>
+
+                    {/* Mensajes */}
                     {passwordError && (
                         <div className="alert alert-error">
                             <p>{passwordError}</p>
@@ -104,7 +111,7 @@ export const PasswordModal = ({
                             <p>{passwordSuccess}</p>
                         </div>
                     )}
-
+                    {/* Botones */}
                     <div className="modal-actions">
                         <button onClick={onClose} className="btn btn-secondary" disabled={isLoading}>
                             Cancelar
@@ -118,7 +125,6 @@ export const PasswordModal = ({
         </div>
     );
 };
-
 export const StatCard = ({ label, value, color }) => (
     <div className="stat-card">
         <div className="stat-content">
@@ -130,7 +136,7 @@ export const StatCard = ({ label, value, color }) => (
         </div>
     </div>
 );
-
+// Fila de evento
 export const EventRow = ({ event }) => (
     <div className="event-row">
         <div>
@@ -152,7 +158,6 @@ export const MainContent = ({ activeSection, stats, recentEvents }) => (
                         <StatCard key={index} {...stat} />
                     ))}
                 </div>
-
                 <div className="events-container">
                     <h2 className="events-title">Eventos Recientes</h2>
                     <div>
@@ -166,7 +171,6 @@ export const MainContent = ({ activeSection, stats, recentEvents }) => (
 
         {activeSection === 'eventos' && <EventosPage />}
         {activeSection === 'actividades' && <ActividadesPage />}
-
         {activeSection !== 'inicio' && activeSection !== 'eventos' && (
             <div className="placeholder-content">
                 <p>Contenido de {activeSection} - En desarrollo</p>
