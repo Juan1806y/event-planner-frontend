@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Calendar, Users, CalendarCheck, Settings } from 'lucide-react';
+import { Calendar, Users, CalendarCheck, Settings, Book } from 'lucide-react';
 
 export const useSidebar = () => {
     const navigate = useNavigate();
@@ -29,6 +29,7 @@ export const useSidebar = () => {
         { id: 'eventos', label: 'Eventos', icon: Calendar, path: '/eventos' },
         { id: 'asistentes', label: 'Asistentes', icon: Users, path: '/organizador/asistentes' },
         { id: 'actividades', label: 'Agenda', icon: CalendarCheck, path: '/organizador/agenda' },
+        { id: 'reportes', label: 'Reportes', icon: Book, path: '/organizador/reportes' },
         { id: 'configuracion', label: 'Configuración', icon: Settings, path: '/organizador/configuracion' }
     ];
 

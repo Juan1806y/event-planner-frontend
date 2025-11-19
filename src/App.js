@@ -30,6 +30,7 @@ import EditarActividadPage from './pages/organizador/Actividades/EditarActividad
 import ActividadesPage from './pages/organizador/Actividades/ActividadesPage';
 import EventosPageOrganizador from './pages/organizador/Eventos/EventosPageOrganizador';
 import GestionAsistentes from './pages/organizador/asistencia';
+import EstadisticasAsistencia from './pages/organizador/EstadisticasAsistencia';
 
 function App() {
   return (
@@ -220,6 +221,16 @@ function App() {
             path="/organizador/agenda"
             element={<ActividadesPage />}
           />
+
+          <Route
+            path="/organizador/reportes"
+            element={
+              <PrivateRoute>
+                <EstadisticasAsistencia />
+              </PrivateRoute>
+            }
+          />
+
           <Route
             path="/organizador/asistentes"
             element={
@@ -228,6 +239,7 @@ function App() {
               </PrivateRoute>
             }
           />
+
           {/* Rutas Ponente */}
           <Route
             path="/ponente"
