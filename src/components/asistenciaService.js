@@ -1,4 +1,4 @@
-// asistenciaService.js
+// File: asistenciaService.js
 import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
@@ -6,21 +6,21 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 class AsistenciaService {
     /**
      * Obtener todas las asistencias de un evento
-     * @param {string} idEvento - ID del evento
-     * @returns {Promise} Lista de asistencias
+     * @param {string} idEvento
      */
     async obtenerAsistenciasEvento(idEvento) {
         try {
-            const token = localStorage.getItem('token');
-            const response = await axios.get(
-                `${API_URL}/asistencias/evento/${idEvento}`,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
+            const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+            const response = await axios.get(`${API_URL}/asistencias/evento/${idEvento}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
                 }
-            );
+            });
+
+            console.log('Asistencias obtenidas:', response.data);
+
+            // La respuesta ya tiene la estructura correcta en response.data
             return response.data;
         } catch (error) {
             console.error('Error al obtener asistencias:', error);
@@ -29,51 +29,20 @@ class AsistenciaService {
     }
 
     /**
-     * Registrar asistencia
-     * @param {Object} data - Datos de la asistencia
-     * @returns {Promise}
+     * Obtener todos los eventos
      */
-    async registrarAsistencia(data) {
+    async obtenerEventos() {
         try {
-            const token = localStorage.getItem('token');
-            const response = await axios.post(
-                `${API_URL}/asistencias`,
-                data,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                }
-            );
-            return response.data;
-        } catch (error) {
-            console.error('Error al registrar asistencia:', error);
-            throw error;
-        }
-    }
+            const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+            const response = await axios.get(`${API_URL}/eventos`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
 
-    /**
-     * Registrar asistencia por código
-     * @param {Object} data - Datos con código
-     * @returns {Promise}
-     */
-    async registrarAsistenciaPorCodigo(data) {
-        try {
-            const token = localStorage.getItem('token');
-            const response = await axios.post(
-                `${API_URL}/asistencias/codigo`,
-                data,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                }
-            );
+            console.log('Eventos obtenidos:', response.data);
+            if (response.data && response.data.data) return response.data.data;
             return response.data;
         } catch (error) {
-            console.error('Error al registrar asistencia por código:', error);
+            console.error('Error al obtener eventos:', error);
             throw error;
         }
     }
