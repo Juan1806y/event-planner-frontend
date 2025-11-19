@@ -269,7 +269,12 @@ const EditarActividadPage = () => {
                     <Calendar size={28} className="header-icon-actividad" />
                     <h1>Editar Actividad</h1>
                 </div>
-
+                <div className="evento-info-card">
+                    <h2>Nombre del Evento: {evento?.titulo}</h2>
+                    <p className="evento-fechas">
+                        {evento.fecha_inicio?.split('-').reverse().join('/')} - {evento.fecha_fin?.split('-').reverse().join('/')}
+                    </p>
+                </div>
                 <div className="info-banner">
                     <FileText size={20} />
                     <p>
