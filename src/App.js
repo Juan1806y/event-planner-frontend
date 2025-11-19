@@ -29,6 +29,7 @@ import CrearActividadPage from './pages/organizador/Actividades/CrearActividadPa
 import EditarActividadPage from './pages/organizador/Actividades/EditarActividadPage';
 import ActividadesPage from './pages/organizador/Actividades/ActividadesPage';
 import EventosPageOrganizador from './pages/organizador/Eventos/EventosPageOrganizador';
+import GestionAsistentes from './pages/organizador/asistencia';
 
 function App() {
   return (
@@ -219,7 +220,14 @@ function App() {
             path="/organizador/agenda"
             element={<ActividadesPage />}
           />
-
+          <Route
+            path="/organizador/asistentes"
+            element={
+              <PrivateRoute>
+                <GestionAsistentes />
+              </PrivateRoute>
+            }
+          />
           {/* Rutas Ponente */}
           <Route
             path="/ponente"

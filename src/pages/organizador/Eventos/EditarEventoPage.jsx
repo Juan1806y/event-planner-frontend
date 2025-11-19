@@ -130,7 +130,6 @@ const EditarEventoPage = () => {
                         </div>
 
                         <div className="form-row-crear">
-
                             {/* FECHA DE INICIO */}
                             <div className="form-group-crear">
                                 <label className="form-label-crear">
@@ -158,10 +157,9 @@ const EditarEventoPage = () => {
                                     required
                                 />
                             </div>
-
                         </div>
 
-                        {/* FECHA DE FIN (VA ABAJO) */}
+                        {/* FECHA DE FIN */}
                         <div className="form-row-crear">
                             <div className="form-group-crear">
                                 <label className="form-label-crear">
@@ -177,6 +175,7 @@ const EditarEventoPage = () => {
                             </div>
                         </div>
 
+                        {/* ESTADO DEL EVENTO */}
                         <div className="form-row-crear">
                             <div className="form-group-crear">
                                 <label className="form-label-crear">Estado del Evento</label>
@@ -193,18 +192,19 @@ const EditarEventoPage = () => {
                                     ))}
                                 </select>
                             </div>
-                            {/* Descripción Adicional */}
-                            <div className="form-group-crear">
-                                <label className="form-label-crear">Descripción Adicional</label>
-                                <textarea
-                                    value={formData.descripcion}
-                                    onChange={(e) => handleInputChange('descripcion_adicional', e.target.value)}
-                                    className="form-textarea-crear"
-                                    rows="5"
-                                />
-                            </div>
+                        </div>
+
+                        {/* DESCRIPCIÓN ADICIONAL */}
+                        <div className="form-group-crear">
+                            <label className="form-label-crear">Descripción Adicional</label>
+                            <textarea
+                                value={formData.descripcion ?? ""}   // <-- esto evita que se congele
+                                onChange={(e) => handleInputChange('descripcion', e.target.value)}
+                            />
+
                         </div>
                     </section>
+
 
                     <div className="form-actions-crear">
                         <button
@@ -229,34 +229,38 @@ const EditarEventoPage = () => {
             </div>
 
             {/* Modal éxito */}
-            {mostrarModalExito && (
-                <div className="modal-overlay">
-                    <div className="modal-exito">
-                        <CheckCircle size={48} color="#28a745" />
-                        <h2>¡Evento actualizado correctamente!</h2>
-                        <p>Redirigiendo...</p>
+            {
+                mostrarModalExito && (
+                    <div className="modal-overlay">
+                        <div className="modal-exito">
+                            <CheckCircle size={48} color="#28a745" />
+                            <h2>¡Evento actualizado correctamente!</h2>
+                            <p>Redirigiendo...</p>
+                        </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
             {/* Modal error */}
-            {mostrarModalError && (
-                <div className="modal-overlay">
-                    <div className="modal-exito" style={{ borderTop: '4px solid #dc3545' }}>
-                        <XCircle size={48} color="#dc3545" />
-                        <h2>Error en los Cupos</h2>
-                        <p>{errorCupos.mensaje}</p>
-                        <button
-                            className="btn-submit-crear"
-                            style={{ backgroundColor: '#dc3545' }}
-                            onClick={() => setMostrarModalError(false)}
-                        >
-                            Entendido
-                        </button>
+            {
+                mostrarModalError && (
+                    <div className="modal-overlay">
+                        <div className="modal-exito" style={{ borderTop: '4px solid #dc3545' }}>
+                            <XCircle size={48} color="#dc3545" />
+                            <h2>Error en los Cupos</h2>
+                            <p>{errorCupos.mensaje}</p>
+                            <button
+                                className="btn-submit-crear"
+                                style={{ backgroundColor: '#dc3545' }}
+                                onClick={() => setMostrarModalError(false)}
+                            >
+                                Entendido
+                            </button>
+                        </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 };
 

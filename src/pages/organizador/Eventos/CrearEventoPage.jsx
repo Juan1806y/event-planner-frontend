@@ -195,9 +195,9 @@ const CrearEventoPage = () => {
                     <div className="form-group-crear">
                         <label className="form-label-crear">Descripción Adicional</label>
                         <textarea
-                            value={formData.descripcion_adicional}
+                            value={formData.descripcion}
                             onChange={(e) =>
-                                handleInputChange("descripcion_adicional", e.target.value)
+                                handleInputChange("descripcion", e.target.value)
                             }
                             className="form-textarea-crear"
                             rows="5"
