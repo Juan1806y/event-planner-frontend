@@ -185,9 +185,10 @@ export const isPonente = (user) => {
  */
 export const getRedirectPath = (user) => {
   if (isAdmin(user)) return '/admin';
+  // Priorizar organizador antes que gerente en caso de ambigüedad
+  if (isOrganizador(user)) return '/organizador';
   if (isGerente(user)) return '/gerente';
   if (isAsistente(user)) return '/asistente';
-  if (isOrganizador(user)) return '/organizador';
   if (isPonente(user)) return '/ponente';
 
   // También verifica por correo en caso de fallback

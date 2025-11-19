@@ -15,11 +15,26 @@ export const isAuthenticated = () => {
 };
 
 export class AuthService extends BaseService {
+  // Intenta parsear la respuesta: JSON cuando corresponda, si no retorna texto crudo
+  async parseResponse(response) {
+    const contentType = response.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      try {
+        return await response.json();
+      } catch (e) {
+        const txt = await response.text();
+        return { __rawText: txt };
+      }
+    }
+
+    const text = await response.text();
+    return { __rawText: text };
+  }
   async login(email, password, selectedRole) {
     try {
       const payload = { correo: email, contraseña: password};
       
-      const response = await fetch(`${this.baseURL}/auth/login`, {
+      const response = await fetch(`${this.baseURL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -27,10 +42,11 @@ export class AuthService extends BaseService {
         body: JSON.stringify(payload)
       });
 
-      const data = await response.json();
+      const data = await this.parseResponse(response);
 
       if (!response.ok) {
-        throw new Error(this.getErrorMessage(data));
+        const message = this.getErrorMessage(data);
+        throw new Error(message);
       }
 
       const token = data.data?.accessToken;
@@ -71,7 +87,7 @@ export class AuthService extends BaseService {
 
   async register(userData) {
     try {
-      const response = await fetch(`${this.baseURL}/auth/register`, {
+      const response = await fetch(`${this.baseURL}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -79,10 +95,12 @@ export class AuthService extends BaseService {
         body: JSON.stringify(userData)
       });
 
-      const data = await response.json();
+      const data = await this.parseResponse(response);
 
       if (!response.ok) {
-        throw new Error(this.getErrorMessage(data));
+        // Si la respuesta no es JSON, parseResponse devuelve { __rawText }
+        const message = this.getErrorMessage(data);
+        throw new Error(message);
       }
 
       return {
@@ -107,17 +125,22 @@ export class AuthService extends BaseService {
   }
 
   getErrorMessage(data) {
+    if (!data) return 'Error durante la operación';
+    if (typeof data === 'string') return data;
+    if (data.__rawText) return data.__rawText;
     if (data.message) return data.message;
     if (data.error) return typeof data.error === 'string' ? data.error : data.error.message;
     if (Array.isArray(data.errors)) return data.errors.join(', ');
     
     const errorMessages = [];
-    Object.entries(data).forEach(([key, value]) => {
+    if (typeof data === 'object') {
+      Object.entries(data).forEach(([key, value]) => {
       if (key === 'data' || key === 'status' || key === 'statusCode') return;
       if (Array.isArray(value)) errorMessages.push(...value);
       else if (typeof value === 'string') errorMessages.push(value);
       else if (typeof value === 'object' && value.message) errorMessages.push(value.message);
-    });
+      });
+    }
 
     return errorMessages.length > 0 ? errorMessages.join(', ') : 'Error durante la operación';
   }

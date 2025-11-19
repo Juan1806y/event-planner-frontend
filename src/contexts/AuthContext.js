@@ -96,7 +96,10 @@ export const AuthProvider = ({ children }) => {
 
             if (result.success) {
                 dispatch({ type: 'LOGIN_SUCCESS', payload: { user: result.user } });
-                return { success: true, redirectPath: getRedirectPath(result.user) };
+                const redirectPath = getRedirectPath(result.user);
+                console.log('AuthProvider.login - user:', result.user);
+                console.log('AuthProvider.login - redirectPath:', redirectPath);
+                return { success: true, redirectPath };
             } else {
                 dispatch({ type: 'LOGIN_FAILURE', payload: result.error });
                 return { success: false, error: result.error };
