@@ -19,22 +19,39 @@ const EventModal = ({ evento, onClose, formatFecha, formatFechaCompleta }) => {
         debugFecha(evento.fecha_fin, 'Modal - Fecha fin');
     }, [evento]);
 
-    // ✅ Función para formatear el número de cupos
     const formatearCupos = (valor) => {
         if (valor === undefined || valor === null) return 'No disponible';
         if (typeof valor === 'number') return valor.toString();
         return valor;
     };
 
-    // ✅ Función para calcular porcentaje de disponibilidad
     const calcularPorcentajeDisponibilidad = () => {
         if (!evento.cupo_total || evento.cupo_total === 0) return 0;
         if (typeof evento.cupos_disponibles !== 'number') return 0;
-
         return Math.round((evento.cupos_disponibles / evento.cupo_total) * 100);
     };
 
+    const obtenerActividadesOrdenadas = () => {
+        if (!evento.actividades || evento.actividades.length === 0) return [];
+        
+        return [...evento.actividades].sort((a, b) => {
+            const fechaHoraA = new Date(`${a.fecha_actividad}T${a.hora_inicio}`);
+            const fechaHoraB = new Date(`${b.fecha_actividad}T${b.hora_inicio}`);
+            return fechaHoraA - fechaHoraB;
+        });
+    };
+
+    const formatearHora = (hora) => {
+        if (!hora) return '';
+        const [hours, minutes] = hora.split(':');
+        const h = parseInt(hours);
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        const hora12 = h % 12 || 12;
+        return `${hora12}:${minutes} ${ampm}`;
+    };
+
     const porcentajeDisponible = calcularPorcentajeDisponibilidad();
+    const actividadesOrdenadas = obtenerActividadesOrdenadas();
 
     return (
         <div className={styles.modalBody}>
@@ -109,14 +126,124 @@ const EventModal = ({ evento, onClose, formatFecha, formatFechaCompleta }) => {
                         <label>Última actualización:</label>
                         <span>{formatFechaCompleta(evento.fecha_actualizacion)}</span>
                     </div>
-                    {evento.actividades && evento.actividades.length > 0 && (
+                    {actividadesOrdenadas.length > 0 && (
                         <div className={styles.infoItem}>
-                            <label>Actividades:</label>
-                            <span>{evento.actividades.length} actividad(es) programada(s)</span>
+                            <label>Total de actividades:</label>
+                            <span>{actividadesOrdenadas.length} actividad(es) programada(s)</span>
                         </div>
                     )}
                 </div>
             </div>
+
+            {/* Sección de Actividades en orden cronológico */}
+            {actividadesOrdenadas.length > 0 && (
+                <div style={{ marginTop: '20px' }}>
+                    <div className={styles.infoSection}>
+                        <h4>Cronograma de Actividades</h4>
+                        {actividadesOrdenadas.map((actividad, index) => (
+                            <div key={actividad.id_actividad} style={{ 
+                                marginBottom: index < actividadesOrdenadas.length - 1 ? '16px' : '0',
+                                paddingBottom: index < actividadesOrdenadas.length - 1 ? '16px' : '0',
+                                borderBottom: index < actividadesOrdenadas.length - 1 ? '1px solid #e5e7eb' : 'none'
+                            }}>
+                                <div style={{ 
+                                    marginBottom: '12px', 
+                                    paddingLeft: '8px', 
+                                    borderLeft: '3px solid #2C5F7C',
+                                    background: 'white',
+                                    padding: '12px',
+                                    borderRadius: '8px'
+                                }}>
+                                    <div style={{ 
+                                        fontSize: '1rem', 
+                                        fontWeight: '600', 
+                                        color: '#2C5F7C',
+                                        marginBottom: '8px'
+                                    }}>
+                                        {index + 1}. {actividad.titulo}
+                                    </div>
+                                    
+                                    <div style={{ 
+                                        display: 'grid', 
+                                        gap: '8px',
+                                        fontSize: '0.9rem'
+                                    }}>
+                                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                            <span style={{ fontWeight: '600', color: '#374151', minWidth: '80px' }}>
+                                                Fecha:
+                                            </span>
+                                            <span style={{ color: '#6b7280' }}>
+                                                {formatFecha(actividad.fecha_actividad)}
+                                            </span>
+                                        </div>
+
+                                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                            <span style={{ fontWeight: '600', color: '#374151', minWidth: '80px' }}>
+                                                Horario:
+                                            </span>
+                                            <span style={{ color: '#6b7280' }}>
+                                                {formatearHora(actividad.hora_inicio)} - {formatearHora(actividad.hora_fin)}
+                                            </span>
+                                        </div>
+
+                                        {actividad.lugares && actividad.lugares.length > 0 && (
+                                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                                <span style={{ fontWeight: '600', color: '#374151', minWidth: '80px' }}>
+                                                    Lugar:
+                                                </span>
+                                                <span style={{ color: '#6b7280' }}>
+                                                    {actividad.lugares.map(lugar => lugar.nombre).join(', ')}
+                                                </span>
+                                            </div>
+                                        )}
+
+                                        {actividad.descripcion && (
+                                            <div style={{ marginTop: '4px' }}>
+                                                <span style={{ 
+                                                    fontWeight: '600', 
+                                                    color: '#374151',
+                                                    display: 'block',
+                                                    marginBottom: '4px'
+                                                }}>
+                                                    Descripción:
+                                                </span>
+                                                <p style={{
+                                                    margin: 0,
+                                                    color: '#6b7280',
+                                                    lineHeight: '1.5',
+                                                    paddingLeft: '8px'
+                                                }}>
+                                                    {actividad.descripcion}
+                                                </p>
+                                            </div>
+                                        )}
+
+                                        {actividad.url && (
+                                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                                <span style={{ fontWeight: '600', color: '#374151', minWidth: '80px' }}>
+                                                    Enlace:
+                                                </span>
+                                                <a 
+                                                    href={actividad.url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    style={{
+                                                        color: '#2C5F7C',
+                                                        textDecoration: 'none',
+                                                        wordBreak: 'break-all'
+                                                    }}
+                                                >
+                                                    {actividad.url}
+                                                </a>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             <div className={styles.modalActions}>
                 <button
