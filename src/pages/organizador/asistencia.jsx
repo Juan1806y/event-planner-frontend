@@ -1,273 +1,287 @@
+// File: GestionAsistentes.jsx
 import React, { useState, useEffect } from 'react';
-import { Search, Download, Eye, Calendar, MapPin, Users, AlertCircle } from 'lucide-react';
+import { Search, Download, Eye, Users, AlertCircle } from 'lucide-react';
+import Sidebar from './Sidebar';
+import asistenciaService from '../../components/asistenciaService';
+import './asistencia.css';
 
-// Simula el servicio - reemplaza con el import real
-const asistenciaService = {
-    async obtenerAsistenciasEvento(idEvento) {
-        // Aquí iría la llamada real al API
-        const response = await fetch(`/api/asistencias/evento/${idEvento}`, {
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
-        });
-        return response.json();
-    }
-};
-
-export default function GestionAsistentes({ idEvento = '1' }) {
+export default function GestionAsistentes() {
+    const [eventos, setEventos] = useState([]);
+    const [selectedEventoId, setSelectedEventoId] = useState(null);
     const [asistentes, setAsistentes] = useState([]);
     const [filteredAsistentes, setFilteredAsistentes] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filtroEstado, setFiltroEstado] = useState('todos');
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // Cargar datos del API
     useEffect(() => {
-        cargarAsistentes();
-    }, [idEvento]);
+        const cargarEventos = async () => {
+            setLoading(true);
+            try {
+                const ev = await asistenciaService.obtenerEventos();
+                const lista = Array.isArray(ev) ? ev : (ev.data || []);
+                setEventos(lista);
+
+                if (lista.length > 0) {
+                    setSelectedEventoId(String(lista[0].id || lista[0]._id || lista[0].id_evento));
+                }
+                setError(null);
+            } catch (err) {
+                console.error(err);
+                setError('No se pudo cargar la lista de eventos.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        cargarEventos();
+    }, []);
+
+    useEffect(() => {
+        if (!selectedEventoId) return;
+        cargarAsistentes(selectedEventoId);
+    }, [selectedEventoId]);
+
+    const cargarAsistentes = async (idEvento) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await asistenciaService.obtenerAsistenciasEvento(idEvento);
+
+            const info = response.data || {};
+            const lista = info.inscripciones || [];
+
+            const normalizados = lista.map((inscripcion, idx) => {
+                // Extraer datos del usuario anidado
+                const usuario = inscripcion.asistente?.usuario || {};
+                const nombre = usuario.nombre ||
+                    inscripcion.nombre ||
+                    `${inscripcion.nombres || ''} ${inscripcion.apellidos || ''}`.trim() ||
+                    'Sin nombre';
+
+                const email = usuario.correo ||
+                    usuario.email ||
+                    inscripcion.email ||
+                    inscripcion.correo ||
+                    '—';
+
+                // Generar iniciales desde el nombre
+                const iniciales = nombre.split(' ')
+                    .filter(n => n.length > 0)
+                    .map(n => n[0])
+                    .slice(0, 2)
+                    .join('')
+                    .toUpperCase() || '—';
+
+                return {
+                    id: String(inscripcion.id || inscripcion._id || inscripcion.codigo || idx + 1),
+                    codigo: inscripcion.codigo || '—',
+                    nombre: nombre,
+                    email: email,
+                    cedula: usuario.cedula || '—',
+                    fechaRegistro: inscripcion.fecha || inscripcion.fecha_registro || inscripcion.createdAt || '—',
+                    estado: inscripcion.estado || 'Pendiente',
+                    iniciales: iniciales,
+                    color: inscripcion.color || generarColorAleatorio()
+                };
+            });
+
+            setAsistentes(normalizados);
+            setFilteredAsistentes(normalizados);
+
+        } catch (err) {
+            console.error('Error cargando asistentes:', err);
+            setError('Error al cargar asistentes.');
+            setAsistentes([]);
+            setFilteredAsistentes([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Función auxiliar para generar colores aleatorios para avatares
+    const generarColorAleatorio = () => {
+        const colores = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4'];
+        return colores[Math.floor(Math.random() * colores.length)];
+    };
 
     useEffect(() => {
         let filtered = asistentes;
 
         if (searchTerm) {
+            const term = searchTerm.toLowerCase();
             filtered = filtered.filter(a =>
-                a.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                a.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                a.id.includes(searchTerm)
+                a.nombre.toLowerCase().includes(term) ||
+                (a.email || '').toLowerCase().includes(term) ||
+                a.id.toLowerCase().includes(term) ||
+                (a.cedula || '').toLowerCase().includes(term)
             );
         }
 
         if (filtroEstado !== 'todos') {
-            filtered = filtered.filter(a => a.estado.toLowerCase() === filtroEstado);
+            filtered = filtered.filter(a => a.estado.toLowerCase() === filtroEstado.toLowerCase());
         }
 
         setFilteredAsistentes(filtered);
     }, [searchTerm, filtroEstado, asistentes]);
 
-    // Calcular estadísticas
     const totalInscritos = asistentes.length;
-    const confirmados = asistentes.filter(a => a.estado === 'Confirmado').length;
-    const pendientes = asistentes.filter(a => a.estado === 'Pendiente').length;
-    const ausentes = asistentes.filter(a => a.estado === 'Ausente').length;
-    const capacidad = 500;
+    const confirmados = asistentes.filter(a => a.estado.toLowerCase() === 'confirmado' || a.estado.toLowerCase() === 'confirmada').length;
+    const pendientes = asistentes.filter(a => a.estado.toLowerCase() === 'pendiente').length;
+    const ausentes = asistentes.filter(a => a.estado.toLowerCase() === 'ausente').length;
 
     const getEstadoBadgeClass = (estado) => {
-        switch (estado.toLowerCase()) {
-            case 'confirmado':
-                return 'bg-green-100 text-green-700';
-            case 'pendiente':
-                return 'bg-yellow-100 text-yellow-700';
-            case 'ausente':
-                return 'bg-red-100 text-red-700';
-            default:
-                return 'bg-gray-100 text-gray-700';
-        }
-    };
-
-    const exportarExcel = () => {
-        const csv = [
-            ['ID', 'Nombre', 'Email', 'Tipo', 'Fecha Registro', 'Estado'].join(','),
-            ...filteredAsistentes.map(a =>
-                [a.id, a.nombre, a.email, a.tipo, a.fechaRegistro, a.estado].join(',')
-            )
-        ].join('\n');
-
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `asistentes_${new Date().toISOString().split('T')[0]}.csv`;
-        a.click();
+        const estadoNorm = estado.toLowerCase();
+        if (estadoNorm === 'confirmado' || estadoNorm === 'confirmada') return 'badge-confirmado';
+        if (estadoNorm === 'pendiente') return 'badge-pendiente';
+        if (estadoNorm === 'ausente') return 'badge-ausente';
+        return 'badge-default';
     };
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                    <p className="mt-4 text-gray-600">Cargando asistentes...</p>
-                </div>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-                <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
-                    <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-gray-900 text-center mb-2">Error al cargar datos</h3>
-                    <p className="text-gray-600 text-center mb-6">{error}</p>
-                    <button
-                        onClick={cargarAsistentes}
-                        className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                        Reintentar
-                    </button>
+            <div className="layout-container">
+                <Sidebar />
+                <div className="main-content">
+                    <div className="loading-container">
+                        <div className="spinner"></div>
+                        <p>Cargando...</p>
+                    </div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <div className="bg-white shadow-sm border-b">
-                <div className="max-w-7xl mx-auto px-6 py-4">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <div className="flex items-center gap-3 mb-2">
-                                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                                    <Calendar className="w-6 h-6 text-white" />
-                                </div>
-                                <h1 className="text-2xl font-bold text-gray-900">Event Planner</h1>
-                            </div>
-                            <p className="text-sm text-orange-600 font-medium">Gestión de Inscritos</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-                                <span className="text-white font-semibold text-sm">AD</span>
-                            </div>
-                            <div className="text-right">
-                                <p className="text-sm font-medium text-gray-900">Organizador</p>
-                                <p className="text-xs text-gray-500">admin@event.com</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div className="max-w-7xl mx-auto px-6 py-8">
-                {/* Información del Evento */}
-                <div className="bg-gray-800 rounded-lg p-6 mb-6 text-white">
-                    <h2 className="text-2xl font-bold mb-4">Conferencia Anual de Tecnología 2025</h2>
-                    <div className="flex gap-6 text-sm">
-                        <div className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4" />
-                            <span>Fecha: 15-17 de Marzo, 2025</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <MapPin className="w-4 h-4" />
-                            <span>Lugar: Centro de Convenciones Norte</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <Users className="w-4 h-4" />
-                            <span>Capacidad: {capacidad} personas</span>
-                        </div>
-                    </div>
+        <div className="layout-container">
+            <Sidebar />
+            <div className="main-content">
+                <div className="page-header">
+                    <h1 className="page-title">Gestión de Inscritos</h1>
                 </div>
 
-                {/* Estadísticas */}
-                <div className="grid grid-cols-4 gap-6 mb-6">
-                    <div className="bg-white rounded-lg p-6 border-l-4 border-blue-500 shadow-sm">
-                        <p className="text-gray-500 text-sm uppercase mb-2">Total Inscritos</p>
-                        <p className="text-3xl font-bold text-gray-900">{totalInscritos}</p>
-                        <p className="text-sm text-gray-500 mt-1">de {capacidad} capacidad</p>
+                <div className="evento-selector-card">
+                    <div className="selector-header">
+                        <h3 className="selector-title">Seleccionar evento</h3>
+                        <p className="selector-subtitle">Elige el evento para ver los inscritos</p>
                     </div>
-                    <div className="bg-white rounded-lg p-6 border-l-4 border-green-500 shadow-sm">
-                        <p className="text-gray-500 text-sm uppercase mb-2">Confirmados</p>
-                        <p className="text-3xl font-bold text-gray-900">{confirmados}</p>
-                        <p className="text-sm text-gray-500 mt-1">
-                            {totalInscritos > 0 ? ((confirmados / totalInscritos) * 100).toFixed(1) : 0}% del total
-                        </p>
+                    <select
+                        className="evento-select"
+                        value={selectedEventoId || ''}
+                        onChange={(e) => setSelectedEventoId(e.target.value)}
+                    >
+                        <option value="">-- Seleccione un evento --</option>
+                        {eventos.map(ev => (
+                            <option
+                                key={ev.id || ev._id || ev.codigo}
+                                value={String(ev.id || ev._id || ev.codigo)}
+                            >
+                                {ev.titulo || ev.nombre || ev.title || `Evento ${ev.id || ev._id}`}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                {error && (
+                    <div className="error-container-inline">
+                        <AlertCircle size={20} />
+                        <span>{error}</span>
                     </div>
-                    <div className="bg-white rounded-lg p-6 border-l-4 border-yellow-500 shadow-sm">
-                        <p className="text-gray-500 text-sm uppercase mb-2">Pendientes</p>
-                        <p className="text-3xl font-bold text-gray-900">{pendientes}</p>
-                        <p className="text-sm text-gray-500 mt-1">
-                            {totalInscritos > 0 ? ((pendientes / totalInscritos) * 100).toFixed(1) : 0}% del total
-                        </p>
+                )}
+
+                {selectedEventoId && (
+                    <div className="evento-info">
+                        <h2>
+                            {(() => {
+                                const ev = eventos.find(e =>
+                                    String(e.id || e._id || e.codigo) === String(selectedEventoId)
+                                );
+                                return ev ? (ev.titulo || ev.nombre || ev.title) : 'Evento seleccionado';
+                            })()}
+                        </h2>
                     </div>
-                    <div className="bg-white rounded-lg p-6 border-l-4 border-red-500 shadow-sm">
-                        <p className="text-gray-500 text-sm uppercase mb-2">Ausentes</p>
-                        <p className="text-3xl font-bold text-gray-900">{ausentes}</p>
-                        <p className="text-sm text-gray-500 mt-1">
-                            {totalInscritos > 0 ? ((ausentes / totalInscritos) * 100).toFixed(1) : 0}% del total
-                        </p>
+                )}
+
+                <div className="stats-grid">
+                    <div className="stat-card stat-blue">
+                        <p className="stat-label">Total Inscritos</p>
+                        <p className="stat-value">{totalInscritos}</p>
+                    </div>
+                    <div className="stat-card stat-green">
+                        <p className="stat-label">Confirmados</p>
+                        <p className="stat-value">{confirmados}</p>
+                    </div>
+                    <div className="stat-card stat-yellow">
+                        <p className="stat-label">Pendientes</p>
+                        <p className="stat-value">{pendientes}</p>
+                    </div>
+                    <div className="stat-card stat-red">
+                        <p className="stat-label">Ausentes</p>
+                        <p className="stat-value">{ausentes}</p>
                     </div>
                 </div>
 
-                {/* Filtros y búsqueda */}
-                <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
-                    <div className="flex items-center justify-between gap-4">
-                        <div className="flex-1 relative">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                            <input
-                                type="text"
-                                placeholder="Buscar por nombre, email o ID..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
-                        </div>
-                        <select
-                            value={filtroEstado}
-                            onChange={(e) => setFiltroEstado(e.target.value)}
-                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                            <option value="todos">Todos los estados</option>
-                            <option value="confirmado">Confirmado</option>
-                            <option value="pendiente">Pendiente</option>
-                            <option value="ausente">Ausente</option>
-                        </select>
-                        <button
-                            onClick={exportarExcel}
-                            className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors"
-                        >
-                            <Download className="w-4 h-4" />
-                            Exportar Excel
-                        </button>
+                <div className="filters-container">
+                    <div className="search-box">
+                        <Search size={20} />
+                        <input
+                            type="text"
+                            placeholder="Buscar por nombre, email, cédula o ID..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
                     </div>
+
+                    <select
+                        value={filtroEstado}
+                        onChange={(e) => setFiltroEstado(e.target.value)}
+                        className="filter-select"
+                    >
+                        <option value="todos">Todos los estados</option>
+                        <option value="confirmado">Confirmado</option>
+                        <option value="confirmada">Confirmada</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="ausente">Ausente</option>
+                    </select>
+
                 </div>
 
-                {/* Tabla de asistentes */}
-                <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-                    <table className="w-full">
-                        <thead className="bg-gray-50 border-b">
+                <div className="table-container">
+                    <table className="asistentes-table">
+                        <thead>
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Participante</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo Inscripción</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Registro</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                                <th>ID</th>
+                                <th>Participante</th>
+                                <th>Fecha Registro</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-200">
+                        <tbody>
                             {filteredAsistentes.map((asistente) => (
-                                <tr key={asistente.id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        #{asistente.id}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="flex items-center gap-3">
-                                            <div
-                                                className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm"
-                                                style={{ backgroundColor: asistente.color }}
-                                            >
+                                <tr key={asistente.id}>
+                                    <td>#{asistente.id}</td>
+                                    <td>
+                                        <div className="participante-cell">
+                                            <div className="avatar" style={{ backgroundColor: asistente.color }}>
                                                 {asistente.iniciales}
                                             </div>
-                                            <div>
-                                                <p className="text-sm font-medium text-gray-900">{asistente.nombre}</p>
-                                                <p className="text-sm text-gray-500">{asistente.email}</p>
+                                            <div className="participante-info">
+                                                <p className="participante-nombre">{asistente.nombre}</p>
+                                                <p className="participante-email">{asistente.email}</p>
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                        {asistente.tipo}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                        {asistente.fechaRegistro}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getEstadoBadgeClass(asistente.estado)}`}>
+                                    <td>{asistente.fechaRegistro}</td>
+                                    <td>
+                                        <span className={`badge ${getEstadoBadgeClass(asistente.estado)}`}>
                                             {asistente.estado}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                        <button className="text-gray-600 hover:text-blue-600 transition-colors">
-                                            <Eye className="w-4 h-4" />
+                                    <td>
+                                        <button className="btn-icon">
+                                            <Eye size={16} />
                                         </button>
                                     </td>
                                 </tr>
@@ -277,9 +291,9 @@ export default function GestionAsistentes({ idEvento = '1' }) {
                 </div>
 
                 {filteredAsistentes.length === 0 && (
-                    <div className="bg-white rounded-lg p-12 text-center">
-                        <Users className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                        <p className="text-gray-500">No se encontraron asistentes con los filtros aplicados</p>
+                    <div className="empty-state">
+                        <Users size={48} />
+                        <p>No se encontraron asistentes con los filtros aplicados</p>
                     </div>
                 )}
             </div>
