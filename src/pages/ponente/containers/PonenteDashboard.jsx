@@ -12,12 +12,13 @@ const PonenteDashboard = () => {
   const [currentView, setCurrentView] = useState('dashboard');
   const [isMenuCollapsed, setIsMenuCollapsed] = useState(false);
   const [selectedEvento, setSelectedEvento] = useState(null);
-  
+
   const { actividades, loading, error, refetch } = usePonenteAgenda();
 
   console.log('🔍 PonenteDashboard - Estado actual:', {
     currentView,
     actividadesCount: actividades?.length,
+    actividades: actividades,
     loading,
     error
   });
@@ -33,7 +34,7 @@ const PonenteDashboard = () => {
 
   const renderSection = () => {
     console.log('🎯 Renderizando sección:', currentView);
-    
+
     switch (currentView) {
       case 'dashboard':
         return <DashboardSection actividades={actividades} loading={loading} />;
@@ -42,7 +43,7 @@ const PonenteDashboard = () => {
       case 'agenda':
         return <AgendaSection evento={selectedEvento} />;
       case 'actividades':
-        return <MisActividadesSection actividades={actividades} onSolicitudEnviada={refetch} />;
+        return <MisActividadesSection actividades={actividades} onSolicitudEnviada={refetch} error={error} />;
       default:
         return <DashboardSection actividades={actividades} loading={loading} />;
     }
@@ -50,7 +51,7 @@ const PonenteDashboard = () => {
 
   return (
     <div className={styles.dashboard}>
-      <Sidebar 
+      <Sidebar
         onToggle={handleToggleSidebar}
         onNavigate={handleNavigate}
         currentView={currentView}

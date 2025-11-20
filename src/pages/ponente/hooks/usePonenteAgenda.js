@@ -8,12 +8,39 @@ export const usePonenteAgenda = () => {
     const [estadisticas, setEstadisticas] = useState(null);
 
     const getToken = () => {
-        return localStorage.getItem('access_token');
+        const token = localStorage.getItem('access_token');
+        console.log('🔐 Token encontrado:', token ? 'Sí' : 'No');
+        return token;
     };
 
     const getPonenteId = () => {
-        const user = JSON.parse(localStorage.getItem('user'));
-        return user?.id_ponente || user?.id;
+        try {
+            const userStr = localStorage.getItem('user');
+            console.log('👤 User string del localStorage:', userStr);
+
+            if (!userStr) {
+                console.warn('❌ No se encontró usuario en localStorage');
+                return null;
+            }
+
+            const user = JSON.parse(userStr);
+            console.log('👤 Usuario completo del localStorage:', user);
+
+            // CORREGIDO: Buscar el ID del ponente en rolData
+            const ponenteId = user?.rolData?.id_ponente || user?.id_ponente;
+
+            console.log('🔍 ID del ponente encontrado:', ponenteId);
+
+            if (!ponenteId) {
+                console.warn('⚠️ No se pudo encontrar un ID de ponente válido');
+                console.log('Estructura del usuario:', JSON.stringify(user, null, 2));
+            }
+
+            return ponenteId;
+        } catch (error) {
+            console.error('💥 Error al obtener usuario del localStorage:', error);
+            return null;
+        }
     };
 
     // Cargar agenda completa del ponente
@@ -21,123 +48,48 @@ export const usePonenteAgenda = () => {
         try {
             setLoading(true);
             setError(null);
-            
+
             const token = getToken();
             if (!token) {
                 throw new Error('No hay token de autenticación');
             }
 
-            const data = await ponenteAgendaService.obtenerAgendaPonente(token);
-            console.log('📊 Datos obtenidos del servicio:', data);
-            setAgenda(data);
-
-            // Cargar estadísticas
-            try {
-                const stats = await ponenteAgendaService.obtenerEstadisticasPonente(token);
-                setEstadisticas(stats);
-            } catch (statsError) {
-                console.warn('No se pudieron cargar las estadísticas:', statsError);
-                // No romper el flujo por errores en estadísticas
+            const ponenteId = getPonenteId();
+            if (!ponenteId) {
+                throw new Error('No se pudo identificar al ponente. El usuario logueado no tiene un ID de ponente válido.');
             }
+
+            console.log('🔄 Iniciando carga de agenda para ponente ID:', ponenteId);
+            const data = await ponenteAgendaService.obtenerAgendaPonente(ponenteId, token);
+
+            console.log('📊 Datos FINALES obtenidos del servicio:', data);
+            console.log(`📈 Actividades: ${data.actividades?.length || 0}`);
+            console.log(`📈 Eventos: ${data.eventos?.length || 0}`);
+
+            setAgenda(data);
 
             return data;
         } catch (err) {
             console.error('❌ Error cargando agenda del ponente:', err);
             setError(err.message);
-            // Asegurar que agenda tenga estructura válida incluso en error
             setAgenda({ actividades: [], eventos: [] });
         } finally {
             setLoading(false);
         }
     }, []);
 
-    // Responder invitación
-    const responderInvitacion = useCallback(async (actividadId, aceptar, motivoRechazo = '') => {
-        try {
-            const token = getToken();
-            const ponenteId = getPonenteId();
-
-            if (!ponenteId) {
-                throw new Error('No se pudo identificar al ponente');
-            }
-
-            await ponenteAgendaService.responderInvitacion(ponenteId, actividadId, aceptar, motivoRechazo, token);
-            
-            // Recargar agenda después de responder
-            await cargarAgenda();
-            
-            return true;
-        } catch (err) {
-            setError(err.message);
-            return false;
-        }
-    }, [cargarAgenda]);
-
-    // Solicitar cambios
-    const solicitarCambios = useCallback(async (actividadId, cambiosSolicitados, justificacion) => {
-        try {
-            const token = getToken();
-            const ponenteId = getPonenteId();
-
-            if (!ponenteId) {
-                throw new Error('No se pudo identificar al ponente');
-            }
-
-            await ponenteAgendaService.solicitarCambios(ponenteId, actividadId, cambiosSolicitados, justificacion, token);
-            
-            // Recargar agenda después de solicitar cambios
-            await cargarAgenda();
-            
-            return true;
-        } catch (err) {
-            setError(err.message);
-            return false;
-        }
-    }, [cargarAgenda]);
-
-    // Obtener agenda por evento
-    const cargarAgendaPorEvento = useCallback(async (eventoId) => {
-        try {
-            setLoading(true);
-            const token = getToken();
-            const actividades = await ponenteAgendaService.obtenerAgendaPorEvento(eventoId, token);
-            return actividades || [];
-        } catch (err) {
-            setError(err.message);
-            throw err;
-        } finally {
-            setLoading(false);
-        }
-    }, []);
-
-    // Cargar actividades por estado
-    const cargarActividadesPorEstado = useCallback(async (estado = null) => {
-        try {
-            const token = getToken();
-            const result = await ponenteAgendaService.obtenerActividadesPorEstado(token, estado);
-            return result || [];
-        } catch (err) {
-            setError(err.message);
-            throw err;
-        }
-    }, []);
-
-    // Cargar al montar el componente
     useEffect(() => {
+        console.log('🎯 usePonenteAgenda - Montando hook');
         cargarAgenda();
     }, [cargarAgenda]);
 
     return {
-        actividades: agenda.actividades || [], // Asegurar que siempre sea array
-        eventos: agenda.eventos || [], // Asegurar que siempre sea array
+        actividades: agenda.actividades || [],
+        eventos: agenda.eventos || [],
         estadisticas,
         loading,
         error,
         cargarAgenda,
-        responderInvitacion,
-        solicitarCambios,
-        cargarAgendaPorEvento,
-        cargarActividadesPorEstado,
         refetch: cargarAgenda
     };
 };
