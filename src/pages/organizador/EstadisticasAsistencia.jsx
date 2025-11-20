@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { TrendingUp, Users, UserCheck, UserX, XCircle } from 'lucide-react';
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import Sidebar from './Sidebar';
 import asistenciaService from '../../components/asistenciaService';
 import './estadisticas.css';
@@ -18,6 +20,10 @@ export default function EstadisticasAsistencia() {
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [generatingPDF, setGeneratingPDF] = useState(false);
+
+    const statsRef = useRef();
+    const chartsRef = useRef();
 
     useEffect(() => { cargarEventos(); }, []);
     useEffect(() => { if (selectedEventoId) cargarEstadisticas(selectedEventoId); }, [selectedEventoId]);
@@ -90,6 +96,100 @@ export default function EstadisticasAsistencia() {
             setError('Error al cargar estadísticas.');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const generarPDF = async () => {
+        if (!selectedEventoId || !eventoSeleccionado) {
+            alert('Selecciona un evento primero');
+            return;
+        }
+
+        setGeneratingPDF(true);
+
+        try {
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
+            let currentY = 20;
+
+            pdf.setFontSize(18);
+            pdf.setTextColor(31, 41, 55);
+            pdf.text('Reporte de Estadísticas', pageWidth / 2, currentY, { align: 'center' });
+            
+            currentY += 10;
+            pdf.setFontSize(14);
+            pdf.text(eventoSeleccionado.titulo || eventoSeleccionado.nombre, pageWidth / 2, currentY, { align: 'center' });
+            
+            currentY += 8;
+            pdf.setFontSize(10);
+            pdf.setTextColor(107, 114, 128);
+            pdf.text(`Fecha: ${eventoSeleccionado.fecha_inicio || 'N/A'} | Modalidad: ${eventoSeleccionado.modalidad || 'N/A'}`, pageWidth / 2, currentY, { align: 'center' });
+
+            currentY += 15;
+
+            if (statsRef.current) {
+                const statsCanvas = await html2canvas(statsRef.current, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: '#ffffff'
+                });
+                
+                const statsImgData = statsCanvas.toDataURL('image/png');
+                const statsImgWidth = pageWidth - 20;
+                const statsImgHeight = (statsCanvas.height * statsImgWidth) / statsCanvas.width;
+
+                pdf.addImage(statsImgData, 'PNG', 10, currentY, statsImgWidth, statsImgHeight);
+                currentY += statsImgHeight + 10;
+            }
+
+            if (chartsRef.current) {
+                if (currentY + 120 > pageHeight) {
+                    pdf.addPage();
+                    currentY = 20;
+                }
+
+                const chartsCanvas = await html2canvas(chartsRef.current, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: '#ffffff'
+                });
+                
+                const chartsImgData = chartsCanvas.toDataURL('image/png');
+                const chartsImgWidth = pageWidth - 20;
+                const chartsImgHeight = (chartsCanvas.height * chartsImgWidth) / chartsCanvas.width;
+
+                if (currentY + chartsImgHeight > pageHeight - 10) {
+                    pdf.addPage();
+                    currentY = 20;
+                }
+
+                pdf.addImage(chartsImgData, 'PNG', 10, currentY, chartsImgWidth, chartsImgHeight);
+            }
+
+            const totalPages = pdf.internal.getNumberOfPages();
+            for (let i = 1; i <= totalPages; i++) {
+                pdf.setPage(i);
+                pdf.setFontSize(8);
+                pdf.setTextColor(156, 163, 175);
+                pdf.text(
+                    `Página ${i} de ${totalPages} | Generado el ${new Date().toLocaleDateString('es-CO')}`,
+                    pageWidth / 2,
+                    pageHeight - 10,
+                    { align: 'center' }
+                );
+            }
+
+            const nombreArchivo = `Reporte_${(eventoSeleccionado.titulo || eventoSeleccionado.nombre || 'Evento').replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+            pdf.save(nombreArchivo);
+
+        } catch (error) {
+            console.error('Error al generar PDF:', error);
+            alert('Hubo un error al generar el PDF. Por favor intenta nuevamente.');
+        } finally {
+            setGeneratingPDF(false);
         }
     };
 
@@ -167,11 +267,17 @@ export default function EstadisticasAsistencia() {
                             </div>
                         </div>
 
-                        <button className="btn-export-report">📄 Exportar Reporte PDF</button>
+                        <button 
+                            className="btn-export-report" 
+                            onClick={generarPDF}
+                            disabled={generatingPDF || estadisticas.totalInscritos === 0}
+                        >
+                            {generatingPDF ? '⏳ Generando PDF...' : '📄 Exportar Reporte PDF'}
+                        </button>
                     </div>
                 )}
 
-                <div className="stats-cards-grid">
+                <div className="stats-cards-grid" ref={statsRef}>
                     <div className="stat-card-large stat-blue">
                         <div className="stat-icon"><Users size={24} /></div>
                         <div className="stat-content">
@@ -205,7 +311,7 @@ export default function EstadisticasAsistencia() {
                     </div>
                 </div>
 
-                <div className="charts-grid">
+                <div className="charts-grid" ref={chartsRef}>
                     <div className="chart-card">
                         <h3 className="chart-title">📊 Asistencia por Actividad</h3>
                         <ResponsiveContainer width="100%" height={300}>
