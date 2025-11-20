@@ -4,7 +4,7 @@
 
 .modalHeader {
     background: linear-gradient(135deg, #2C5F7C 0%, #1E4157 100%);
-    color: white!important;
+    color: white !important;
     padding: 24px 28px;
     border-top-left-radius: 16px;
     border-top-right-radius: 16px;
@@ -14,6 +14,547 @@
     margin: 0 0 8px 0;
     font-size: 1.5rem;
     font-weight: 700;
+}
+
+/* Agrega estos estilos a tu EventModal.module.css */
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 900px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+    position: relative;
+}
+
+.modalBody {
+    padding: 0;
+    max-height: calc(90vh - 140px);
+    overflow-y: auto;
+}
+
+.modalHeader {
+    background: linear-gradient(135deg, #2C5F7C 0%, #1E4157 100%);
+    color: white !important;
+    padding: 24px 28px;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.modalHeader h2 {
+    margin: 0 0 8px 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.eventSubtitle {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 0.95rem;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+    margin-left: 20px;
+}
+
+.closeButton:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.eventInfoGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 28px;
+    background: #f8fafc;
+}
+
+.infoSection {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    border-left: 4px solid #2C5F7C;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.infoSection h4 {
+    margin: 0 0 16px 0;
+    color: #2C5F7C;
+    font-size: 1rem;
+    font-weight: 600;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 8px;
+}
+
+.infoItem {
+    margin-bottom: 16px;
+}
+
+.infoItem:last-child {
+    margin-bottom: 0;
+}
+
+.infoItem label {
+    display: block;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+}
+
+.infoItem span,
+.infoItem p {
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.5;
+    font-size: 0.9rem;
+}
+
+.eventTitle {
+    font-weight: 600;
+    color: #1f2937 !important;
+    font-size: 1rem !important;
+}
+
+.eventDescription {
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    line-height: 1.6 !important;
+}
+
+.statusBadge {
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.statusAvailable {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #10b981;
+}
+
+.statusUnavailable {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #ef4444;
+}
+
+.availabilityProgress {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.progressBar {
+    flex: 1;
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.percentage {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #374151;
+    min-width: 40px;
+}
+
+.activitiesCount {
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    padding: 20px 28px;
+    border-top: 1px solid #e5e7eb;
+    background: white;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+}
+
+.btnClose {
+    padding: 12px 28px;
+    background: #2C5F7C;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.btnClose:hover {
+    background: #1E4157;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(44, 95, 124, 0.3);
+}
+
+.btnClose:active {
+    transform: translateY(0);
+}
+
+.btnCancel {
+    padding: 12px 28px;
+    border: 2px solid #d1d5db;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #6b7280;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.btnCancel:hover {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+}
+
+.loadingContainer {
+    padding: 60px 20px;
+    text-align: center;
+    color: #64748b;
+}
+
+.loadingSpinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f4f6;
+    border-top: 4px solid #2C5F7C;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+.errorContainer {
+    padding: 40px 20px;
+    text-align: center;
+    background: #fef2f2;
+    margin: 20px;
+    border-radius: 8px;
+    border: 1px solid #fecaca;
+}
+
+.errorActions {
+    margin-top: 16px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.retryButton {
+    padding: 8px 16px;
+    background: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.closeErrorButton {
+    padding: 8px 16px;
+    background: #6b7280;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.empresaBadge {
+    background: #f0f7ff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    color: #2C5F7C;
+    display: inline-block;
+}
+
+.creadorInfo {
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.creadorNombre {
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 4px;
+}
+
+.creadorCorreo {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.eventoTitulo {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 1.1rem;
+    margin: 8px 0;
+}
+
+.eventoDescripcion {
+    color: #4b5563;
+    line-height: 1.5;
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 6px;
+}
+
+.cuposBadge {
+    background: #f0fdf4;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    color: #065f46;
+    border: 1px solid #bbf7d0;
+}
+
+.idBadge {
+    background: #f0f7ff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-family: monospace;
+    color: #2C5F7C;
+    font-weight: 600;
+}
+
+.actividadTitulo {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 1.1rem;
+    margin: 8px 0;
+}
+
+.actividadDescripcion {
+    color: #4b5563;
+    line-height: 1.5;
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 6px;
+}
+
+.fechaTexto {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.horarioTexto {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.duracionBadge {
+    font-weight: 500;
+    color: #4b5563;
+    background: #f0fdf4;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid #bbf7d0;
+}
+
+.lugarInfo {
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.lugarNombre {
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 4px;
+}
+
+.lugarDescripcion {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.sinLugar {
+    color: #9ca3af;
+    font-style: italic;
+    background: #f8fafc;
+    padding: 8px 12px;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+.urlLink {
+    color: #2C5F7C;
+    text-decoration: underline;
+    word-break: break-all;
+    font-weight: 500;
+}
+
+.sinUrl {
+    color: #9ca3af;
+    font-style: italic;
+    background: #f8fafc;
+    padding: 6px 10px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.materialesInfo {
+    background: #f0f9ff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #bae6fd;
+}
+
+.sinMateriales {
+    color: #9ca3af;
+    font-style: italic;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .modalOverlay {
+        padding: 10px;
+    }
+
+    .eventInfoGrid {
+        grid-template-columns: 1fr;
+        padding: 20px;
+        gap: 16px;
+    }
+
+    .infoSection {
+        padding: 16px;
+    }
+
+    .modalHeader {
+        padding: 20px 24px;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .closeButton {
+        align-self: flex-end;
+        margin-left: 0;
+        margin-top: -10px;
+    }
+
+    .modalActions {
+        padding: 16px 20px;
+    }
+
+    .btnClose {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal {
+        max-height: 95vh;
+    }
+
+    .modalBody {
+        max-height: calc(95vh - 140px);
+    }
+
+    .eventInfoGrid {
+        padding: 15px;
+        gap: 12px;
+    }
+
+    .infoSection {
+        padding: 12px;
+    }
 }
 
 .eventSubtitle {
@@ -218,4 +759,215 @@
         padding: 10px 20px;
         font-size: 0.9rem;
     }
+}
+
+.loadingContainer {
+    padding: 60px 20px;
+    text-align: center;
+    color: #64748b;
+}
+
+.loadingSpinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f4f6;
+    border-top: 4px solid #2C5F7C;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.errorContainer {
+    padding: 40px 20px;
+    text-align: center;
+    background: #fef2f2;
+    margin: 20px;
+    border-radius: 8px;
+    border: 1px solid #fecaca;
+}
+
+.errorActions {
+    margin-top: 16px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.retryButton {
+    padding: 8px 16px;
+    background: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.closeErrorButton {
+    padding: 8px 16px;
+    background: #6b7280;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.empresaBadge {
+    background: #f0f7ff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    color: #2C5F7C;
+    display: inline-block;
+}
+
+.creadorInfo {
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.creadorNombre {
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 4px;
+}
+
+.creadorCorreo {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.eventoTitulo {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 1.1rem;
+    margin: 8px 0;
+}
+
+.eventoDescripcion {
+    color: #4b5563;
+    line-height: 1.5;
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 6px;
+}
+
+.cuposBadge {
+    background: #f0fdf4;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    color: #065f46;
+    border: 1px solid #bbf7d0;
+}
+
+/* Agrega al archivo EventModal.module.css */
+
+.idBadge {
+    background: #f0f7ff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-family: monospace;
+    color: #2C5F7C;
+    font-weight: 600;
+}
+
+.actividadTitulo {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 1.1rem;
+    margin: 8px 0;
+}
+
+.actividadDescripcion {
+    color: #4b5563;
+    line-height: 1.5;
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 6px;
+}
+
+.fechaTexto {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.horarioTexto {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.duracionBadge {
+    font-weight: 500;
+    color: #4b5563;
+    background: #f0fdf4;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid #bbf7d0;
+}
+
+.lugarInfo {
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.lugarNombre {
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 4px;
+}
+
+.lugarDescripcion {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.sinLugar {
+    color: #9ca3af;
+    font-style: italic;
+    background: #f8fafc;
+    padding: 8px 12px;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+.urlLink {
+    color: #2C5F7C;
+    text-decoration: underline;
+    word-break: break-all;
+    font-weight: 500;
+}
+
+.sinUrl {
+    color: #9ca3af;
+    font-style: italic;
+    background: #f8fafc;
+    padding: 6px 10px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.materialesInfo {
+    background: #f0f9ff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #bae6fd;
+}
+
+.sinMateriales {
+    color: #9ca3af;
+    font-style: italic;
 }

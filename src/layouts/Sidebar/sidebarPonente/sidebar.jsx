@@ -99,19 +99,6 @@ const Sidebar = ({ onToggle, onNavigate, currentView }) => {
                     </div>
                 </div>
 
-                {/* Agenda */}
-                <div className={styles.menuItem}>
-                    <div
-                        className={`${styles.menuItemContent} ${isActive('agenda') ? styles.activeMenuItem : ''
-                            }`}
-                        onClick={() => onNavigate('agenda')}
-                        title={isCollapsed ? 'Agenda' : ''}
-                    >
-                        <img src={campana} alt="Agenda Icon" className={styles.menuIcon} />
-                        {!isCollapsed && <span className={styles.menuLabel}>Agenda</span>}
-                    </div>
-                </div>
-
                 {/* Mis Actividades */}
                 <div className={styles.menuItem}>
                     <div

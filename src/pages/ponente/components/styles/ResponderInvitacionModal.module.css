@@ -1,0 +1,233 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.modalHeader h2 {
+    margin: 0;
+    font-size: 20px;
+    color: #333;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.closeButton:hover {
+    color: #333;
+}
+
+.form {
+    padding: 20px;
+}
+
+.formSection {
+    margin-bottom: 20px;
+}
+
+.formSection h3 {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+}
+
+.currentInfo {
+    background: #f8fafc;
+    padding: 16px;
+    border-radius: 8px;
+    border-left: 4px solid #2C5F7C;
+}
+
+.currentInfo p {
+    margin: 4px 0;
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+.radioGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.radioOption {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.radioOption:hover {
+    border-color: #2C5F7C;
+    background: #f8fafc;
+}
+
+.radioOption input[type="radio"] {
+    margin-top: 2px;
+}
+
+.radioLabel {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.radioTitle {
+    font-weight: 600;
+    color: #333;
+}
+
+.radioDescription {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.formGroup {
+    margin-bottom: 12px;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 500;
+    color: #555;
+    font-size: 14px;
+}
+
+.formGroup textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 80px;
+}
+
+.formGroup textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.modalActions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.cancelButton {
+    padding: 10px 20px;
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.cancelButton:hover {
+    background: #f8f9fa;
+}
+
+.acceptButton {
+    padding: 10px 20px;
+    border: none;
+    background: #10b981;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.acceptButton:hover {
+    background: #059669;
+}
+
+.rejectButton {
+    padding: 10px 20px;
+    border: none;
+    background: #ef4444;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.rejectButton:hover {
+    background: #dc2626;
+}
+
+.errorMessage {
+    background: #fef2f2;
+    color: #dc2626;
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #fecaca;
+    font-size: 0.85rem;
+    margin-top: 4px;
+}
+
+.error {
+    border-color: #dc2626 !important;
+}
+
+@media (max-width: 768px) {
+    .modalActions {
+        flex-direction: column;
+    }
+    
+    .cancelButton,
+    .acceptButton,
+    .rejectButton {
+        width: 100%;
+    }
+}

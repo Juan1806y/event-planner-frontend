@@ -4,8 +4,6 @@ const API_BASE = API_PREFIX;
 export const ponenteAgendaService = {
     async obtenerAgendaPonente(ponenteId, token) {
         try {
-            console.log('Obteniendo agenda del ponente...');
-
             let _ponenteId = ponenteId;
             let _token = token;
 
@@ -29,8 +27,6 @@ export const ponenteAgendaService = {
             const actividades = await this.obtenerActividadesPonente(_ponenteId, _token);
             const eventos = await this.obtenerEventosPonente(_ponenteId, _token);
 
-            console.log(`Agenda del ponente: ${actividades.length} actividades en ${eventos.length} eventos`);
-
             return {
                 actividades,
                 eventos
@@ -44,13 +40,10 @@ export const ponenteAgendaService = {
 
     async obtenerActividadesPonente(ponenteId, token) {
         try {
-            console.log(`Obteniendo actividades del ponente: ${ponenteId}`);
-
             const user = JSON.parse(localStorage.getItem('user')) || {};
             const ponenteIdReal = user?.rolData?.id_ponente || user?.id_ponente;
 
             if (ponenteIdReal && ponenteIdReal !== ponenteId) {
-                console.log(`Usando ID real del ponente: ${ponenteIdReal}`);
                 ponenteId = ponenteIdReal;
             }
 
@@ -62,12 +55,8 @@ export const ponenteAgendaService = {
                 }
             });
 
-            console.log('Response status actividades ponente:', response.status);
-
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error('Error response actividades ponente (raw):', errorText);
-
                 let parsed;
                 try {
                     parsed = JSON.parse(errorText);
@@ -78,14 +67,11 @@ export const ponenteAgendaService = {
                 const isPonenteNotFound = parsed && parsed.message && parsed.message.toLowerCase().includes('ponente no encontrado');
 
                 if (response.status === 404 || isPonenteNotFound) {
-                    console.log('Ponente no encontrado con id proporcionado. Intentando fallback con id de usuario...');
-
                     try {
                         const user = JSON.parse(localStorage.getItem('user')) || {};
                         const alternateId = user?.id;
 
                         if (alternateId && alternateId !== ponenteId) {
-                            console.log(` Reintentando con id usuario: ${alternateId}`);
                             const altResponse = await fetch(`${API_BASE}/ponente-actividad/ponente/${alternateId}`, {
                                 method: 'GET',
                                 headers: {
@@ -93,8 +79,6 @@ export const ponenteAgendaService = {
                                     'Content-Type': 'application/json'
                                 }
                             });
-
-                            console.log(' Response status (fallback):', altResponse.status);
 
                             if (altResponse.ok) {
                                 const altResult = await altResponse.json();
@@ -104,14 +88,13 @@ export const ponenteAgendaService = {
                             }
                         }
                     } catch (fallbackError) {
-                        console.error(' Error durante fallback de id de ponente:', fallbackError);
+                        console.error('Error durante fallback de id de ponente:', fallbackError);
                     }
 
                     if (isPonenteNotFound) {
                         throw new Error('Ponente no encontrado');
                     }
 
-                    console.log('ℹPonente no encontrado o sin actividades, devolviendo array vacío');
                     return [];
                 }
 
@@ -119,17 +102,13 @@ export const ponenteAgendaService = {
             }
 
             const result = await response.json();
-            console.log(`RESPUESTA CRUDA API actividades ponente ${ponenteId}:`, result);
 
             if (!result.success) {
-                console.warn('API returned success: false', result.message);
-
                 if (result.message && result.message.toLowerCase().includes('ponente no encontrado')) {
                     throw new Error('Ponente no encontrado');
                 }
 
                 if (result.data && Array.isArray(result.data)) {
-                    console.log('Intentando formatear datos aunque success: false');
                     return this.formatearActividadesPonente(result.data);
                 }
 
@@ -137,8 +116,6 @@ export const ponenteAgendaService = {
             }
 
             const actividadesFormateadas = this.formatearActividadesPonente(result.data || []);
-            console.log(`${actividadesFormateadas.length} actividades formateadas:`, actividadesFormateadas);
-
             return actividadesFormateadas;
         } catch (error) {
             console.error('Error en obtenerActividadesPonente:', error);
@@ -166,8 +143,6 @@ export const ponenteAgendaService = {
 
     async obtenerAgendaPorEvento(eventoId, token) {
         try {
-            console.log(`Obteniendo agenda del ponente para evento: ${eventoId}`);
-
             const user = JSON.parse(localStorage.getItem('user'));
             const ponenteId = user?.id_ponente || user?.id;
 
@@ -181,8 +156,6 @@ export const ponenteAgendaService = {
                 actividad.evento?.id === eventoId &&
                 actividad.estado === 'aceptado'
             );
-
-            console.log(`${actividadesEvento.length} actividades para el evento ${eventoId}`);
 
             return actividadesEvento;
         } catch (error) {
@@ -214,7 +187,6 @@ export const ponenteAgendaService = {
                 url: asignacion.actividad?.url
             },
 
-            // Información del evento
             evento: {
                 id: asignacion.actividad?.evento?.id,
                 nombre: asignacion.actividad?.evento?.nombre,
@@ -227,19 +199,21 @@ export const ponenteAgendaService = {
         }));
     },
 
-    /**
-     * Responde a una invitación (aceptar/rechazar)
-     */
     async responderInvitacion(ponenteId, actividadId, aceptar, motivoRechazo = '', token) {
         try {
-            console.log(`Respondiendo invitación: ponente ${ponenteId}, actividad ${actividadId}, aceptar: ${aceptar}`);
-
             const payload = aceptar
                 ? { aceptar: true }
                 : {
                     aceptar: false,
                     motivo_rechazo: motivoRechazo
                 };
+
+            console.log('Enviando respuesta de invitación:', {
+                ponenteId,
+                actividadId,
+                payload,
+                endpoint: `${API_BASE}/ponente-actividad/${ponenteId}/${actividadId}/responder-invitacion`
+            });
 
             const response = await fetch(
                 `${API_BASE}/ponente-actividad/${ponenteId}/${actividadId}/responder-invitacion`,
@@ -252,21 +226,31 @@ export const ponenteAgendaService = {
                     body: JSON.stringify(payload)
                 }
             );
-            console.log('Response status responder invitación:', response.status);
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('Error response responder invitación:', errorText);
-                throw new Error(`Error ${response.status}: ${response.statusText}`);
+            // Obtener el texto de la respuesta primero
+            const responseText = await response.text();
+            console.log('Respuesta cruda del servidor:', responseText);
+
+            let result;
+            try {
+                result = JSON.parse(responseText);
+            } catch (parseError) {
+                console.error('Error parseando JSON:', parseError);
+                throw new Error(`Error ${response.status}: No se pudo procesar la respuesta del servidor`);
             }
 
-            const result = await response.json();
-            console.log('Respuesta a invitación:', result);
+            if (!response.ok) {
+                // El backend devolvió un error, usar el mensaje específico
+                const errorMessage = result.message || result.error || `Error ${response.status}: ${response.statusText}`;
+                console.error('Error del servidor:', errorMessage);
+                throw new Error(errorMessage);
+            }
 
             if (!result.success) {
                 throw new Error(result.message || 'Error al responder invitación');
             }
 
+            console.log('Respuesta exitosa:', result);
             return result.data;
         } catch (error) {
             console.error('Error en responderInvitacion:', error);
@@ -274,13 +258,8 @@ export const ponenteAgendaService = {
         }
     },
 
-    /**
-     * Solicita cambios en una actividad
-     */
     async solicitarCambios(ponenteId, actividadId, cambiosSolicitados, justificacion, token) {
         try {
-            console.log(`Solicitando cambios: ponente ${ponenteId}, actividad ${actividadId}`, cambiosSolicitados);
-
             const response = await fetch(
                 `${API_BASE}/ponente-actividad/${ponenteId}/${actividadId}/solicitar-cambio`,
                 {
@@ -296,16 +275,22 @@ export const ponenteAgendaService = {
                 }
             );
 
-            console.log('Response status solicitar cambios:', response.status);
+            // Obtener el texto de la respuesta primero
+            const responseText = await response.text();
+            console.log('Respuesta cruda solicitar cambios:', responseText);
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error(' Error response solicitar cambios:', errorText);
-                throw new Error(`Error ${response.status}: ${response.statusText}`);
+            let result;
+            try {
+                result = JSON.parse(responseText);
+            } catch (parseError) {
+                console.error('Error parseando JSON:', parseError);
+                throw new Error(`Error ${response.status}: No se pudo procesar la respuesta del servidor`);
             }
 
-            const result = await response.json();
-            console.log('Solicitud de cambios enviada:', result);
+            if (!response.ok) {
+                const errorMessage = result.message || result.error || `Error ${response.status}: ${response.statusText}`;
+                throw new Error(errorMessage);
+            }
 
             if (!result.success) {
                 throw new Error(result.message || 'Error al solicitar cambios');
@@ -318,9 +303,6 @@ export const ponenteAgendaService = {
         }
     },
 
-    /**
-     * Obtiene actividades agrupadas por estado
-     */
     async obtenerActividadesPorEstado(token, estado = null) {
         try {
             const user = JSON.parse(localStorage.getItem('user'));
@@ -336,7 +318,6 @@ export const ponenteAgendaService = {
                 return actividades.filter(actividad => actividad.estado === estado);
             }
 
-            // Agrupar por estado
             const agrupadas = {
                 pendientes: actividades.filter(a => a.estado === 'pendiente'),
                 aceptadas: actividades.filter(a => a.estado === 'aceptado'),
@@ -351,33 +332,22 @@ export const ponenteAgendaService = {
         }
     },
 
-    /**
-     * Verifica si una actividad está en curso (para el ponente)
-     */
     estaEnCurso(actividad) {
         const ahora = new Date();
         const inicio = new Date(`${actividad.actividad.fecha_actividad}T${actividad.actividad.hora_inicio}`);
         const fin = new Date(`${actividad.actividad.fecha_actividad}T${actividad.actividad.hora_fin}`);
-
         return ahora >= inicio && ahora <= fin;
     },
 
-    /**
-     * Verifica si una actividad es próxima (para el ponente)
-     */
     esProxima(actividad) {
         const ahora = new Date();
         const fechaActividad = new Date(`${actividad.actividad.fecha_actividad}T${actividad.actividad.hora_inicio}`);
         return fechaActividad >= ahora;
     },
 
-    /**
-     * Obtiene estadísticas del ponente
-     */
     async obtenerEstadisticasPonente(token) {
         try {
             const actividades = await this.obtenerActividadesPorEstado(token);
-
             return {
                 total: Object.values(actividades).flat().length,
                 pendientes: actividades.pendientes.length,

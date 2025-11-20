@@ -1,13 +1,295 @@
-/* En DashboardSection.module.css - agrega esto */
-.emptySubtitle {
-    color: #666;
-    font-size: 0.9rem;
-    margin-top: 0.5rem;
+/* DashboardSection.module.css */
+.dashboard {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    padding: 30px 20px;
 }
 
+.dashboard h1 {
+    color: #1a365d;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    text-align: center;
+}
+
+.subtitle {
+    color: #4a5568;
+    font-size: 1.1rem;
+    text-align: center;
+    margin: 0 0 40px 0;
+    font-weight: 400;
+}
+
+/* Estadísticas */
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+    margin-bottom: 50px;
+}
+
+.statCard {
+    background: white;
+    padding: 30px 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.statCard::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #2C5F7C 0%, #1E4157 100%);
+}
+
+.statCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.statCard h3 {
+    color: #4a5568;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0 0 12px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.statNumber {
+    color: #2C5F7C;
+    font-size: 2.5rem;
+    font-weight: 700;
+    display: block;
+}
+
+/* Lista de actividades */
+.actividadesList {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+}
+
+.actividadesList h2 {
+    color: #1a365d;
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin: 0 0 24px 0;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+/* Estados vacíos */
+.emptyState {
+    text-align: center;
+    padding: 60px 20px;
+    color: #718096;
+}
+
+.emptyState p {
+    font-size: 1.1rem;
+    margin: 0 0 12px 0;
+    color: #4a5568;
+}
+
+.emptySubtitle {
+    font-size: 0.95rem !important;
+    color: #718096 !important;
+    line-height: 1.5;
+}
+
+/* Loading state */
 .loading {
     text-align: center;
-    padding: 2rem;
-    color: #666;
+    padding: 60px 20px;
+    color: #4a5568;
     font-size: 1.1rem;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Filtros (si decides agregarlos después) */
+.filters {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.filterBtn {
+    padding: 10px 20px;
+    border: 2px solid #e2e8f0;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    color: #4a5568;
+    transition: all 0.3s ease;
+}
+
+.filterBtn:hover {
+    border-color: #2C5F7C;
+    color: #2C5F7C;
+}
+
+.filterBtn.active {
+    background: #2C5F7C;
+    border-color: #2C5F7C;
+    color: white;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .statsGrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard {
+        padding: 20px 15px;
+    }
+
+    .dashboard h1 {
+        font-size: 2rem;
+    }
+
+    .subtitle {
+        font-size: 1rem;
+        margin-bottom: 30px;
+    }
+
+    .statsGrid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        margin-bottom: 40px;
+    }
+
+    .statCard {
+        padding: 24px 20px;
+    }
+
+    .statNumber {
+        font-size: 2rem;
+    }
+
+    .actividadesList {
+        padding: 24px 20px;
+    }
+
+    .actividadesList h2 {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+    }
+
+    .emptyState {
+        padding: 40px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard {
+        padding: 15px 10px;
+    }
+
+    .dashboard h1 {
+        font-size: 1.75rem;
+    }
+
+    .statsGrid {
+        gap: 12px;
+    }
+
+    .statCard {
+        padding: 20px 16px;
+    }
+
+    .statCard h3 {
+        font-size: 0.9rem;
+    }
+
+    .statNumber {
+        font-size: 1.75rem;
+    }
+
+    .actividadesList {
+        padding: 20px 16px;
+        border-radius: 12px;
+    }
+
+    .actividadesList h2 {
+        font-size: 1.3rem;
+    }
+
+    .emptyState p {
+        font-size: 1rem;
+    }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.statCard {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.statCard:nth-child(1) { animation-delay: 0.1s; }
+.statCard:nth-child(2) { animation-delay: 0.2s; }
+.statCard:nth-child(3) { animation-delay: 0.3s; }
+.statCard:nth-child(4) { animation-delay: 0.4s; }
+
+/* Estados de las tarjetas de estadísticas con colores específicos */
+.statCard:nth-child(1)::before {
+    background: linear-gradient(135deg, #2C5F7C 0%, #1E4157 100%);
+}
+
+.statCard:nth-child(2)::before {
+    background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+}
+
+.statCard:nth-child(3)::before {
+    background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+}
+
+.statCard:nth-child(4)::before {
+    background: linear-gradient(135deg, #d69e2e 0%, #b7791f 100%);
+}
+
+/* Colores para los números de estadísticas */
+.statCard:nth-child(1) .statNumber {
+    color: #2C5F7C;
+}
+
+.statCard:nth-child(2) .statNumber {
+    color: #ed8936;
+}
+
+.statCard:nth-child(3) .statNumber {
+    color: #38a169;
+}
+
+.statCard:nth-child(4) .statNumber {
+    color: #d69e2e;
 }

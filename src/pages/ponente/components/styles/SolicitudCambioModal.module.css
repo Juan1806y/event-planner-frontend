@@ -302,3 +302,40 @@
         max-width: none;
     }
 }
+
+/* Agrega estos estilos al archivo SolicitudCambioModal.module.css */
+
+.fieldHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.clearButton {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+    color: #6c757d;
+    padding: 0;
+}
+
+.clearButton:hover {
+    background: #e9ecef;
+    color: #495057;
+}
+
+.helpText {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.75rem;
+    color: #94a3b8;
+    font-style: italic;
+}

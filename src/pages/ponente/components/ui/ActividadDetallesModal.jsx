@@ -5,6 +5,7 @@ const ActividadDetallesModal = ({ actividadId, eventoId, onClose }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [detalle, setDetalle] = useState(null);
+    const [eventoData, setEventoData] = useState(null);
 
     useEffect(() => {
         const fetchDetalle = async () => {
@@ -14,31 +15,81 @@ const ActividadDetallesModal = ({ actividadId, eventoId, onClose }) => {
                 const token = localStorage.getItem('access_token');
                 const API_BASE = (window.__env && window.__env.REACT_APP_API_URL) || 'http://localhost:3000';
 
-                // Usar la ruta correcta que incluye lugares
-                const res = await fetch(`${API_BASE}/api/eventos/${eventoId}/actividades`, {
+                console.log('Buscando detalles para:', { actividadId, eventoId });
+
+                let eventoIdFinal = eventoId;
+
+                if (!eventoIdFinal) {
+                    console.log('No hay eventoId, intentando obtener actividad directamente...');
+                    const actividadDirectaRes = await fetch(`${API_BASE}/api/actividades/${actividadId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (actividadDirectaRes.ok) {
+                        const actividadDirectaJson = await actividadDirectaRes.json();
+                        if (actividadDirectaJson.success) {
+                            eventoIdFinal = actividadDirectaJson.data?.id_evento;
+                            console.log('Evento ID obtenido de actividad directa:', eventoIdFinal);
+                        }
+                    }
+                }
+
+                if (!eventoIdFinal) {
+                    throw new Error('No se pudo identificar el evento de la actividad');
+                }
+
+                console.log('Obteniendo datos del evento:', eventoIdFinal);
+                const eventoRes = await fetch(`${API_BASE}/api/eventos/${eventoIdFinal}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     }
                 });
 
-                if (!res.ok) {
-                    const text = await res.text();
-                    throw new Error(text || `Error ${res.status}`);
+                if (!eventoRes.ok) {
+                    throw new Error(`Error ${eventoRes.status} al obtener datos del evento`);
                 }
 
-                const json = await res.json();
+                const eventoJson = await eventoRes.json();
 
-                if (json.success && json.data) {
-                    // Buscar la actividad específica dentro del array de actividades
-                    const actividadEncontrada = json.data.find(actividad =>
+                if (!eventoJson.success || !eventoJson.data) {
+                    throw new Error('No se pudo obtener la información del evento');
+                }
+
+                setEventoData(eventoJson.data);
+                console.log('Datos del evento obtenidos:', eventoJson.data);
+
+                console.log('Obteniendo actividades del evento...');
+                const actividadesRes = await fetch(`${API_BASE}/api/eventos/${eventoIdFinal}/actividades`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!actividadesRes.ok) {
+                    const errorText = await actividadesRes.text();
+                    console.error('Error en respuesta de actividades:', errorText);
+                    throw new Error(`Error ${actividadesRes.status} al obtener actividades`);
+                }
+
+                const actividadesJson = await actividadesRes.json();
+                console.log('Respuesta de actividades:', actividadesJson);
+
+                if (actividadesJson.success && actividadesJson.data) {
+                    const actividadEncontrada = actividadesJson.data.find(actividad =>
                         actividad.id_actividad === parseInt(actividadId)
                     );
+
+                    console.log('Actividad encontrada:', actividadEncontrada);
 
                     if (actividadEncontrada) {
                         setDetalle(actividadEncontrada);
                     } else {
-                        throw new Error('No se encontró la actividad especificada');
+                        throw new Error(`No se encontró la actividad con ID: ${actividadId}`);
                     }
                 } else {
                     throw new Error('No se pudo obtener la información de las actividades');
@@ -51,173 +102,132 @@ const ActividadDetallesModal = ({ actividadId, eventoId, onClose }) => {
             }
         };
 
-        if (actividadId && eventoId) {
+        if (actividadId) {
             fetchDetalle();
+        } else {
+            setError('No se proporcionó ID de actividad');
+            setLoading(false);
         }
     }, [actividadId, eventoId]);
 
-    // Función para formatear la fecha
     const formatFecha = (fechaString) => {
         if (!fechaString) return 'No definida';
-        const fecha = new Date(fechaString);
-        return fecha.toLocaleDateString('es-ES', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
+        try {
+            const fecha = new Date(fechaString);
+            return fecha.toLocaleDateString('es-ES', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        } catch (e) {
+            return 'Fecha inválida';
+        }
     };
 
-    // Función para formatear hora
     const formatHora = (horaString) => {
         if (!horaString) return '';
         return horaString.substring(0, 5);
     };
 
-    // Calcular duración
     const calcularDuracion = (horaInicio, horaFin) => {
         if (!horaInicio || !horaFin) return 'No disponible';
 
-        const inicio = new Date(`2000-01-01T${horaInicio}`);
-        const fin = new Date(`2000-01-01T${horaFin}`);
-        const diffMs = fin - inicio;
-        const diffMins = Math.floor(diffMs / 60000);
-        const hours = Math.floor(diffMins / 60);
-        const minutes = diffMins % 60;
+        try {
+            const inicio = new Date(`2000-01-01T${horaInicio}`);
+            const fin = new Date(`2000-01-01T${horaFin}`);
+            const diffMs = fin - inicio;
+            const diffMins = Math.floor(diffMs / 60000);
+            const hours = Math.floor(diffMins / 60);
+            const minutes = diffMins % 60;
 
-        if (hours > 0) {
-            return `${hours}h ${minutes > 0 ? `${minutes}m` : ''}`;
+            if (hours > 0) {
+                return `${hours}h ${minutes > 0 ? `${minutes}m` : ''}`;
+            }
+            return `${minutes} minutos`;
+        } catch (e) {
+            return 'No disponible';
         }
-        return `${minutes} minutos`;
+    };
+
+    const handleRetry = () => {
+        setLoading(true);
+        setError(null);
     };
 
     return (
-        <div className={styles.modalOverlay} style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.7)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-            padding: '20px'
-        }}>
-            <div className={styles.modal} style={{
-                background: 'white',
-                borderRadius: '16px',
-                maxWidth: '800px',
-                width: '100%',
-                maxHeight: '90vh',
-                overflow: 'auto',
-                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)'
-            }}>
+        <div className={styles.modalOverlay}>
+            <div className={styles.modal}>
                 <div className={styles.modalHeader}>
                     <div>
                         <h2>Detalles de la Actividad</h2>
-                        <p className={styles.eventSubtitle}>Información completa de la actividad</p>
                     </div>
-                    <button
-                        className={styles.closeButton}
-                        onClick={onClose}
-                        style={{
-                            background: 'rgba(255, 255, 255, 0.2)',
-                            border: 'none',
-                            color: 'white',
-                            fontSize: '24px',
-                            cursor: 'pointer',
-                            padding: '4px 8px',
-                            borderRadius: '4px',
-                            transition: 'background 0.3s ease'
-                        }}
-                        onMouseEnter={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.3)'}
-                        onMouseLeave={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
-                    >
+                    <button className={styles.closeButton} onClick={onClose}>
                         ×
                     </button>
                 </div>
 
                 <div className={styles.modalBody}>
                     {loading && (
-                        <div style={{
-                            padding: '60px 20px',
-                            textAlign: 'center',
-                            color: '#64748b'
-                        }}>
+                        <div className={styles.loadingContainer}>
                             <p>Cargando detalles de la actividad...</p>
+                            <div className={styles.loadingSpinner}></div>
                         </div>
                     )}
 
                     {error && (
-                        <div style={{
-                            padding: '40px 20px',
-                            textAlign: 'center',
-                            background: '#fef2f2',
-                            margin: '20px',
-                            borderRadius: '8px',
-                            border: '1px solid #fecaca'
-                        }}>
-                            <h3 style={{ color: '#dc2626', marginBottom: '8px' }}>Error</h3>
-                            <p style={{ color: '#991b1b' }}>{error}</p>
-                            <button
-                                onClick={() => window.location.reload()}
-                                style={{
-                                    marginTop: '12px',
-                                    padding: '8px 16px',
-                                    background: '#dc2626',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer'
-                                }}
-                            >
-                                Reintentar
-                            </button>
+                        <div className={styles.errorContainer}>
+                            <h3>Error</h3>
+                            <p>{error}</p>
+                            <div className={styles.errorActions}>
+                                <button onClick={handleRetry} className={styles.retryButton}>
+                                    Reintentar
+                                </button>
+                                <button onClick={onClose} className={styles.closeErrorButton}>
+                                    Cerrar
+                                </button>
+                            </div>
                         </div>
                     )}
 
-                    {detalle && (
+                    {detalle && eventoData && !loading && !error && (
                         <div className={styles.eventInfoGrid}>
-                            {/* Información Principal */}
+                            {/* Información del Evento */}
                             <div className={styles.infoSection}>
-                                <h4>Información Principal</h4>
+                                <h4>Información del Evento</h4>
                                 <div className={styles.infoItem}>
-                                    <label>ID de Actividad</label>
-                                    <span style={{
-                                        background: '#f0f7ff',
-                                        padding: '4px 8px',
-                                        borderRadius: '4px',
-                                        fontFamily: 'monospace',
-                                        color: '#2C5F7C',
-                                        fontWeight: '600'
-                                    }}>
-                                        #{detalle.id_actividad}
+                                    <label>Empresa</label>
+                                    <span className={styles.empresaBadge}>
+                                        {eventoData.empresa?.nombre || 'No especificada'}
                                     </span>
                                 </div>
                                 <div className={styles.infoItem}>
-                                    <label>Título</label>
-                                    <p className={styles.eventTitle}>
-                                        {detalle.titulo || 'Sin título'}
+                                    <label>Creador del Evento</label>
+                                    <div className={styles.creadorInfo}>
+                                        <div className={styles.creadorNombre}>
+                                            {eventoData.creador?.nombre || 'No especificado'}
+                                        </div>
+                                        <div className={styles.creadorCorreo}>
+                                            {eventoData.creador?.correo || 'Sin correo'}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className={styles.infoItem}>
+                                    <label>Nombre del Evento</label>
+                                    <p className={styles.eventoTitulo}>
+                                        {eventoData.titulo || 'Sin título'}
                                     </p>
                                 </div>
                                 <div className={styles.infoItem}>
-                                    <label>Descripción</label>
-                                    <p className={styles.eventDescription}>
-                                        {detalle.descripcion || 'No hay descripción disponible'}
+                                    <label>Descripción del Evento</label>
+                                    <p className={styles.eventoDescripcion}>
+                                        {eventoData.descripcion || 'No hay descripción disponible'}
                                     </p>
                                 </div>
                                 <div className={styles.infoItem}>
-                                    <label>ID del Evento</label>
-                                    <span style={{
-                                        background: '#f0f9ff',
-                                        padding: '4px 8px',
-                                        borderRadius: '4px',
-                                        fontFamily: 'monospace',
-                                        fontWeight: '600'
-                                    }}>
-                                        #{detalle.id_evento}
+                                    <label>Cupos del Evento</label>
+                                    <span className={styles.cuposBadge}>
+                                        {eventoData.cupos || 0} cupos disponibles
                                     </span>
                                 </div>
                             </div>
@@ -226,14 +236,14 @@ const ActividadDetallesModal = ({ actividadId, eventoId, onClose }) => {
                             <div className={styles.infoSection}>
                                 <h4>Fechas y Horarios</h4>
                                 <div className={styles.infoItem}>
-                                    <label>Fecha</label>
-                                    <span style={{ fontWeight: '600', color: '#1f2937' }}>
+                                    <label>Fecha de la Actividad</label>
+                                    <span className={styles.fechaTexto}>
                                         {formatFecha(detalle.fecha_actividad)}
                                     </span>
                                 </div>
                                 <div className={styles.infoItem}>
                                     <label>Horario</label>
-                                    <span style={{ fontWeight: '600', color: '#1f2937' }}>
+                                    <span className={styles.horarioTexto}>
                                         {detalle.hora_inicio && detalle.hora_fin
                                             ? `${formatHora(detalle.hora_inicio)} - ${formatHora(detalle.hora_fin)}`
                                             : 'No definido'
@@ -242,65 +252,10 @@ const ActividadDetallesModal = ({ actividadId, eventoId, onClose }) => {
                                 </div>
                                 <div className={styles.infoItem}>
                                     <label>Duración</label>
-                                    <span style={{
-                                        fontWeight: '500',
-                                        color: '#4b5563',
-                                        background: '#f0fdf4',
-                                        padding: '4px 8px',
-                                        borderRadius: '4px',
-                                        border: '1px solid #bbf7d0'
-                                    }}>
+                                    <span className={styles.duracionBadge}>
                                         {calcularDuracion(detalle.hora_inicio, detalle.hora_fin)}
                                     </span>
                                 </div>
-                            </div>
-
-                            {/* Lugares */}
-                            <div className={styles.infoSection}>
-                                <h4>Ubicaciones</h4>
-                                {detalle.lugares && detalle.lugares.length > 0 ? (
-                                    detalle.lugares.map((lugar, index) => (
-                                        <div key={lugar.id || index} className={styles.infoItem}>
-                                            <label>Lugar {detalle.lugares.length > 1 ? index + 1 : ''}</label>
-                                            <div style={{
-                                                background: '#f8fafc',
-                                                padding: '12px',
-                                                borderRadius: '8px',
-                                                border: '1px solid #e2e8f0'
-                                            }}>
-                                                <div style={{
-                                                    fontWeight: '600',
-                                                    color: '#1e293b',
-                                                    marginBottom: '4px'
-                                                }}>
-                                                    {lugar.nombre}
-                                                </div>
-                                                {lugar.descripcion && (
-                                                    <div style={{
-                                                        color: '#64748b',
-                                                        fontSize: '0.9rem'
-                                                    }}>
-                                                        {lugar.descripcion}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <div className={styles.infoItem}>
-                                        <label>Ubicación</label>
-                                        <span style={{
-                                            color: '#9ca3af',
-                                            fontStyle: 'italic',
-                                            background: '#f8fafc',
-                                            padding: '8px 12px',
-                                            borderRadius: '6px',
-                                            display: 'inline-block'
-                                        }}>
-                                            No hay lugares asignados
-                                        </span>
-                                    </div>
-                                )}
                             </div>
 
                             {/* Información Adicional */}
@@ -314,59 +269,20 @@ const ActividadDetallesModal = ({ actividadId, eventoId, onClose }) => {
                                                 href={detalle.url}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                style={{
-                                                    color: '#2C5F7C',
-                                                    textDecoration: 'underline',
-                                                    wordBreak: 'break-all',
-                                                    fontWeight: '500'
-                                                }}
+                                                className={styles.urlLink}
                                             >
                                                 {detalle.url}
                                             </a>
                                         ) : (
-                                            <span style={{
-                                                color: '#9ca3af',
-                                                fontStyle: 'italic',
-                                                background: '#f8fafc',
-                                                padding: '6px 10px',
-                                                borderRadius: '4px',
-                                                display: 'inline-block'
-                                            }}>
+                                            <span className={styles.sinUrl}>
                                                 No hay URL disponible
                                             </span>
                                         )}
                                     </span>
                                 </div>
-                                <div className={styles.infoItem}>
-                                    <label>Estado</label>
-                                    <span className={`${styles.statusBadge} ${styles.statusAvailable}`}>
-                                        Activa
-                                    </span>
-                                </div>
-                                <div className={styles.infoItem}>
-                                    <label>Fecha Técnica</label>
-                                    <span style={{
-                                        fontFamily: 'monospace',
-                                        fontSize: '0.85rem',
-                                        background: '#f8fafc',
-                                        padding: '4px 8px',
-                                        borderRadius: '4px'
-                                    }}>
-                                        {detalle.fecha_actividad}
-                                    </span>
-                                </div>
                             </div>
                         </div>
                     )}
-                </div>
-
-                <div className={styles.modalActions}>
-                    <button
-                        className={styles.btnClose}
-                        onClick={onClose}
-                    >
-                        Cerrar Detalles
-                    </button>
                 </div>
             </div>
         </div>

@@ -54,49 +54,6 @@ const DashboardSection = ({ actividades, loading }) => {
                     <span className={styles.statNumber}>{estadisticas.conSolicitud}</span>
                 </div>
             </div>
-
-            {/* Filtros */}
-            <div className={styles.filters}>
-                <button
-                    className={`${styles.filterBtn} ${filter === 'todas' ? styles.active : ''}`}
-                    onClick={() => setFilter('todas')}
-                >
-                    Todas
-                </button>
-                <button
-                    className={`${styles.filterBtn} ${filter === 'pendientes' ? styles.active : ''}`}
-                    onClick={() => setFilter('pendientes')}
-                >
-                    Pendientes
-                </button>
-                <button
-                    className={`${styles.filterBtn} ${filter === 'aceptadas' ? styles.active : ''}`}
-                    onClick={() => setFilter('aceptadas')}
-                >
-                    Aceptadas
-                </button>
-            </div>
-
-            {/* Lista de actividades */}
-            <div className={styles.actividadesList}>
-                <h2>Próximas Actividades</h2>
-                {actividadesFiltradas.length === 0 ? (
-                    <div className={styles.emptyState}>
-                        <p>No tienes actividades asignadas actualmente.</p>
-                        <p className={styles.emptySubtitle}>
-                            Cuando un organizador te asigne a un evento, podrás consultar tu agenda aquí.
-                        </p>
-                    </div>
-                ) : (
-                    actividadesFiltradas.map(actividad => (
-                        <ActividadCard
-                            key={`${actividad.id_ponente}-${actividad.id_actividad}`}
-                            actividad={actividad}
-                            showActions={true}
-                        />
-                    ))
-                )}
-            </div>
         </div>
     );
 };

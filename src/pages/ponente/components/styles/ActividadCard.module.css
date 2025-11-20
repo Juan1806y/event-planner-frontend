@@ -39,7 +39,7 @@
 }
 
 .modalidadBadge {
-    background: rgba(255,255,255,0.12);
+    background: rgba(255, 255, 255, 0.12);
     color: white;
     padding: 4px 10px;
     border-radius: 14px;
@@ -56,10 +56,29 @@
     flex: 0 0 auto;
 }
 
-.estadoBadge.pendiente { background: #fef3c7; color: #92400e; border: 1px solid #f59e0b; }
-.estadoBadge.aceptado  { background: #d1fae5; color: #065f46; border: 1px solid #10b981; }
-.estadoBadge.rechazado { background: #fee2e2; color: #991b1b; border: 1px solid #ef4444; }
-.estadoBadge.solicitudCambio { background: #fef3c7; color: #92400e; border: 1px solid #f59e0b; }
+.estadoBadge.pendiente {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #f59e0b;
+}
+
+.estadoBadge.aceptado {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #10b981;
+}
+
+.estadoBadge.rechazado {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #ef4444;
+}
+
+.estadoBadge.solicitudCambio {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #f59e0b;
+}
 
 .cardBody {
     padding: 20px;
@@ -84,10 +103,26 @@
     transition: width 0.3s ease;
 }
 
-.pendiente { background: linear-gradient(90deg,#f59e0b,#fbbf24); width:30%; }
-.aceptado { background: linear-gradient(90deg,#10b981,#34d399); width:100%; }
-.rechazado { background: linear-gradient(90deg,#ef4444,#f87171); width:100%; }
-.solicitud_cambio, .solicitudCambio { background: linear-gradient(90deg,#607b81,#b1c8d7); width:60%; }
+.pendiente {
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+    width: 30%;
+}
+
+.aceptado {
+    background: linear-gradient(90deg, #10b981, #34d399);
+    width: 100%;
+}
+
+.rechazado {
+    background: linear-gradient(90deg, #ef4444, #f87171);
+    width: 100%;
+}
+
+.solicitud_cambio,
+.solicitudCambio {
+    background: linear-gradient(90deg, #607b81, #b1c8d7);
+    width: 60%;
+}
 
 .detalles {
     display: flex;
@@ -103,7 +138,9 @@
     border-bottom: 1px solid #f0f0f0;
 }
 
-.detalleItem:last-child { border-bottom: none; }
+.detalleItem:last-child {
+    border-bottom: none;
+}
 
 .detalleLabel {
     font-size: 11px;
@@ -127,12 +164,21 @@
     border-left: 3px solid #2C5F7C;
 }
 
-.descripcionLabel { font-size: 11px; font-weight: 700; color: #2C5F7C; margin-bottom: 6px; }
-.descripcionText { color: #4b5563; font-size: 0.95rem; }
+.descripcionLabel {
+    font-size: 11px;
+    font-weight: 700;
+    color: #2C5F7C;
+    margin-bottom: 6px;
+}
+
+.descripcionText {
+    color: #4b5563;
+    font-size: 0.95rem;
+}
 
 .actions {
-    display:flex;
-    gap:10px;
+    display: flex;
+    gap: 10px;
     margin-top: auto;
     padding-top: 12px;
     border-top: 1px solid #e9ecef;
@@ -140,27 +186,83 @@
     align-items: center;
 }
 
-.solicitarBtn, .detallesBtn {
-    padding:10px 14px;
-    border-radius:8px;
-    border:none;
-    cursor:pointer;
-    font-weight:700;
+.solicitarBtn,
+.detallesBtn {
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
     min-width: 140px;
     white-space: nowrap;
 }
-.solicitarBtn { background: linear-gradient(135deg,#3b3b8f,#474357); color: white; }
-.detallesBtn { background: linear-gradient(135deg,#2C5F7C,#1E4157); color: white; }
 
-.solicitudInfo { background: linear-gradient(135deg,#6f7299,#60788e); border-radius:8px; padding:12px; border:1px; }
-.solicitudText { color: #f8f4f2; font-weight:600; }
-
-@media (max-width:768px){
-    .cardHeader{padding:14px;}
-    .cardBody{padding:16px;}
-    .actions{flex-direction:column;}
-    .solicitarBtn, .detallesBtn { width:100%; min-width: auto; }
+.solicitarBtn {
+    background: linear-gradient(135deg, #3b3b8f, #474357);
+    color: white;
 }
 
-@keyframes cardEntrance{from{opacity:0;transform:translateY(20px) scale(.95);}to{opacity:1;transform:translateY(0) scale(1);}}
-.card{animation:cardEntrance .5s ease-out}
+.detallesBtn {
+    background: linear-gradient(135deg, #2C5F7C, #1E4157);
+    color: white;
+}
+
+.solicitudInfo {
+    background: linear-gradient(135deg, #6f7299, #60788e);
+    border-radius: 8px;
+    padding: 12px;
+    border: 1px;
+}
+
+.solicitudText {
+    color: #f8f4f2;
+    font-weight: 600;
+}
+
+.rechazadoBtn {
+    background: linear-gradient(135deg, #5e636e) !important;
+    cursor: not-allowed !important;
+    opacity: 0.7 !important;
+}
+
+.solicitudEnviadaBtn {
+    background: linear-gradient(135deg, #5d6de9) !important;
+    cursor: not-allowed !important;
+}
+
+
+@media (max-width:768px) {
+    .cardHeader {
+        padding: 14px;
+    }
+
+    .cardBody {
+        padding: 16px;
+    }
+
+    .actions {
+        flex-direction: column;
+    }
+
+    .solicitarBtn,
+    .detallesBtn {
+        width: 100%;
+        min-width: auto;
+    }
+}
+
+@keyframes cardEntrance {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.card {
+    animation: cardEntrance .5s ease-out
+}

@@ -4,12 +4,12 @@ import styles from '../styles/SolicitudCambioModal.module.css';
 const SolicitudCambioModal = ({ actividad, onClose, onSubmit }) => {
     const [formData, setFormData] = useState({
         cambios_solicitados: {
-            fecha_actividad: actividad.fecha ? formatDateForInput(actividad.fecha) : '',
-            hora_inicio: actividad.hora_inicio || '',
-            hora_fin: actividad.hora_fin || '',
-            titulo: actividad.nombre || actividad.titulo || '',
-            descripcion: actividad.descripcion || '',
-            ubicacion: actividad.ubicacion || ''
+            fecha_actividad: '',
+            hora_inicio: '',
+            hora_fin: '',
+            titulo: '',
+            descripcion: '',
+            ubicacion: ''
         },
         tipo_cambio: [],
         justificacion: ''
@@ -24,17 +24,19 @@ const SolicitudCambioModal = ({ actividad, onClose, onSubmit }) => {
     function formatDateForInput(dateString) {
         if (!dateString) return '';
         const date = new Date(dateString);
-        const year = date.getUTCFullYear();
-        const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-        const day = String(date.getUTCDate()).padStart(2, '0');
+        const adjustedDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+        const year = adjustedDate.getFullYear();
+        const month = String(adjustedDate.getMonth() + 1).padStart(2, '0');
+        const day = String(adjustedDate.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     }
 
     function formatDateForDisplay(dateString) {
         if (!dateString) return 'No definida';
         const date = new Date(dateString);
-        return date.toLocaleDateString('es-ES', {
-            timeZone: 'UTC',
+        const adjustedDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+
+        return adjustedDate.toLocaleDateString('es-ES', {
             weekday: 'long',
             year: 'numeric',
             month: 'long',
@@ -80,36 +82,31 @@ const SolicitudCambioModal = ({ actividad, onClose, onSubmit }) => {
     const validateForm = () => {
         const newErrors = {};
 
-        // Verificar que al menos haya un cambio solicitado
         const cambiosSolicitados = Object.entries(formData.cambios_solicitados)
             .some(([key, value]) => {
-                if (key === 'fecha_actividad' && value) return true;
-                if (key === 'hora_inicio' && value) return true;
-                if (key === 'hora_fin' && value) return true;
-                if (key === 'titulo' && value) return true;
-                if (key === 'descripcion' && value) return true;
-                if (key === 'ubicacion' && value) return true;
+                if (value && value.trim() !== '') {
+                    return true;
+                }
                 return false;
             });
 
-        if (!cambiosSolicitados && formData.tipo_cambio.length === 0) {
+        if (!cambiosSolicitados) {
             newErrors.cambios = 'Por favor, especifica al menos un cambio solicitado';
         }
 
-        // Validación más estricta de la justificación
-        if (!formData.justificacion || !formData.justificacion.trim()) {
-            newErrors.justificacion = 'Por favor, proporciona una justificación para el cambio';
-        } else if (formData.justificacion.trim().length < 10) {
-            newErrors.justificacion = 'La justificación debe tener al menos 10 caracteres';
+        if (cambiosSolicitados) {
+            if (!formData.justificacion || !formData.justificacion.trim()) {
+                newErrors.justificacion = 'Por favor, proporciona una justificación para el cambio';
+            } else if (formData.justificacion.trim().length < 10) {
+                newErrors.justificacion = 'La justificación debe tener al menos 10 caracteres';
+            }
         }
 
-        // Validar que si se cambia hora_inicio, también se cambie hora_fin y viceversa
         if ((formData.cambios_solicitados.hora_inicio && !formData.cambios_solicitados.hora_fin) ||
             (!formData.cambios_solicitados.hora_inicio && formData.cambios_solicitados.hora_fin)) {
             newErrors.horario = 'Si modificas el horario, debes especificar tanto la hora de inicio como la de fin';
         }
 
-        // Validar que la fecha no sea en el pasado
         if (formData.cambios_solicitados.fecha_actividad) {
             const selectedDate = new Date(formData.cambios_solicitados.fecha_actividad);
             const today = new Date();
@@ -143,11 +140,6 @@ const SolicitudCambioModal = ({ actividad, onClose, onSubmit }) => {
             });
 
             const justificacion = formData.justificacion.trim();
-            if (!justificacion) {
-                showAlert('La justificación es obligatoria', 'error');
-                setIsSubmitting(false);
-                return;
-            }
 
             const datosEnvio = {
                 cambios_solicitados: cambiosFiltrados,
@@ -157,13 +149,10 @@ const SolicitudCambioModal = ({ actividad, onClose, onSubmit }) => {
 
             console.log('Datos a enviar:', datosEnvio);
 
-            // Enviar la solicitud
             await onSubmit(datosEnvio);
 
-            // Mostrar notificación de éxito personalizada
             showAlert('Tu solicitud de cambio ha sido enviada para revisión', 'success');
 
-            // Cerrar el modal después de un tiempo
             setTimeout(() => {
                 onClose();
             }, 2000);
@@ -171,7 +160,6 @@ const SolicitudCambioModal = ({ actividad, onClose, onSubmit }) => {
         } catch (error) {
             console.error('Error al enviar solicitud:', error);
 
-            // Mostrar error específico si está disponible
             if (error.message && error.message.includes('400')) {
                 showAlert('Error: La justificación es requerida o muy corta', 'error');
             } else if (error.message && error.message.includes('network')) {
@@ -203,9 +191,12 @@ const SolicitudCambioModal = ({ actividad, onClose, onSubmit }) => {
         }
     };
 
+    const clearField = (field) => {
+        handleInputChange(`cambios_solicitados.${field}`, '');
+    };
+
     return (
         <div className={styles.modalOverlay}>
-            {/* Notificación personalizada - ESTILO MEJORADO */}
             {showNotification && (
                 <div className={`${styles.notification} ${styles[notificationType]}`}>
                     <div className={styles.notificationContent}>
@@ -246,6 +237,9 @@ const SolicitudCambioModal = ({ actividad, onClose, onSubmit }) => {
 
                     <div className={styles.formSection}>
                         <h3>Cambios Solicitados</h3>
+                        <p className={styles.helpText}>
+                            Completa solo los campos que deseas modificar. No es necesario completar todos.
+                        </p>
 
                         {errors.cambios && (
                             <div className={styles.errorMessage}>
@@ -254,7 +248,18 @@ const SolicitudCambioModal = ({ actividad, onClose, onSubmit }) => {
                         )}
 
                         <div className={styles.formGroup}>
-                            <label>Nueva Fecha:</label>
+                            <div className={styles.fieldHeader}>
+                                <label>Nueva Fecha:</label>
+                                {formData.cambios_solicitados.fecha_actividad && (
+                                    <button
+                                        type="button"
+                                        className={styles.clearButton}
+                                        onClick={() => clearField('fecha_actividad')}
+                                    >
+                                        ×
+                                    </button>
+                                )}
+                            </div>
                             <input
                                 type="date"
                                 value={formData.cambios_solicitados.fecha_actividad}
@@ -273,7 +278,18 @@ const SolicitudCambioModal = ({ actividad, onClose, onSubmit }) => {
 
                         <div className={styles.formRow}>
                             <div className={styles.formGroup}>
-                                <label>Nueva Hora de Inicio:</label>
+                                <div className={styles.fieldHeader}>
+                                    <label>Nueva Hora de Inicio:</label>
+                                    {formData.cambios_solicitados.hora_inicio && (
+                                        <button
+                                            type="button"
+                                            className={styles.clearButton}
+                                            onClick={() => clearField('hora_inicio')}
+                                        >
+                                            ×
+                                        </button>
+                                    )}
+                                </div>
                                 <input
                                     type="time"
                                     value={formData.cambios_solicitados.hora_inicio}
@@ -285,7 +301,18 @@ const SolicitudCambioModal = ({ actividad, onClose, onSubmit }) => {
                             </div>
 
                             <div className={styles.formGroup}>
-                                <label>Nueva Hora de Fin:</label>
+                                <div className={styles.fieldHeader}>
+                                    <label>Nueva Hora de Fin:</label>
+                                    {formData.cambios_solicitados.hora_fin && (
+                                        <button
+                                            type="button"
+                                            className={styles.clearButton}
+                                            onClick={() => clearField('hora_fin')}
+                                        >
+                                            ×
+                                        </button>
+                                    )}
+                                </div>
                                 <input
                                     type="time"
                                     value={formData.cambios_solicitados.hora_fin}
@@ -304,7 +331,18 @@ const SolicitudCambioModal = ({ actividad, onClose, onSubmit }) => {
                         )}
 
                         <div className={styles.formGroup}>
-                            <label>Nuevo Título:</label>
+                            <div className={styles.fieldHeader}>
+                                <label>Nuevo Título:</label>
+                                {formData.cambios_solicitados.titulo && (
+                                    <button
+                                        type="button"
+                                        className={styles.clearButton}
+                                        onClick={() => clearField('titulo')}
+                                    >
+                                        ×
+                                    </button>
+                                )}
+                            </div>
                             <input
                                 type="text"
                                 value={formData.cambios_solicitados.titulo}
@@ -317,7 +355,18 @@ const SolicitudCambioModal = ({ actividad, onClose, onSubmit }) => {
                         </div>
 
                         <div className={styles.formGroup}>
-                            <label>Nueva Descripción:</label>
+                            <div className={styles.fieldHeader}>
+                                <label>Nueva Descripción:</label>
+                                {formData.cambios_solicitados.descripcion && (
+                                    <button
+                                        type="button"
+                                        className={styles.clearButton}
+                                        onClick={() => clearField('descripcion')}
+                                    >
+                                        ×
+                                    </button>
+                                )}
+                            </div>
                             <textarea
                                 value={formData.cambios_solicitados.descripcion}
                                 onChange={(e) => handleInputChange('cambios_solicitados.descripcion', e.target.value)}
@@ -330,7 +379,18 @@ const SolicitudCambioModal = ({ actividad, onClose, onSubmit }) => {
                         </div>
 
                         <div className={styles.formGroup}>
-                            <label>Nueva Ubicación:</label>
+                            <div className={styles.fieldHeader}>
+                                <label>Nueva Ubicación:</label>
+                                {formData.cambios_solicitados.ubicacion && (
+                                    <button
+                                        type="button"
+                                        className={styles.clearButton}
+                                        onClick={() => clearField('ubicacion')}
+                                    >
+                                        ×
+                                    </button>
+                                )}
+                            </div>
                             <input
                                 type="text"
                                 value={formData.cambios_solicitados.ubicacion}
@@ -353,7 +413,6 @@ const SolicitudCambioModal = ({ actividad, onClose, onSubmit }) => {
                                 placeholder="Describe los motivos para solicitar el cambio (conflicto de horario, disponibilidad, recursos, etc.)"
                                 rows="4"
                                 className={errors.justificacion ? styles.error : ''}
-                                required
                             />
                             {errors.justificacion && (
                                 <div className={styles.errorMessage}>
