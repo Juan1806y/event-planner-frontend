@@ -190,10 +190,8 @@ export const useEvento = (idEvento = null) => {
             console.error("Respuesta completa del backend (si existe):", err.response);
             setMensaje({ tipo: 'error', texto: 'Error al guardar el evento' });
             setMostrarModalError(true);
-        } catch (err) {
-            console.error('Error guardarEvento:', err);
-            setMensaje({ tipo: 'error', texto: `Error al guardar el evento: ${err.message || ''}` });
-        } finally {
+        }
+        finally {
             setGuardando(false);
             setEnviando(false);
         }

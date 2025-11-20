@@ -37,6 +37,7 @@ const EditarEventoPage = () => {
         guardarEvento,
         setMostrarModalError,
         setMostrarModalExito,
+        errorCupos
     } = useEvento(id);
     useEffect(() => {
         if (mostrarModalExito) {

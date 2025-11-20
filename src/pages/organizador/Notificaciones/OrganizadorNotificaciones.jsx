@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, CheckCircle, XCircle, Clock, User, Calendar, MessageSquare, Loader2, AlertCircle } from 'lucide-react';
+import { Bell, CheckCircle, XCircle, Clock, User, Calendar, MessageSquare, Loader2, AlertCircle, Edit } from 'lucide-react';
 import {
     obtenerMisNotificaciones,
     obtenerDetalleNotificacion,
     obtenerAsignacion,
     procesarSolicitud,
-    actualizarHorarioActividad
+    actualizarActividad
 } from '../../../components/notificacionesService';
 import './OrganizadorNotificaciones.css';
 import Sidebar from '../Sidebar';
@@ -18,6 +18,7 @@ const OrganizadorNotificaciones = () => {
     const [horaInicio, setHoraInicio] = useState('');
     const [horaFin, setHoraFin] = useState('');
     const [cargando, setCargando] = useState(false);
+    const [actualizandoActividad, setActualizandoActividad] = useState(false);
 
     useEffect(() => {
         cargarNotificaciones();
@@ -84,6 +85,42 @@ const OrganizadorNotificaciones = () => {
         } catch (error) {
             console.error('Error obteniendo asignación:', error);
             alert('Error obteniendo asignación del ponente');
+        }
+    };
+
+    const aplicarCambiosActividad = async () => {
+        if (!detalle?.datos_adicionales?.cambios_solicitados) {
+            alert('No hay cambios solicitados para aplicar');
+            return;
+        }
+
+        if (!detalle.datos_adicionales?.id_actividad) {
+            alert('No se encontró el ID de la actividad');
+            return;
+        }
+
+        const idActividad = detalle.datos_adicionales.id_actividad;
+        const cambios = detalle.datos_adicionales.cambios_solicitados;
+
+        console.log('Aplicando cambios a actividad:', idActividad);
+        console.log('Cambios a aplicar:', cambios);
+
+        setActualizandoActividad(true);
+        try {
+            const resultado = await actualizarActividad(idActividad, cambios);
+            console.log('Respuesta del PUT:', resultado);
+            alert('Actividad actualizada correctamente');
+
+            // Recargar la asignación para ver los cambios reflejados
+            const idPonente = detalle.datos_adicionales?.id_ponente;
+            if (idPonente) {
+                await cargarAsignacion(idPonente, idActividad);
+            }
+        } catch (error) {
+            console.error('Error actualizando actividad:', error);
+            alert(`Error actualizando actividad: ${error.response?.data?.message || error.message}`);
+        } finally {
+            setActualizandoActividad(false);
         }
     };
 
@@ -188,6 +225,47 @@ const OrganizadorNotificaciones = () => {
                                         </span>
                                     </div>
                                 </div>
+
+                                {/* Mostrar JSON de cambios solicitados */}
+                                {detalle.datos_adicionales?.cambios_solicitados && (
+                                    <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f3f4f6', borderRadius: '0.5rem', border: '1px solid #d1d5db' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                                            <Edit className="icon-sm" style={{ color: '#059669' }} />
+                                            <strong style={{ color: '#059669' }}>Cambios Solicitados (JSON):</strong>
+                                        </div>
+                                        <pre style={{
+                                            backgroundColor: '#1f2937',
+                                            color: '#10b981',
+                                            padding: '1rem',
+                                            borderRadius: '0.375rem',
+                                            overflow: 'auto',
+                                            fontSize: '0.875rem',
+                                            fontFamily: 'monospace'
+                                        }}>
+                                            {JSON.stringify(detalle.datos_adicionales.cambios_solicitados, null, 2)}
+                                        </pre>
+                                        <div style={{ marginTop: '0.75rem' }}>
+                                            <button
+                                                className="btn btn-aprobar"
+                                                onClick={aplicarCambiosActividad}
+                                                disabled={actualizandoActividad}
+                                                style={{ width: '100%' }}
+                                            >
+                                                {actualizandoActividad ? (
+                                                    <>
+                                                        <Loader2 className="icon-md" style={{ animation: 'spin 1s linear infinite' }} />
+                                                        Aplicando...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <CheckCircle className="icon-md" />
+                                                        Aplicar Cambios a Actividad (PUT)
+                                                    </>
+                                                )}
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
 
@@ -216,6 +294,17 @@ const OrganizadorNotificaciones = () => {
                                         </div>
                                         <p className="info-box-value">
                                             {asignacion.actividad?.titulo || 'N/A'}
+                                        </p>
+                                    </div>
+
+                                    {/* Mostrar horario actual de la actividad */}
+                                    <div className="info-box">
+                                        <div className="info-box-header">
+                                            <Clock className="icon-sm" style={{ color: '#4b5563' }} />
+                                            <span className="info-box-label">Horario Actual</span>
+                                        </div>
+                                        <p className="info-box-value">
+                                            {asignacion.actividad?.hora_inicio?.substring(0, 5) || 'N/A'} - {asignacion.actividad?.hora_fin?.substring(0, 5) || 'N/A'}
                                         </p>
                                     </div>
 
@@ -252,14 +341,14 @@ const OrganizadorNotificaciones = () => {
                                             onClick={() => manejarSolicitud(true)}
                                         >
                                             <CheckCircle className="icon-md" />
-                                            Aprobar
+                                            Aprobar Solicitud
                                         </button>
                                         <button
                                             className="btn btn-rechazar"
                                             onClick={() => manejarSolicitud(false)}
                                         >
                                             <XCircle className="icon-md" />
-                                            Rechazar
+                                            Rechazar Solicitud
                                         </button>
                                     </div>
                                 </div>
