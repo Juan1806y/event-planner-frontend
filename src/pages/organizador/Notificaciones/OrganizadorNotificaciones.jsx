@@ -4,9 +4,9 @@ import {
     obtenerMisNotificaciones,
     obtenerDetalleNotificacion,
     obtenerAsignacion,
-    procesarSolicitud,
-    actualizarActividad
+    procesarSolicitud
 } from '../../../components/notificacionesService';
+import { actualizarActividad } from '../../../components/eventosService';
 import './OrganizadorNotificaciones.css';
 import Sidebar from '../Sidebar';
 
