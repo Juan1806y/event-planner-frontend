@@ -96,7 +96,7 @@ const ActividadesPage = () => {
                             {eventosInscritos.map((evento) => (
                                 <div key={evento.id} className="evento-card-agenda">
                                     <div className="evento-card-header">
-                                        <h3 className="evento-titulo">{evento.titulo}</h3>
+                                        <h3 className="evento-titulo-agenda">{evento.titulo}</h3>
                                     </div>
 
                                     <div className="evento-card-body">

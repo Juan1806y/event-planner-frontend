@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useMatch } from 'react-router-dom';
 import { Calendar, Users, CalendarCheck, Settings, Book } from 'lucide-react';
 
 export const useSidebar = () => {
@@ -42,11 +42,23 @@ export const useSidebar = () => {
         }
     }, []);
 
+    // SOLUCIÓN: Lógica mejorada para detectar rutas anidadas
     useEffect(() => {
         const path = location.pathname;
-        const section = path.split('/').pop();
-        if (section && menuItems.some(item => item.id === section)) {
-            setActiveSection(section);
+        
+        // Mapeo especial para rutas anidadas
+        if (path.includes('/eventos/') && path.includes('/agenda')) {
+            // Si la ruta es /organizador/eventos/:id/agenda, activar 'actividades'
+            setActiveSection('actividades');
+        } else if (path.includes('/agenda')) {
+            // Si la ruta es /organizador/agenda, activar 'actividades'
+            setActiveSection('actividades');
+        } else {
+            // Para otras rutas, usar la lógica normal
+            const section = path.split('/').pop();
+            if (section && menuItems.some(item => item.id === section)) {
+                setActiveSection(section);
+            }
         }
     }, [location]);
 
