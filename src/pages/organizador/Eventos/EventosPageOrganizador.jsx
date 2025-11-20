@@ -84,8 +84,8 @@ const EventosPageOrganizador = () => {
             setModalVisible(false);
             setEventoAEliminar(null);
 
-            const eventosActualizados = await obtenerEventos();
-            setEventos(eventosActualizados.data);
+            // Volver a cargar los eventos filtrados por organizador
+            await cargarEventos();
         } catch {
             alert('Error al eliminar el evento.');
         } finally {
