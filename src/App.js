@@ -31,6 +31,7 @@ import ActividadesPage from './pages/organizador/Actividades/ActividadesPage';
 import EventosPageOrganizador from './pages/organizador/Eventos/EventosPageOrganizador';
 import GestionAsistentes from './pages/organizador/asistencia';
 import EstadisticasAsistencia from './pages/organizador/EstadisticasAsistencia';
+import OrganizadorNotificaciones from './pages/organizador/Notificaciones/OrganizadorNotificaciones';
 
 function App() {
   return (
@@ -236,6 +237,15 @@ function App() {
             element={
               <PrivateRoute>
                 <GestionAsistentes />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/organizador/notificaciones"
+            element={
+              <PrivateRoute>
+                <OrganizadorNotificaciones />
               </PrivateRoute>
             }
           />
