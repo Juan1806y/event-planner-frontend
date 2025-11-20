@@ -26,10 +26,11 @@ export const useSidebar = () => {
     });
 
     const menuItems = [
-        { id: 'eventos', label: 'Eventos', icon: Calendar, path: '/eventos' },
+        { id: 'eventos', label: 'Eventos', icon: Calendar, path: '/organizador/eventos' },
         { id: 'asistentes', label: 'Asistentes', icon: Users, path: '/organizador/asistentes' },
         { id: 'actividades', label: 'Agenda', icon: CalendarCheck, path: '/organizador/agenda' },
         { id: 'reportes', label: 'Reportes', icon: Book, path: '/organizador/reportes' },
+        { id: 'notificaciones', label: 'Notificaciones', icon: Book, path: '/organizador/notificaciones' },
         { id: 'configuracion', label: 'Configuración', icon: Settings, path: '/organizador/configuracion' }
     ];
 

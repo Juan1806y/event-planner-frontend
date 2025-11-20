@@ -31,13 +31,13 @@ const EditarEventoPage = () => {
         error,
         mostrarModalExito,
         mostrarModalError,
-        errorCupos,
         empresa,
         formData,
         handleInputChange,
         guardarEvento,
         setMostrarModalError,
         setMostrarModalExito,
+        errorCupos
     } = useEvento(id);
     useEffect(() => {
         if (mostrarModalExito) {
@@ -194,6 +194,23 @@ const EditarEventoPage = () => {
                             </div>
                         </div>
 
+                        {/* CUPOS DEL EVENTO */}
+                        <div className="form-group-crear">
+                            <label className="form-label-crear">
+                                Cupos <span className="required">*</span>
+                            </label>
+                            <input
+                                type="number"
+                                min={0}
+                                value={formData.cupos ?? ""}
+                                onChange={(e) => handleInputChange('cupos', e.target.value)}
+                                className="form-input-crear"
+                                placeholder="Ej: 50"
+                                required
+                            />
+                        </div>
+
+
                         {/* DESCRIPCIÓN ADICIONAL */}
                         <div className="form-group-crear">
                             <label className="form-label-crear">Descripción Adicional</label>
@@ -218,7 +235,7 @@ const EditarEventoPage = () => {
 
                         <button
                             type="submit"
-                            disabled={guardando || errorCupos.mostrar}
+                            disabled={guardando || errorCupos?.mostrar}
                             className="btn-submit-crear"
                         >
                             <Save size={20} />
@@ -248,7 +265,7 @@ const EditarEventoPage = () => {
                         <div className="modal-exito" style={{ borderTop: '4px solid #dc3545' }}>
                             <XCircle size={48} color="#dc3545" />
                             <h2>Error en los Cupos</h2>
-                            <p>{errorCupos.mensaje}</p>
+                            <p>{errorCupos?.mensaje || ''}</p>
                             <button
                                 className="btn-submit-crear"
                                 style={{ backgroundColor: '#dc3545' }}

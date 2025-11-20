@@ -27,8 +27,15 @@ export const crearEvento = async (nuevoEvento) => {
 };
 
 export const actualizarEvento = async (id, datosActualizados) => {
-    const response = await axios.put(`${API_URL}/${id}`, datosActualizados, getHeaders());
-    return response.data;
+    try {
+        const response = await axios.put(`${API_URL}/${id}`, datosActualizados, getHeaders());
+        return response.data;
+    } catch (error) {
+        console.error('Error en actualizarEvento PUT', error.response?.status, error.response?.data);
+        // Re-lanzar con más contexto
+        const message = error.response?.data?.message || error.message || 'Error al actualizar evento';
+        throw new Error(message);
+    }
 };
 
 export const eliminarEvento = async (id) => {
