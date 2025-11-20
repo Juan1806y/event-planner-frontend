@@ -1,12 +1,14 @@
-// OrganizadorNotificaciones.jsx
 import React, { useState, useEffect } from 'react';
+import { Bell, CheckCircle, XCircle, Clock, User, Calendar, MessageSquare, Loader2, AlertCircle, Edit } from 'lucide-react';
 import {
     obtenerMisNotificaciones,
     obtenerDetalleNotificacion,
     obtenerAsignacion,
     procesarSolicitud,
-    actualizarHorarioActividad
+    actualizarActividad
 } from '../../../components/notificacionesService';
+import './OrganizadorNotificaciones.css';
+import Sidebar from '../Sidebar';
 
 const OrganizadorNotificaciones = () => {
     const [notificaciones, setNotificaciones] = useState([]);
@@ -16,6 +18,7 @@ const OrganizadorNotificaciones = () => {
     const [horaInicio, setHoraInicio] = useState('');
     const [horaFin, setHoraFin] = useState('');
     const [cargando, setCargando] = useState(false);
+    const [actualizandoActividad, setActualizandoActividad] = useState(false);
 
     useEffect(() => {
         cargarNotificaciones();
@@ -36,124 +39,324 @@ const OrganizadorNotificaciones = () => {
     const verDetalle = async (id) => {
         try {
             const data = await obtenerDetalleNotificacion(id);
+            console.log('Detalle notificación:', data);
             setDetalle(data);
+
+            setAsignacion(null);
+            setComentarios('');
+            setHoraInicio('');
+            setHoraFin('');
+
+            const esTipo1 = data.id_TipoNotificacion === 1 || data.id_TipoNotificacion === '1';
+            console.log('Es tipo 1?:', esTipo1, 'Valor:', data.id_TipoNotificacion);
+
+            const idPonente = data.datos_adicionales?.id_ponente;
+            const idActividad = data.datos_adicionales?.id_actividad;
+
+            if (data.datos_adicionales?.cambios_solicitados) {
+                const { hora_inicio, hora_fin } = data.datos_adicionales.cambios_solicitados;
+                if (hora_inicio) {
+                    setHoraInicio(hora_inicio.substring(0, 5));
+                }
+                if (hora_fin) {
+                    setHoraFin(hora_fin.substring(0, 5));
+                }
+            }
+
+            if (esTipo1 && idPonente && idActividad) {
+                console.log('Cargando asignación para ponente:', idPonente, 'actividad:', idActividad);
+                await cargarAsignacion(idPonente, idActividad);
+            } else {
+                console.log('No se cumple condición. Tipo:', data.id_TipoNotificacion, 'Ponente:', idPonente, 'Actividad:', idActividad);
+            }
         } catch (error) {
+            console.error('Error obteniendo detalle:', error);
             alert('Error obteniendo detalle');
         }
     };
 
-    const verAsignacion = async (idPonente, idActividad) => {
+    const cargarAsignacion = async (idPonente, idActividad) => {
         try {
-            const data = await obtenerAsignacion(idPonente, idActividad);
-            setAsignacion(data);
+            const response = await obtenerAsignacion(idPonente, idActividad);
+            console.log('Asignación cargada:', response);
+
+            const asignacionData = response.data || response;
+            setAsignacion(asignacionData);
         } catch (error) {
-            alert('Error obteniendo asignación');
+            console.error('Error obteniendo asignación:', error);
+            alert('Error obteniendo asignación del ponente');
         }
     };
 
-    const manejarAprobacion = async (idPonente, idActividad, aprobada) => {
+    const aplicarCambiosActividad = async () => {
+        if (!detalle?.datos_adicionales?.cambios_solicitados) {
+            alert('No hay cambios solicitados para aplicar');
+            return;
+        }
+
+        if (!detalle.datos_adicionales?.id_actividad) {
+            alert('No se encontró el ID de la actividad');
+            return;
+        }
+
+        const idActividad = detalle.datos_adicionales.id_actividad;
+        const cambios = detalle.datos_adicionales.cambios_solicitados;
+
+        console.log('Aplicando cambios a actividad:', idActividad);
+        console.log('Cambios a aplicar:', cambios);
+
+        setActualizandoActividad(true);
         try {
-            await procesarSolicitud(idPonente, idActividad, aprobada, comentarios);
-            if (aprobada && horaInicio && horaFin) {
-                await actualizarHorarioActividad(idActividad, horaInicio, horaFin);
+            const resultado = await actualizarActividad(idActividad, cambios);
+            console.log('Respuesta del PUT:', resultado);
+            alert('Actividad actualizada correctamente');
+
+            // Recargar la asignación para ver los cambios reflejados
+            const idPonente = detalle.datos_adicionales?.id_ponente;
+            if (idPonente) {
+                await cargarAsignacion(idPonente, idActividad);
             }
-            alert('Solicitud procesada correctamente');
-            cargarNotificaciones(); // refresca la lista
+        } catch (error) {
+            console.error('Error actualizando actividad:', error);
+            alert(`Error actualizando actividad: ${error.response?.data?.message || error.message}`);
+        } finally {
+            setActualizandoActividad(false);
+        }
+    };
+
+    const manejarSolicitud = async (aprobada) => {
+        if (!asignacion) {
+            alert('No hay asignación cargada');
+            return;
+        }
+
+        try {
+            const idPonente = asignacion.ponente.id_ponente;
+            const idActividad = asignacion.actividad.id_actividad;
+
+            await procesarSolicitud(idPonente, idActividad, aprobada, comentarios);
+
+            alert(`Solicitud ${aprobada ? 'aprobada' : 'rechazada'} correctamente`);
+
             setDetalle(null);
             setAsignacion(null);
             setComentarios('');
             setHoraInicio('');
             setHoraFin('');
+
+            cargarNotificaciones();
         } catch (error) {
-            alert('Error procesando solicitud');
+            console.error(error);
+            alert('Error procesando la solicitud');
         }
     };
 
     return (
-        <div>
-            <h2>Notificaciones Pendientes</h2>
-            {cargando ? <p>Cargando...</p> : null}
-            <ul>
-                {notificaciones.map((n) => (
-                    <li key={n.id}>
-                        <span>{n.titulo}</span>
-                        <button onClick={() => verDetalle(n.id)}>Ver Detalle</button>
-                    </li>
-                ))}
-            </ul>
-
-            {detalle && (
-                <div style={{ marginTop: '20px', border: '1px solid gray', padding: '10px' }}>
-                    <h3>Detalle de Notificación</h3>
-                    <p>ID: {detalle.id}</p>
-                    <p>Descripción: {detalle.descripcion}</p>
-
-                    {detalle.id_ponente && detalle.id_actividad && (
-                        <>
-                            <button
-                                onClick={() =>
-                                    verAsignacion(detalle.id_ponente, detalle.id_actividad)
-                                }
-                            >
-                                Ver Asignación del Ponente
-                            </button>
-                        </>
-                    )}
+        <div className="organizador-container">
+            <Sidebar />
+            <div className="organizador-wrapper">
+                {/* Header */}
+                <div className="organizador-header">
+                    <div className="header-title">
+                        <Bell className="icon-lg" style={{ color: '#4f46e5' }} />
+                        <h2>Notificaciones Pendientes</h2>
+                    </div>
+                    <p className="header-subtitle">Gestiona las solicitudes y notificaciones de tu evento</p>
                 </div>
-            )}
 
-            {asignacion && (
-                <div style={{ marginTop: '20px', border: '1px solid blue', padding: '10px' }}>
-                    <h3>Asignación</h3>
-                    <p>Ponente: {asignacion.ponente.nombre}</p>
-                    <p>Actividad: {asignacion.actividad.titulo}</p>
+                <div className="notificaciones-grid">
+                    {/* Lista de Notificaciones */}
+                    <div className="notificaciones-list-card">
+                        <h3 className="notificaciones-list-header">
+                            <Bell className="icon-md" style={{ color: '#4f46e5' }} />
+                            Bandeja de Entrada
+                        </h3>
 
-                    <div style={{ marginTop: '10px' }}>
-                        <label>
-                            Comentarios:
-                            <input
-                                type="text"
-                                value={comentarios}
-                                onChange={(e) => setComentarios(e.target.value)}
-                            />
-                        </label>
-                        <br />
-                        <label>
-                            Hora Inicio (solo si aprueba):
-                            <input
-                                type="time"
-                                value={horaInicio}
-                                onChange={(e) => setHoraInicio(e.target.value)}
-                            />
-                        </label>
-                        <br />
-                        <label>
-                            Hora Fin (solo si aprueba):
-                            <input
-                                type="time"
-                                value={horaFin}
-                                onChange={(e) => setHoraFin(e.target.value)}
-                            />
-                        </label>
-                        <br />
-                        <button
-                            onClick={() =>
-                                manejarAprobacion(asignacion.ponente.id, asignacion.actividad.id, true)
-                            }
-                        >
-                            Aprobar
-                        </button>
-                        <button
-                            onClick={() =>
-                                manejarAprobacion(asignacion.ponente.id, asignacion.actividad.id, false)
-                            }
-                            style={{ marginLeft: '10px' }}
-                        >
-                            Rechazar
-                        </button>
+                        {cargando ? (
+                            <div className="cargando">
+                                <Loader2 className="cargando-spinner" />
+                            </div>
+                        ) : notificaciones.length === 0 ? (
+                            <div className="estado-vacio">
+                                <AlertCircle className="estado-vacio-icono" />
+                                <p className="estado-vacio-texto">No hay notificaciones pendientes</p>
+                            </div>
+                        ) : (
+                            <ul className="notificaciones-list">
+                                {notificaciones.map(n => (
+                                    <li key={n.id} onClick={() => verDetalle(n.id)}>
+                                        <div className="notificacion-item">
+                                            <div className="notificacion-contenido">
+                                                <div className="notificacion-punto"></div>
+                                                <span className="notificacion-titulo">{n.titulo}</span>
+                                            </div>
+                                            <svg
+                                                className="notificacion-flecha"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                            </svg>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+
+                    {/* Panel de Detalles */}
+                    <div>
+                        {detalle && (
+                            <div className="detalle-card">
+                                <h3>Detalle de Notificación</h3>
+                                <div className="detalle-info">
+                                    <div className="detalle-row">
+                                        <span className="detalle-label">ID:</span>
+                                        <span className="detalle-value-mono">{detalle.id}</span>
+                                    </div>
+                                    <div className="detalle-row">
+                                        <span className="detalle-label">Título:</span>
+                                        <span className="detalle-value">{detalle.titulo}</span>
+                                    </div>
+                                    <div>
+                                        <span className="detalle-badge">
+                                            Tipo {detalle.id_TipoNotificacion}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Mostrar JSON de cambios solicitados */}
+                                {detalle.datos_adicionales?.cambios_solicitados && (
+                                    <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f3f4f6', borderRadius: '0.5rem', border: '1px solid #d1d5db' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                                            <Edit className="icon-sm" style={{ color: '#059669' }} />
+                                            <strong style={{ color: '#059669' }}>Cambios Solicitados (JSON):</strong>
+                                        </div>
+                                        <pre style={{
+                                            backgroundColor: '#1f2937',
+                                            color: '#10b981',
+                                            padding: '1rem',
+                                            borderRadius: '0.375rem',
+                                            overflow: 'auto',
+                                            fontSize: '0.875rem',
+                                            fontFamily: 'monospace'
+                                        }}>
+                                            {JSON.stringify(detalle.datos_adicionales.cambios_solicitados, null, 2)}
+                                        </pre>
+                                        <div style={{ marginTop: '0.75rem' }}>
+                                            <button
+                                                className="btn btn-aprobar"
+                                                onClick={aplicarCambiosActividad}
+                                                disabled={actualizandoActividad}
+                                                style={{ width: '100%' }}
+                                            >
+                                                {actualizandoActividad ? (
+                                                    <>
+                                                        <Loader2 className="icon-md" style={{ animation: 'spin 1s linear infinite' }} />
+                                                        Aplicando...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <CheckCircle className="icon-md" />
+                                                        Aplicar Cambios a Actividad (PUT)
+                                                    </>
+                                                )}
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {asignacion && detalle && (detalle.id_TipoNotificacion === 1 || detalle.id_TipoNotificacion === '1') && (
+                            <div className="asignacion-card" style={{ marginTop: detalle ? '1.5rem' : '0' }}>
+                                <h3>
+                                    <User className="icon-md" style={{ color: '#4f46e5' }} />
+                                    Solicitud de Ponente
+                                </h3>
+
+                                <div className="asignacion-info">
+                                    <div className="info-box">
+                                        <div className="info-box-header">
+                                            <User className="icon-sm" style={{ color: '#4b5563' }} />
+                                            <span className="info-box-label">Ponente</span>
+                                        </div>
+                                        <p className="info-box-value">
+                                            {asignacion.ponente?.usuario?.nombre || 'N/A'}
+                                        </p>
+                                    </div>
+
+                                    <div className="info-box">
+                                        <div className="info-box-header">
+                                            <Calendar className="icon-sm" style={{ color: '#4b5563' }} />
+                                            <span className="info-box-label">Actividad</span>
+                                        </div>
+                                        <p className="info-box-value">
+                                            {asignacion.actividad?.titulo || 'N/A'}
+                                        </p>
+                                    </div>
+
+                                    {/* Mostrar horario actual de la actividad */}
+                                    <div className="info-box">
+                                        <div className="info-box-header">
+                                            <Clock className="icon-sm" style={{ color: '#4b5563' }} />
+                                            <span className="info-box-label">Horario Actual</span>
+                                        </div>
+                                        <p className="info-box-value">
+                                            {asignacion.actividad?.hora_inicio?.substring(0, 5) || 'N/A'} - {asignacion.actividad?.hora_fin?.substring(0, 5) || 'N/A'}
+                                        </p>
+                                    </div>
+
+                                    {detalle.datos_adicionales?.justificacion && (
+                                        <div className="justificacion">
+                                            <div className="justificacion-header">
+                                                <MessageSquare className="icon-sm" style={{ color: '#d97706' }} />
+                                                <span className="justificacion-label">Justificación</span>
+                                            </div>
+                                            <p className="justificacion-texto">
+                                                "{detalle.datos_adicionales.justificacion}"
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="form-group">
+                                    <div>
+                                        <label className="form-label">
+                                            Comentarios del organizador
+                                        </label>
+                                        <textarea
+                                            className="form-textarea"
+                                            value={comentarios}
+                                            onChange={(e) => setComentarios(e.target.value)}
+                                            rows="3"
+                                            placeholder="Ej: Aprobado. Horario actualizado según solicitud."
+                                        />
+                                    </div>
+
+                                    <div className="botones-container">
+                                        <button
+                                            className="btn btn-aprobar"
+                                            onClick={() => manejarSolicitud(true)}
+                                        >
+                                            <CheckCircle className="icon-md" />
+                                            Aprobar Solicitud
+                                        </button>
+                                        <button
+                                            className="btn btn-rechazar"
+                                            onClick={() => manejarSolicitud(false)}
+                                        >
+                                            <XCircle className="icon-md" />
+                                            Rechazar Solicitud
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
-            )}
+            </div>
         </div>
     );
 };

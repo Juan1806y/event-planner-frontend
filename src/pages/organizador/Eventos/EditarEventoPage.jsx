@@ -31,13 +31,13 @@ const EditarEventoPage = () => {
         error,
         mostrarModalExito,
         mostrarModalError,
-        errorCupos,
         empresa,
         formData,
         handleInputChange,
         guardarEvento,
         setMostrarModalError,
         setMostrarModalExito,
+        errorCupos
     } = useEvento(id);
     useEffect(() => {
         if (mostrarModalExito) {
@@ -193,6 +193,23 @@ const EditarEventoPage = () => {
                                 </select>
                             </div>
                         </div>
+
+                        {/* CUPOS DEL EVENTO */}
+                        <div className="form-group-crear">
+                            <label className="form-label-crear">
+                                Cupos <span className="required">*</span>
+                            </label>
+                            <input
+                                type="number"
+                                min={0}
+                                value={formData.cupos ?? ""}
+                                onChange={(e) => handleInputChange('cupos', e.target.value)}
+                                className="form-input-crear"
+                                placeholder="Ej: 50"
+                                required
+                            />
+                        </div>
+
 
                         {/* DESCRIPCIÓN ADICIONAL */}
                         <div className="form-group-crear">

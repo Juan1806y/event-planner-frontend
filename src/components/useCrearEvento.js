@@ -135,7 +135,10 @@ export const useEvento = (idEvento = null) => {
         const dataAEnviar = {
             ...formData,
             hora: formatearHora(formData.hora),
+            estado: Number(formData.estado),   // Aseguramos que sea número
+            cupos: Number(formData.cupos)      // Aseguramos que sea número
         };
+        console.log(dataAEnviar)
 
         // Normalizamos modalidad para backend (sin tilde)
         if (dataAEnviar.modalidad === "Híbrida") {
@@ -158,11 +161,18 @@ export const useEvento = (idEvento = null) => {
 
         console.log("ENVIANDO (sanitized):", sanitized);
 
+        // === LOGS DE DEPURACIÓN ===
+        console.log("=== GUARDANDO EVENTO ===");
+        console.log("Datos a enviar:", dataAEnviar);
+        console.log("Tipo de estado:", typeof dataAEnviar.estado);
+        console.log("Tipo de cupos:", typeof dataAEnviar.cupos);
 
         try {
             const eventoGuardado = idEvento
                 ? await actualizarEvento(idEvento, sanitized)
                 : await crearEvento({ ...sanitized, id_empresa: empresa.id });
+
+            console.log("Respuesta backend:", eventoGuardado);
 
             const eventoId = idEvento || eventoGuardado?.data?.id;
 
@@ -175,13 +185,18 @@ export const useEvento = (idEvento = null) => {
 
             setMostrarModalExito(true);
         } catch (err) {
-            console.error('Error guardarEvento:', err);
-            setMensaje({ tipo: 'error', texto: `Error al guardar el evento: ${err.message || ''}` });
-        } finally {
+            // Log completo del error
+            console.error("Error al guardar evento:", err);
+            console.error("Respuesta completa del backend (si existe):", err.response);
+            setMensaje({ tipo: 'error', texto: 'Error al guardar el evento' });
+            setMostrarModalError(true);
+        }
+        finally {
             setGuardando(false);
             setEnviando(false);
         }
     };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
