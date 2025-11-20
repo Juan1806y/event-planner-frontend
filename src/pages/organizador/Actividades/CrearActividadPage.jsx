@@ -17,10 +17,11 @@ import {
     crearActividad,
     obtenerPerfil,
     obtenerUbicaciones,
-    obtenerLugares
+    obtenerLugares, obtenerPonentes, getHeaders
 } from '../../../components/eventosService';
 import './CrearActividadPage.css';
 import Sidebar from '../Sidebar';
+import axios from "axios";
 
 const CrearActividadPage = () => {
     const navigate = useNavigate();
@@ -33,6 +34,7 @@ const CrearActividadPage = () => {
     const [lugares, setLugares] = useState([]);
     const [loading, setLoading] = useState(true);
     const [guardando, setGuardando] = useState(false);
+    const [ponentes, setPonentes] = useState([]);
 
     const [formData, setFormData] = useState({
         titulo: '',
@@ -65,6 +67,12 @@ const CrearActividadPage = () => {
 
                 const ubicacionesData = await obtenerUbicaciones(empresaId);
                 setUbicaciones(Array.isArray(ubicacionesData.data) ? ubicacionesData.data : [ubicacionesData.data]);
+
+                const ponentesData = await obtenerPonentes();
+                setPonentes(ponentesData.data || []);
+
+                console.log(ponentesData)
+
             } catch (error) {
                 console.error('Error cargando datos:', error);
             } finally {
@@ -178,37 +186,61 @@ const CrearActividadPage = () => {
                 titulo: formData.titulo,
                 descripcion: formData.descripcion,
                 ponente: formData.ponente || null,
-                fecha_actividad: formData.fecha_actividad, // Ya está en formato YYYY-MM-DD
+                fecha_actividad: formData.fecha_actividad,
                 hora_inicio: formData.hora_inicio,
                 hora_fin: formData.hora_fin,
                 tipo: formData.tipo,
                 lugares: (formData.tipo === 'virtual') ? [] : formData.id_lugares,
-                url: (formData.tipo === 'virtual' || formData.tipo === 'hibrida')
-                    ? formData.link_virtual
-                    : null
+                url:
+                    formData.tipo === 'virtual' || formData.tipo === 'hibrida'
+                        ? formData.link_virtual
+                        : null
             };
 
             console.log('Datos a enviar:', datosEnviar);
 
-            await crearActividad(eventoId, datosEnviar);
+            // Crear actividad y obtener ID
+            const actividadCreada = await crearActividad(eventoId, datosEnviar);
+
+            const idActividadCreada =
+                actividadCreada.data?.id_actividad ||
+                actividadCreada.data?.id ||
+                actividadCreada.id_actividad ||
+                actividadCreada.id;
+
+            console.log("ID actividad creada:", idActividadCreada);
+
+            if (formData.ponente && idActividadCreada) {
+                await axios.post(
+                    "http://localhost:3000/api/ponente-actividad",
+                    {
+                        id_ponente: formData.ponente,
+                        id_actividad: idActividadCreada,
+                        notas: "Te invitamos a participar como ponente en esta actividad."
+                    },
+                    getHeaders()
+                );
+
+                alert("¡Invitación enviada! Notificaremos al ponente si decide aceptar participar en la actividad.");
+            }
+
+
             navigate(`/organizador/eventos/${eventoId}/agenda`);
+
         } catch (error) {
             console.error('Error completo:', error);
-            console.error('Error response:', error.response);
-            console.error('Error data:', error.response?.data);
-            console.error('Mensaje del servidor:', error.response?.data?.message);
             alert(`Error: ${error.response?.data?.message || 'Error al crear la actividad'}`);
         } finally {
             setGuardando(false);
         }
     };
 
+
     if (loading) return <p>Cargando...</p>;
 
     const mostrarCampoLugar = formData.tipo === 'presencial' || formData.tipo === 'hibrida';
     const mostrarCampoLink = formData.tipo === 'virtual' || formData.tipo === 'hibrida';
 
-    // Extraer las fechas sin conversión de zona horaria
     const fechaInicioEvento = evento?.fecha_inicio?.split('T')[0];
     const fechaFinEvento = evento?.fecha_fin?.split('T')[0];
 
@@ -274,12 +306,21 @@ const CrearActividadPage = () => {
                                 <User size={18} />
                                 Ponente
                             </label>
-                            <input
-                                type="text"
+                            <select
                                 value={formData.ponente}
                                 onChange={(e) => handleInputChange('ponente', e.target.value)}
                                 className="form-input-actividad"
-                            />
+                            >
+                                <option value="">Selecciona un ponente</option>
+
+                                {ponentes.map((p) => (
+                                    <option key={p.id_ponente} value={p.id_ponente}>
+                                        {p.usuario.nombre} — {p.especialidad}
+                                    </option>
+                                ))}
+                            </select>
+
+
                         </div>
 
                         <div className="form-row-actividad">

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import axios from "axios";
 import {
     Calendar,
     ArrowLeft,
@@ -18,7 +19,7 @@ import {
     obtenerActividadesEvento,
     obtenerPerfil,
     obtenerUbicaciones,
-    obtenerLugares
+    obtenerLugares, obtenerPonentes, getHeaders, obtenerPonenteAsignado
 } from '../../../components/eventosService';
 import './CrearActividadPage.css';
 import Sidebar from '../Sidebar';
@@ -34,6 +35,7 @@ const EditarActividadPage = () => {
     const [lugares, setLugares] = useState([]);
     const [loading, setLoading] = useState(true);
     const [guardando, setGuardando] = useState(false);
+    const [ponentes, setPonentes] = useState([]);
 
     const [formData, setFormData] = useState({
         titulo: '',
@@ -109,7 +111,7 @@ const EditarActividadPage = () => {
             setFormData({
                 titulo: actividadActual.titulo || '',
                 descripcion: actividadActual.descripcion || '',
-                ponente: actividadActual.ponente || '',
+                ponente: actividadActual.id_ponente || '',
                 fecha_actividad: actividadActual.fecha_actividad || '',
                 hora_inicio: actividadActual.hora_inicio || '',
                 hora_fin: actividadActual.hora_fin || '',
@@ -128,6 +130,43 @@ const EditarActividadPage = () => {
     useEffect(() => {
         cargarActividad();
     }, [cargarActividad]);
+    useEffect(() => {
+        const cargarPonentes = async () => {
+            try {
+                const data = await obtenerPonentes();
+                setPonentes(data.data || []);
+            } catch (error) {
+                console.error("Error obteniendo ponentes:", error);
+            }
+        };
+
+        cargarPonentes();
+    }, []);
+
+    useEffect(() => {
+        const cargarPonenteAsignado = async () => {
+            try {
+                const response = await obtenerPonenteAsignado(idActividad);
+                if (response.success && response.data.length > 0) {
+                    const asignacion = response.data[0];
+                    console.log("ponente asignado", asignacion)
+
+                    setFormData((prev) => ({
+                        ...prev,
+                        ponente: asignacion.id_ponente
+                    }));
+                }
+
+            } catch (error) {
+                console.error("Error cargando ponente asignado:", error);
+            }
+        };
+
+        if (idActividad) {
+            cargarPonenteAsignado();
+        }
+    }, [idActividad]);
+
 
     useEffect(() => {
         if (!empresa?.id || !ubicacionSeleccionada) {
@@ -238,6 +277,26 @@ const EditarActividadPage = () => {
             console.log('Datos a actualizar:', datosEnviar);
 
             await actualizarActividad(idActividad, datosEnviar);
+
+            if (formData.ponente) {
+                try {
+                    await axios.post(
+                        "http://localhost:3000/api/ponente-actividad",
+                        {
+                            id_ponente: formData.ponente,
+                            id_actividad: idActividad,
+                            notas: "Te invitamos a participar como ponente en esta actividad."
+                        },
+                        getHeaders()
+                    );
+
+                    alert("¡Invitación enviada! Notificaremos al ponente si decide aceptar participar en la actividad.");
+                } catch (error) {
+                    console.error("Error al enviar invitación al ponente:", error);
+                    alert("La actividad fue actualizada, pero no se pudo enviar la invitación al ponente.");
+                }
+            }
+
             navigate(`/organizador/eventos/${eventoId}/agenda`);
         } catch (error) {
             console.error("Error al actualizar actividad:", error);
@@ -321,12 +380,20 @@ const EditarActividadPage = () => {
                                 <User size={18} />
                                 Ponente
                             </label>
-                            <input
-                                type="text"
-                                value={formData.ponente}
+                            <select
+                                value={String(formData.ponente)}
                                 onChange={(e) => handleInputChange('ponente', e.target.value)}
                                 className="form-input-actividad"
-                            />
+                            >
+                                <option value="">Selecciona un ponente</option>
+                                {ponentes.map((p) => (
+                                    <option key={p.id_ponente} value={String(p.id_ponente)}>
+                                        {p.usuario.nombre} — {p.especialidad}
+                                    </option>
+                                ))}
+                            </select>
+
+
                         </div>
 
                         <div className="form-row-actividad">

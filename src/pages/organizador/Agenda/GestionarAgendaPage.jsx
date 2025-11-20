@@ -13,7 +13,8 @@ import {
 import {
     obtenerEventoPorId,
     obtenerActividadesEvento,
-    eliminarActividad
+    eliminarActividad,
+    obtenerPonenteAsignado
 } from '../../../components/eventosService';
 import './GestionarAgendaPage.css';
 import Sidebar from '../Sidebar';
@@ -25,6 +26,7 @@ const GestionarAgendaPage = () => {
     const [actividades, setActividades] = useState([]);
     const [loading, setLoading] = useState(true);
     const [actividadesPorFecha, setActividadesPorFecha] = useState({});
+    const [ponentesAsignados, setPonentesAsignados] = useState({});
 
     const cargarDatos = useCallback(async () => {
         try {
@@ -34,17 +36,43 @@ const GestionarAgendaPage = () => {
             setEvento(eventoData.data);
 
             const actividadesData = await obtenerActividadesEvento(eventoId);
+            console.log(actividadesData);
             const acts = Array.isArray(actividadesData.data)
                 ? actividadesData.data
                 : [actividadesData.data];
             setActividades(acts);
             agruparActividadesPorFecha(acts);
+
+            // Cargar ponentes asignados para cada actividad
+            await cargarPonentesAsignados(acts);
         } catch (error) {
             console.error('Error al cargar datos:', error);
         } finally {
             setLoading(false);
         }
     }, [eventoId]);
+
+    const cargarPonentesAsignados = async (actividades) => {
+        const ponentesMap = {};
+
+        for (const actividad of actividades) {
+            try {
+                const response = await obtenerPonenteAsignado(actividad.id_actividad);
+                if (response.success && response.data.length > 0) {
+                    const asignacion = response.data[0];
+                    // Guardar el nombre completo del ponente
+                    ponentesMap[actividad.id_actividad] = asignacion.ponente?.usuario?.nombre || 'Pendiente';
+                } else {
+                    ponentesMap[actividad.id_actividad] = 'Pendiente';
+                }
+            } catch (error) {
+                console.error(`Error cargando ponente para actividad ${actividad.id_actividad}:`, error);
+                ponentesMap[actividad.id_actividad] = 'Pendiente';
+            }
+        }
+
+        setPonentesAsignados(ponentesMap);
+    };
 
     useEffect(() => {
         cargarDatos();
@@ -175,7 +203,9 @@ const GestionarAgendaPage = () => {
                                     <div className="col-ponente">
                                         <div className="ponente-info">
                                             <User size={16} />
-                                            <span>{actividad.ponente || 'Sin ponente'}</span>
+                                            <span>
+                                                {ponentesAsignados[actividad.id_actividad] || 'Cargando...'}
+                                            </span>
                                         </div>
                                     </div>
 

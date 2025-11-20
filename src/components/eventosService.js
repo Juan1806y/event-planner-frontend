@@ -4,7 +4,7 @@ const API_URL = "http://localhost:3000/api/eventos";
 
 const getAuthToken = () => localStorage.getItem('access_token') || '';
 
-const getHeaders = () => ({
+export const getHeaders = () => ({
     headers: {
         'Authorization': `Bearer ${getAuthToken()}`,
         'Content-Type': 'application/json'
@@ -80,3 +80,21 @@ export const eliminarActividad = async (actividadId) => {
     const response = await axios.delete(`http://localhost:3000/api/actividades/${actividadId}`, getHeaders());
     return response.data;
 };
+
+export const obtenerPonentes = async () => {
+    const response = await axios.get(
+        "http://localhost:3000/api/ponente-actividad/ponentes",
+        getHeaders()
+    );
+    return response.data;
+};
+
+export const obtenerPonenteAsignado = async (actividadId) => {
+    const response = await axios.get(
+        `http://localhost:3000/api/ponente-actividad/actividad/${actividadId}`,
+        getHeaders()
+    );
+    return response.data;
+};
+
+
