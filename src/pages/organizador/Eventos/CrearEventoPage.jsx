@@ -135,7 +135,7 @@ const CrearEventoPage = () => {
                         >
                             <option value="Presencial">Presencial</option>
                             <option value="Virtual">Virtual</option>
-                            <option value="Híbrido">Híbrido</option>
+                            <option value="Híbrida">Híbrida</option>
                         </select>
                     </div>
 

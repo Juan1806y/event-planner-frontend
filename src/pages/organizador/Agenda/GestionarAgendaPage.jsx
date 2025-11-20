@@ -111,7 +111,7 @@ const GestionarAgendaPage = () => {
                 </div>
 
                 <div className="evento-info-card">
-                    <h2>{evento?.titulo}</h2>
+                    <h3>{evento?.titulo}</h3>
                     <p className="evento-fechas">
                         {evento?.fecha_inicio?.split('T')[0].split('-').reverse().join('/')} - {evento?.fecha_fin?.split('T')[0].split('-').reverse().join('/')}
                     </p>
