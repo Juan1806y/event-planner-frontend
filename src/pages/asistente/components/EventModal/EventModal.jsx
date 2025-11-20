@@ -3,6 +3,8 @@ import styles from './EventModal.module.css';
 import { formatFecha, debugFecha } from '../../utils/dateUtils';
 
 const EventModal = ({ evento, onClose, formatFecha, formatFechaCompleta }) => {
+    const [ponentesPorActividad, setPonentePorActividad] = React.useState({});
+    const [cargandoPonentes, setCargandoPonentes] = React.useState(false);
 
     // Debug para verificar toda la información del evento
     React.useEffect(() => {
@@ -19,18 +21,62 @@ const EventModal = ({ evento, onClose, formatFecha, formatFechaCompleta }) => {
         debugFecha(evento.fecha_fin, 'Modal - Fecha fin');
     }, [evento]);
 
+    // ✅ Cargar ponentes para todas las actividades
+    React.useEffect(() => {
+        const cargarPonentes = async () => {
+            if (!evento.actividades || evento.actividades.length === 0) return;
+            
+            setCargandoPonentes(true);
+            const token = localStorage.getItem('access_token'); // Ajusta según tu implementación
+            const ponentesData = {};
+
+            try {
+                for (const actividad of evento.actividades) {
+                    const response = await fetch(
+                        `http://localhost:3000/api/ponente-actividad/actividad/${actividad.id_actividad}`,
+                        {
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            }
+                        }
+                    );
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        // Filtrar solo ponentes aceptados
+                        ponentesData[actividad.id_actividad] = data.data?.filter(
+                            pa => pa.estado === 'aceptado'
+                        ) || [];
+                    }
+                }
+                
+                setPonentePorActividad(ponentesData);
+            } catch (error) {
+                console.error('Error cargando ponentes:', error);
+            } finally {
+                setCargandoPonentes(false);
+            }
+        };
+
+        cargarPonentes();
+    }, [evento.actividades]);
+
+    // ✅ Función para formatear el número de cupos
     const formatearCupos = (valor) => {
         if (valor === undefined || valor === null) return 'No disponible';
         if (typeof valor === 'number') return valor.toString();
         return valor;
     };
 
+    // ✅ Función para calcular porcentaje de disponibilidad
     const calcularPorcentajeDisponibilidad = () => {
         if (!evento.cupo_total || evento.cupo_total === 0) return 0;
         if (typeof evento.cupos_disponibles !== 'number') return 0;
         return Math.round((evento.cupos_disponibles / evento.cupo_total) * 100);
     };
 
+    // ✅ Función para ordenar actividades cronológicamente
     const obtenerActividadesOrdenadas = () => {
         if (!evento.actividades || evento.actividades.length === 0) return [];
         
@@ -41,6 +87,7 @@ const EventModal = ({ evento, onClose, formatFecha, formatFechaCompleta }) => {
         });
     };
 
+    // ✅ Función para formatear hora de 24h a 12h (user-friendly)
     const formatearHora = (hora) => {
         if (!hora) return '';
         const [hours, minutes] = hora.split(':');
@@ -140,107 +187,124 @@ const EventModal = ({ evento, onClose, formatFecha, formatFechaCompleta }) => {
                 <div style={{ marginTop: '20px' }}>
                     <div className={styles.infoSection}>
                         <h4>Cronograma de Actividades</h4>
-                        {actividadesOrdenadas.map((actividad, index) => (
-                            <div key={actividad.id_actividad} style={{ 
-                                marginBottom: index < actividadesOrdenadas.length - 1 ? '16px' : '0',
-                                paddingBottom: index < actividadesOrdenadas.length - 1 ? '16px' : '0',
-                                borderBottom: index < actividadesOrdenadas.length - 1 ? '1px solid #e5e7eb' : 'none'
-                            }}>
-                                <div style={{ 
-                                    marginBottom: '12px', 
-                                    paddingLeft: '8px', 
-                                    borderLeft: '3px solid #2C5F7C',
-                                    background: 'white',
-                                    padding: '12px',
-                                    borderRadius: '8px'
+                        {actividadesOrdenadas.map((actividad, index) => {
+                            const ponentes = ponentesPorActividad[actividad.id_actividad] || [];
+                            
+                            return (
+                                <div key={actividad.id_actividad} style={{ 
+                                    marginBottom: index < actividadesOrdenadas.length - 1 ? '16px' : '0',
+                                    paddingBottom: index < actividadesOrdenadas.length - 1 ? '16px' : '0',
+                                    borderBottom: index < actividadesOrdenadas.length - 1 ? '1px solid #e5e7eb' : 'none'
                                 }}>
                                     <div style={{ 
-                                        fontSize: '1rem', 
-                                        fontWeight: '600', 
-                                        color: '#2C5F7C',
-                                        marginBottom: '8px'
+                                        marginBottom: '12px', 
+                                        paddingLeft: '8px', 
+                                        borderLeft: '3px solid #2C5F7C',
+                                        background: 'white',
+                                        padding: '12px',
+                                        borderRadius: '8px'
                                     }}>
-                                        {index + 1}. {actividad.titulo}
-                                    </div>
-                                    
-                                    <div style={{ 
-                                        display: 'grid', 
-                                        gap: '8px',
-                                        fontSize: '0.9rem'
-                                    }}>
-                                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                                            <span style={{ fontWeight: '600', color: '#374151', minWidth: '80px' }}>
-                                                Fecha:
-                                            </span>
-                                            <span style={{ color: '#6b7280' }}>
-                                                {formatFecha(actividad.fecha_actividad)}
-                                            </span>
+                                        <div style={{ 
+                                            fontSize: '1rem', 
+                                            fontWeight: '600', 
+                                            color: '#2C5F7C',
+                                            marginBottom: '8px'
+                                        }}>
+                                            {index + 1}. {actividad.titulo}
                                         </div>
-
-                                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                                            <span style={{ fontWeight: '600', color: '#374151', minWidth: '80px' }}>
-                                                Horario:
-                                            </span>
-                                            <span style={{ color: '#6b7280' }}>
-                                                {formatearHora(actividad.hora_inicio)} - {formatearHora(actividad.hora_fin)}
-                                            </span>
-                                        </div>
-
-                                        {actividad.lugares && actividad.lugares.length > 0 && (
+                                        
+                                        <div style={{ 
+                                            display: 'grid', 
+                                            gap: '8px',
+                                            fontSize: '0.9rem'
+                                        }}>
                                             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                                                 <span style={{ fontWeight: '600', color: '#374151', minWidth: '80px' }}>
-                                                    Lugar:
+                                                    Fecha:
                                                 </span>
                                                 <span style={{ color: '#6b7280' }}>
-                                                    {actividad.lugares.map(lugar => lugar.nombre).join(', ')}
+                                                    {formatFecha(actividad.fecha_actividad)}
                                                 </span>
                                             </div>
-                                        )}
 
-                                        {actividad.descripcion && (
-                                            <div style={{ marginTop: '4px' }}>
-                                                <span style={{ 
-                                                    fontWeight: '600', 
-                                                    color: '#374151',
-                                                    display: 'block',
-                                                    marginBottom: '4px'
-                                                }}>
-                                                    Descripción:
-                                                </span>
-                                                <p style={{
-                                                    margin: 0,
-                                                    color: '#6b7280',
-                                                    lineHeight: '1.5',
-                                                    paddingLeft: '8px'
-                                                }}>
-                                                    {actividad.descripcion}
-                                                </p>
-                                            </div>
-                                        )}
-
-                                        {actividad.url && (
                                             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                                                 <span style={{ fontWeight: '600', color: '#374151', minWidth: '80px' }}>
-                                                    Enlace:
+                                                    Horario:
                                                 </span>
-                                                <a 
-                                                    href={actividad.url}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    style={{
-                                                        color: '#2C5F7C',
-                                                        textDecoration: 'none',
-                                                        wordBreak: 'break-all'
-                                                    }}
-                                                >
-                                                    {actividad.url}
-                                                </a>
+                                                <span style={{ color: '#6b7280' }}>
+                                                    {formatearHora(actividad.hora_inicio)} - {formatearHora(actividad.hora_fin)}
+                                                </span>
                                             </div>
-                                        )}
+
+                                            {actividad.lugares && actividad.lugares.length > 0 && (
+                                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                                    <span style={{ fontWeight: '600', color: '#374151', minWidth: '80px' }}>
+                                                        Lugar:
+                                                    </span>
+                                                    <span style={{ color: '#6b7280' }}>
+                                                        {actividad.lugares.map(lugar => lugar.nombre).join(', ')}
+                                                    </span>
+                                                </div>
+                                            )}
+
+                                            {ponentes.length > 0 && (
+                                                <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                                                    <span style={{ fontWeight: '600', color: '#374151', minWidth: '80px' }}>
+                                                        Ponente(s):
+                                                    </span>
+                                                    <span style={{ color: '#6b7280' }}>
+                                                        {ponentes.map(pa => 
+                                                            pa.ponente?.usuario?.nombre || 'Nombre no disponible'
+                                                        ).join(', ')}
+                                                    </span>
+                                                </div>
+                                            )}
+
+                                            {actividad.descripcion && (
+                                                <div style={{ marginTop: '4px' }}>
+                                                    <span style={{ 
+                                                        fontWeight: '600', 
+                                                        color: '#374151',
+                                                        display: 'block',
+                                                        marginBottom: '4px'
+                                                    }}>
+                                                        Descripción:
+                                                    </span>
+                                                    <p style={{
+                                                        margin: 0,
+                                                        color: '#6b7280',
+                                                        lineHeight: '1.5',
+                                                        paddingLeft: '8px'
+                                                    }}>
+                                                        {actividad.descripcion}
+                                                    </p>
+                                                </div>
+                                            )}
+
+                                            {actividad.url && (
+                                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                                    <span style={{ fontWeight: '600', color: '#374151', minWidth: '80px' }}>
+                                                        Enlace:
+                                                    </span>
+                                                    <a 
+                                                        href={actividad.url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        style={{
+                                                            color: '#2C5F7C',
+                                                            textDecoration: 'none',
+                                                            wordBreak: 'break-all'
+                                                        }}
+                                                    >
+                                                        {actividad.url}
+                                                    </a>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
             )}
