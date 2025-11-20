@@ -59,7 +59,7 @@ const AfiliacionesPendientesSection = () => {
     if (!modal.empresa) return;
 
     try {
-      await handleAprobarEmpresa(modal.empresa.id, modal.empresa.nombre);
+      await handleAprobarEmpresa(modal.empresa.id, modal.empresa.nombre, modal.empresa.id_creador);
       showNotification('success', `✅ Empresa "${modal.empresa.nombre}" aprobada exitosamente`);
       fetchEmpresas('empresas/pendientes');
     } catch (error) {

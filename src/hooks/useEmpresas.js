@@ -66,18 +66,30 @@ export const useEmpresas = () => {
         }
     }, [cleanErrorMessage]);
 
-    const handleAprobarEmpresa = useCallback(async (id, nombre) => {
+    const handleAprobarEmpresa = useCallback(async (id, nombre, creador) => {
         // ✅ ELIMINAR el window.confirm - ya tienes tu modal personalizado
         try {
-            const result = await adminService.aprobarEmpresaYPromover(id);
+            const token = localStorage.getItem('access_token');
+            const promoverAsistente = await adminService.promoverAGerente(creador, id);
+            const response = await fetch(`${API_PREFIX}/empresas/${id}/aprobar`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    aprobar: true
+                })
+            });
 
-            // result.aprobar contiene la respuesta de aprobación; si hubo promoción, queda en result.promote
-            if (!result || !result.aprobar) {
-                throw new Error('No se pudo aprobar la empresa');
+            if (response.ok) {
+                return true;
+            } else {
+                const result = await response.json();
+                const cleanError = cleanErrorMessage(result.message || 'Error al aprobar empresa');
+                throw new Error(cleanError);
             }
 
-            // Si el backend devolvió error dentro de aprobar, request wrapper lanzará error.
-            return true;
         } catch (error) {
             console.error('Error:', error);
             const cleanError = cleanErrorMessage(error.message);
