@@ -135,19 +135,28 @@ export const useEvento = (idEvento = null) => {
         const dataAEnviar = {
             ...formData,
             hora: formatearHora(formData.hora),
+            estado: Number(formData.estado),   // Aseguramos que sea número
+            cupos: Number(formData.cupos)      // Aseguramos que sea número
         };
+        console.log(dataAEnviar)
 
         // Normalizamos modalidad para backend (sin tilde)
         if (dataAEnviar.modalidad === "Híbrida") {
             dataAEnviar.modalidad = "Híbrida";
         }
-        console.log("ENVIANDO:", dataAEnviar);
 
+        // === LOGS DE DEPURACIÓN ===
+        console.log("=== GUARDANDO EVENTO ===");
+        console.log("Datos a enviar:", dataAEnviar);
+        console.log("Tipo de estado:", typeof dataAEnviar.estado);
+        console.log("Tipo de cupos:", typeof dataAEnviar.cupos);
 
         try {
             const eventoGuardado = idEvento
                 ? await actualizarEvento(idEvento, dataAEnviar)
                 : await crearEvento({ ...dataAEnviar, id_empresa: empresa.id });
+
+            console.log("Respuesta backend:", eventoGuardado);
 
             const eventoId = idEvento || eventoGuardado?.data?.id;
 
@@ -159,13 +168,18 @@ export const useEvento = (idEvento = null) => {
             }
 
             setMostrarModalExito(true);
-        } catch {
+        } catch (err) {
+            // Log completo del error
+            console.error("Error al guardar evento:", err);
+            console.error("Respuesta completa del backend (si existe):", err.response);
             setMensaje({ tipo: 'error', texto: 'Error al guardar el evento' });
+            setMostrarModalError(true);
         } finally {
             setGuardando(false);
             setEnviando(false);
         }
     };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();

@@ -8,17 +8,24 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
  */
 export async function obtenerMisNotificaciones() {
     try {
-        const response = await axios.get(`${API_URL}/notificaciones/mis-notificaciones?estado=pendiente`, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('access_token')}`
+        const token = localStorage.getItem('access_token');
+        if (!token) throw new Error('No hay token de autenticación');
+
+        const response = await axios.get(
+            `${API_URL}/notificaciones/mis-notificaciones?estado=pendiente`,
+            {
+                headers: { Authorization: `Bearer ${token}` }
             }
-        });
-        return response.data;
+        );
+
+        // Devuelve solo el array
+        return response.data.data;
     } catch (error) {
         console.error('Error al obtener notificaciones:', error);
         throw error;
     }
 }
+
 
 /**
  * Revisar detalles de una notificación
@@ -26,17 +33,25 @@ export async function obtenerMisNotificaciones() {
  */
 export async function obtenerDetalleNotificacion(notificacionId) {
     try {
-        const response = await axios.get(`${API_URL}/notificaciones/${notificacionId}`, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('acces_token')}`
+        const token = localStorage.getItem('access_token');
+        if (!token) throw new Error('No hay token de autenticación');
+
+        const response = await axios.get(
+            `${API_URL}/notificaciones/${notificacionId}`,
+            {
+                headers: { Authorization: `Bearer ${token}` }
             }
-        });
-        return response.data;
+        );
+
+        // Devuelve solo la data del detalle de la notificación
+        return response.data.data;
     } catch (error) {
         console.error('Error al obtener detalle de notificación:', error);
         throw error;
     }
 }
+
+
 
 /**
  * Revisar asignación de ponente en actividad
