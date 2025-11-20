@@ -25,12 +25,34 @@ const EventosPageOrganizador = () => {
     const cargarEventos = async () => {
         try {
             const perfil = await obtenerPerfil();
-            const idCreador = perfil?.data?.usuario?.id || perfil?.data?.id || null;
+            // Obtener id del creador desde distintas formas según la respuesta del endpoint
+            const idCreador = perfil?.data?.usuario?.id
+                || perfil?.data?.id
+                || perfil?.usuario?.id
+                || perfil?.id
+                || perfil?.usuario_id
+                || null;
 
             const data = await obtenerEventos();
-            const eventosDelCreador = Array.isArray(data.data)
-                ? data.data.filter(e => String(e.id_creador) === String(idCreador))
-                : [];
+            const listaEventos = Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : []);
+
+            // Normalizar y filtrar por posibles campos de creador
+            const eventosDelCreador = listaEventos.filter((e) => {
+                if (!idCreador) return false;
+                const creadorFields = [
+                    e.id_creador,
+                    e.creador?.id,
+                    e.creador_id,
+                    e.usuario?.id,
+                    e.usuario_id,
+                    e.idCreador,
+                    e.owner_id,
+                    e.owner?.id
+                ];
+
+                return creadorFields.some(field => String(field) === String(idCreador));
+            });
+
             setEventos(eventosDelCreador);
         } catch (error) {
             alert("Error al cargar eventos.");
@@ -102,7 +124,7 @@ const EventosPageOrganizador = () => {
                     </div>
 
                     <button
-                        onClick={() => navigate('/eventos/crear')}
+                        onClick={() => navigate('/organizador/eventos/crear')}
                         className="btn-crear-evento"
                     >
                         <Plus size={20} />
@@ -130,7 +152,7 @@ const EventosPageOrganizador = () => {
                                         <Calendar size={48} className="empty-icon" />
                                         <p>No hay eventos registrados</p>
                                         <button
-                                            onClick={() => navigate('/eventos/crear')}
+                                            onClick={() => navigate('/organizador/eventos/crear')}
                                             className="btn-crear-primero"
                                         >
                                             Crear tu primer evento
@@ -155,7 +177,7 @@ const EventosPageOrganizador = () => {
                                         <td>
                                             <div className="action-buttons">
                                                 <button
-                                                    onClick={() => navigate(`/eventos/editar/${evento.id}`)}
+                                                    onClick={() => navigate(`/organizador/eventos/editar/${evento.id}`)}
                                                     className="btn-action btn-editar"
                                                 >
                                                     <Edit size={16} />
@@ -331,7 +353,7 @@ const EventosPageOrganizador = () => {
                             <button
                                 onClick={() => {
                                     setModalVerVisible(false);
-                                    navigate(`/eventos/editar/${eventoAVer.id}`);
+                                    navigate(`/organizador/eventos/editar/${eventoAVer.id}`);
                                 }}
                                 className="btn-editar-modal"
                             >

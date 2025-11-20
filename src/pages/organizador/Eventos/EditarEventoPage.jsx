@@ -218,7 +218,7 @@ const EditarEventoPage = () => {
 
                         <button
                             type="submit"
-                            disabled={guardando || errorCupos.mostrar}
+                            disabled={guardando || errorCupos?.mostrar}
                             className="btn-submit-crear"
                         >
                             <Save size={20} />
@@ -248,7 +248,7 @@ const EditarEventoPage = () => {
                         <div className="modal-exito" style={{ borderTop: '4px solid #dc3545' }}>
                             <XCircle size={48} color="#dc3545" />
                             <h2>Error en los Cupos</h2>
-                            <p>{errorCupos.mensaje}</p>
+                            <p>{errorCupos?.mensaje || ''}</p>
                             <button
                                 className="btn-submit-crear"
                                 style={{ backgroundColor: '#dc3545' }}

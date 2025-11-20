@@ -141,13 +141,28 @@ export const useEvento = (idEvento = null) => {
         if (dataAEnviar.modalidad === "Híbrida") {
             dataAEnviar.modalidad = "Híbrida";
         }
-        console.log("ENVIANDO:", dataAEnviar);
+
+        // Sanitizar: eliminar campos explícitamente nulos para evitar errores en backend
+        const sanitized = {};
+        Object.keys(dataAEnviar).forEach((k) => {
+            const v = dataAEnviar[k];
+            // send empty strings (user may clear), but avoid sending null
+            if (v !== null && v !== undefined) sanitized[k] = v;
+        });
+
+        // Asegurar tipos básicos
+        if (sanitized.cupos !== undefined && sanitized.cupos !== null) {
+            const num = Number(sanitized.cupos);
+            sanitized.cupos = Number.isNaN(num) ? sanitized.cupos : num;
+        }
+
+        console.log("ENVIANDO (sanitized):", sanitized);
 
 
         try {
             const eventoGuardado = idEvento
-                ? await actualizarEvento(idEvento, dataAEnviar)
-                : await crearEvento({ ...dataAEnviar, id_empresa: empresa.id });
+                ? await actualizarEvento(idEvento, sanitized)
+                : await crearEvento({ ...sanitized, id_empresa: empresa.id });
 
             const eventoId = idEvento || eventoGuardado?.data?.id;
 
@@ -159,8 +174,9 @@ export const useEvento = (idEvento = null) => {
             }
 
             setMostrarModalExito(true);
-        } catch {
-            setMensaje({ tipo: 'error', texto: 'Error al guardar el evento' });
+        } catch (err) {
+            console.error('Error guardarEvento:', err);
+            setMensaje({ tipo: 'error', texto: `Error al guardar el evento: ${err.message || ''}` });
         } finally {
             setGuardando(false);
             setEnviando(false);

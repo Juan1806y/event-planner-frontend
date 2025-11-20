@@ -203,9 +203,9 @@ function App() {
               </PrivateRoute>
             }
           />
-          <Route path="/eventos" element={<EventosPageOrganizador />} />
-          <Route path="/eventos/crear" element={<CrearEventoPage />} />
-          <Route path="/eventos/editar/:id" element={<EditarEventoPage />} />
+          <Route path="/organizador/eventos" element={<EventosPageOrganizador />} />
+          <Route path="/organizador/eventos/crear" element={<CrearEventoPage />} />
+          <Route path="/organizador/eventos/editar/:id" element={<EditarEventoPage />} />
           <Route path="/organizador/eventos/:eventoId/agenda" element={<GestionarAgendaPage />} />
           <Route
             path="/organizador/eventos/:eventoId/actividades/crear"
