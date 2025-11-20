@@ -87,7 +87,7 @@
 .pendiente { background: linear-gradient(90deg,#f59e0b,#fbbf24); width:30%; }
 .aceptado { background: linear-gradient(90deg,#10b981,#34d399); width:100%; }
 .rechazado { background: linear-gradient(90deg,#ef4444,#f87171); width:100%; }
-.solicitud_cambio, .solicitudCambio { background: linear-gradient(90deg,#f59e0b,#fbbf24); width:60%; }
+.solicitud_cambio, .solicitudCambio { background: linear-gradient(90deg,#607b81,#b1c8d7); width:60%; }
 
 .detalles {
     display: flex;
@@ -152,8 +152,8 @@
 .solicitarBtn { background: linear-gradient(135deg,#3b3b8f,#474357); color: white; }
 .detallesBtn { background: linear-gradient(135deg,#2C5F7C,#1E4157); color: white; }
 
-.solicitudInfo { background: linear-gradient(135deg,#fef3c7,#f59e0b); border-radius:8px; padding:12px; border:1px solid #f59e0b; }
-.solicitudText { color: #92400e; font-weight:600; }
+.solicitudInfo { background: linear-gradient(135deg,#6f7299,#60788e); border-radius:8px; padding:12px; border:1px; }
+.solicitudText { color: #f8f4f2; font-weight:600; }
 
 @media (max-width:768px){
     .cardHeader{padding:14px;}
