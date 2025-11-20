@@ -9,6 +9,8 @@ import {
     User,
     Clock,
     MapPin,
+    Eye,
+    X,
 } from 'lucide-react';
 import {
     obtenerEventoPorId,
@@ -27,6 +29,8 @@ const GestionarAgendaPage = () => {
     const [loading, setLoading] = useState(true);
     const [actividadesPorFecha, setActividadesPorFecha] = useState({});
     const [ponentesAsignados, setPonentesAsignados] = useState({});
+    const [modalAbierto, setModalAbierto] = useState(false);
+    const [actividadSeleccionada, setActividadSeleccionada] = useState(null);
 
     const cargarDatos = useCallback(async () => {
         try {
@@ -43,7 +47,6 @@ const GestionarAgendaPage = () => {
             setActividades(acts);
             agruparActividadesPorFecha(acts);
 
-            // Cargar ponentes asignados para cada actividad
             await cargarPonentesAsignados(acts);
         } catch (error) {
             console.error('Error al cargar datos:', error);
@@ -60,7 +63,6 @@ const GestionarAgendaPage = () => {
                 const response = await obtenerPonenteAsignado(actividad.id_actividad);
                 if (response.success && response.data.length > 0) {
                     const asignacion = response.data[0];
-                    // Guardar el nombre completo del ponente
                     ponentesMap[actividad.id_actividad] = asignacion.ponente?.usuario?.nombre || 'Pendiente';
                 } else {
                     ponentesMap[actividad.id_actividad] = 'Pendiente';
@@ -80,7 +82,6 @@ const GestionarAgendaPage = () => {
 
     const agruparActividadesPorFecha = (acts) => {
         const agrupadas = acts.reduce((acc, actividad) => {
-            // Extraer la fecha sin conversión de zona horaria
             const fecha = actividad.fecha_actividad.split('T')[0];
             const [year, month, day] = fecha.split('-');
             const fechaFormateada = `${day}/${month}/${year}`;
@@ -102,7 +103,6 @@ const GestionarAgendaPage = () => {
             const resultado = await eliminarActividad(actividadId);
             console.log('Resultado de eliminación:', resultado);
 
-            // Recargar los datos después de eliminar
             await cargarDatos();
         } catch (error) {
             console.error('Error completo:', error);
@@ -113,9 +113,25 @@ const GestionarAgendaPage = () => {
         }
     };
 
+    const handleVerActividad = (actividad) => {
+        setActividadSeleccionada(actividad);
+        setModalAbierto(true);
+    };
+
+    const cerrarModal = () => {
+        setModalAbierto(false);
+        setActividadSeleccionada(null);
+    };
+
     const formatearHora = (hora) => {
         if (!hora) return '';
         return hora.substring(0, 5);
+    };
+
+    const formatearFecha = (fecha) => {
+        if (!fecha) return '';
+        const [year, month, day] = fecha.split('T')[0].split('-');
+        return `${day}/${month}/${year}`;
     };
 
     if (loading) {
@@ -187,7 +203,6 @@ const GestionarAgendaPage = () => {
                                 <div className="col-ponente">PONENTE</div>
                                 <div className="col-horario">HORARIO</div>
                                 <div className="col-sala">SALA</div>
-                                <div className="col-tipo">TIPO</div>
                                 <div className="col-acciones">ACCIONES</div>
                             </div>
 
@@ -226,6 +241,14 @@ const GestionarAgendaPage = () => {
                                     </div>
 
                                     <div className="col-acciones">
+                                        <button
+                                            onClick={() => handleVerActividad(actividad)}
+                                            className="btn-accion btn-ver-accion"
+                                            title="Ver detalles"
+                                        >
+                                            <Eye size={16} />
+                                            Ver
+                                        </button>
                                         <button
                                             onClick={() => {
                                                 sessionStorage.setItem('currentEventoId', eventoId);
@@ -269,6 +292,143 @@ const GestionarAgendaPage = () => {
                     </div>
                 )}
             </div>
+
+            {/* Modal de Detalles de Actividad */}
+            {modalAbierto && actividadSeleccionada && (
+                <div className="modal-overlay" onClick={cerrarModal}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <div className="modal-header-content">
+                                <div className="modal-icon-wrapper">
+                                    <Calendar size={28} />
+                                </div>
+                                <div>
+                                    <h2>Detalles de la Actividad</h2>
+                                </div>
+                            </div>
+                            <button onClick={cerrarModal} className="modal-close-btn">
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="modal-body">
+                            <div className="modal-card">
+                                <div className="modal-card-header">
+                                    <div className="card-icon blue">
+                                        <Calendar size={18} />
+                                    </div>
+                                    <h3>Información General</h3>
+                                </div>
+                                <div className="modal-card-content">
+                                    <div className="info-row">
+                                        <span className="info-label">Título</span>
+                                        <span className="info-value">{actividadSeleccionada.titulo}</span>
+                                    </div>
+                                    <div className="info-row full-width">
+                                        <span className="info-label">Descripción</span>
+                                        <span className="info-value description">{actividadSeleccionada.descripcion || 'Sin descripción disponible'}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="modal-cards-row">
+                                <div className="modal-card">
+                                    <div className="modal-card-header">
+                                        <div className="card-icon purple">
+                                            <Clock size={18} />
+                                        </div>
+                                        <h3>Fecha y Horario</h3>
+                                    </div>
+                                    <div className="modal-card-content">
+                                        <div className="info-item">
+                                            <Calendar size={16} className="item-icon" />
+                                            <div>
+                                                <span className="item-label">Fecha</span>
+                                                <span className="item-value">{formatearFecha(actividadSeleccionada.fecha_actividad)}</span>
+                                            </div>
+                                        </div>
+                                        <div className="info-item">
+                                            <Clock size={16} className="item-icon" />
+                                            <div>
+                                                <span className="item-label">Horario</span>
+                                                <span className="item-value">
+                                                    {formatearHora(actividadSeleccionada.hora_inicio)} - {formatearHora(actividadSeleccionada.hora_fin)}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="modal-card">
+                                    <div className="modal-card-header">
+                                        <div className="card-icon green">
+                                            <MapPin size={18} />
+                                        </div>
+                                        <h3>Ubicación</h3>
+                                    </div>
+                                    <div className="modal-card-content">
+                                        <div className="info-item">
+                                            <MapPin size={16} className="item-icon" />
+                                            <div>
+                                                <span className="item-label">Sala/Lugar</span>
+                                                <span className="item-value">{actividadSeleccionada.lugares?.[0]?.nombre || 'Sin sala asignada'}</span>
+                                            </div>
+                                        </div>
+                                        {actividadSeleccionada.lugares?.[0]?.direccion && (
+                                            <div className="info-item">
+                                                <MapPin size={16} className="item-icon" />
+                                                <div>
+                                                    <span className="item-label">Dirección</span>
+                                                    <span className="item-value small">{actividadSeleccionada.lugares[0].direccion}</span>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="modal-card">
+                                <div className="modal-card-header">
+                                    <div className="card-icon orange">
+                                        <User size={18} />
+                                    </div>
+                                    <h3>Ponente Asignado</h3>
+                                </div>
+                                <div className="modal-card-content">
+                                    <div className="ponente-card">
+                                        <div className="ponente-avatar">
+                                            <User size={24} />
+                                        </div>
+                                        <div className="ponente-info-modal">
+                                            <span className="ponente-name">{ponentesAsignados[actividadSeleccionada.id_actividad] || 'Pendiente de asignación'}</span>
+                                            <span className="ponente-role">Ponente principal</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="modal-footer">
+                            <button
+                                onClick={cerrarModal}
+                                className="btn-modal btn-secondary"
+                            >
+                                Cerrar
+                            </button>
+                            <button
+                                onClick={() => {
+                                    sessionStorage.setItem('currentEventoId', eventoId);
+                                    navigate(`/organizador/actividades/${actividadSeleccionada.id_actividad}/editar`);
+                                }}
+                                className="btn-modal btn-primary"
+                            >
+                                <Edit size={18} />
+                                Editar Actividad
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
