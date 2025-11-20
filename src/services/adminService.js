@@ -2,6 +2,7 @@ import { BaseService } from '../services/api/baseService';
 import { authService } from './api/authService';
 
 export class AdminService extends BaseService {
+  // Método helper para obtener el token decodificado
   async getDashboardData() {
     const [afiliaciones, auditoria] = await Promise.all([
       this.getAfiliaciones(),
@@ -26,46 +27,27 @@ export class AdminService extends BaseService {
     return this.request('/api/gestion-usuarios/users');
   }
 
-  async aprobarEmpresa(id, data) {
-    return this.request(`/api/empresas/${id}/aprobar`, {
+  async promoverAGerente(idUsuario, idEmpresa) {
+    return authService.promoverGerente(idUsuario, idEmpresa);
+  }
+
+  async aprobarEmpresaYPromover(id, data) {
+    // Ejecutar la aprobación primero
+    const aprobarResp = await this.request(`/api/empresas/${id}/aprobar`, {
       method: 'PATCH',
       body: JSON.stringify(data)
     });
-  }
 
-  // Aprobar la empresa y, si es posible, promover al usuario que solicitó la afiliación.
-  async aprobarEmpresaYPromover(id) {
-    // Ejecutar la aprobación
-    console.debug('adminService.aprobarEmpresaYPromover: aprobadando empresa', id);
-    const aprobarResp = await this.request(`/api/empresas/${id}/aprobar`, {
-      method: 'PATCH',
-      body: JSON.stringify({ aprobar: true })
-    });
-
-    // Extraer id del solicitante desde la respuesta si viene
-    const data = aprobarResp?.data || {};
-    let requesterId = data.usuario?.id || data.usuario_id || data.id_usuario || data.creado_por || data.creador_id || data.solicitante?.id || data.solicitante_id || data.user_id || null;
-
-    // Si no está en la respuesta, intentar obtener la empresa completa
-    if (!requesterId) {
-      try {
-        const empresaFull = await this.request(`/api/empresas/${id}`);
-        const empresaData = empresaFull?.data || empresaFull;
-        requesterId = empresaData?.usuario?.id || empresaData?.usuario_id || empresaData?.id_usuario || empresaData?.creado_por || empresaData?.creador_id || empresaData?.solicitante?.id || empresaData?.solicitante_id || empresaData?.user_id || null;
-        console.debug('adminService: requesterId obtained from GET empresa', requesterId, empresaData);
-      } catch (err) {
-        console.warn('adminService: failed to fetch empresa to obtain requesterId', err);
-      }
-    }
+    // Extraer id del creador desde la respuesta (soporte para varias claves)
+    const payload = aprobarResp?.data || {};
+    const requesterId = payload?.creador?.id || payload?.creador_id || payload?.id_creador || payload?.usuario?.id || payload?.usuario_id || null;
 
     let promoteResult = null;
     if (requesterId) {
-      // Llamar al endpoint de promoción del authService
-      console.debug('adminService: calling authService.promoverGerente', { requesterId, empresaId: id });
+      // Llamar al endpoint de promoción con el orden correcto: (id_usuario, id_empresa)
       promoteResult = await authService.promoverGerente(String(requesterId), String(id));
-      console.debug('adminService: promoteResult', promoteResult);
     } else {
-      console.warn('adminService: no requesterId found, skipping promotion');
+      console.warn('adminService.aprobarEmpresaYPromover: no requesterId found, skipping promotion');
     }
 
     return { aprobar: aprobarResp, promote: promoteResult };

@@ -2,24 +2,34 @@ import { API_PREFIX } from '../config/apiConfig';
 const API_BASE = API_PREFIX;
 
 export const ponenteAgendaService = {
-    async obtenerAgendaPonente(token) {
+    async obtenerAgendaPonente(ponenteId, token) {
         try {
-            console.log('🎤 Obteniendo agenda del ponente...');
+            console.log('Obteniendo agenda del ponente...');
 
-            const user = JSON.parse(localStorage.getItem('user'));
-            const ponenteId = user?.id_ponente || user?.id;
+            let _ponenteId = ponenteId;
+            let _token = token;
 
-            if (!ponenteId) {
+            if (!_token) {
+                _token = localStorage.getItem('access_token');
+            }
+
+            if (!_ponenteId) {
+                const user = JSON.parse(localStorage.getItem('user')) || {};
+                _ponenteId = user?.id_ponente || user?.id;
+            }
+
+            if (!_ponenteId) {
                 throw new Error('No se pudo identificar al ponente');
             }
 
-            // Obtener actividades del ponente
-            const actividades = await this.obtenerActividadesPonente(ponenteId, token);
-            
-            // Obtener eventos únicos para mostrar en el selector
-            const eventos = await this.obtenerEventosPonente(ponenteId, token);
+            if (!_token) {
+                throw new Error('No hay token de autenticación');
+            }
 
-            console.log(`✅ Agenda del ponente: ${actividades.length} actividades en ${eventos.length} eventos`);
+            const actividades = await this.obtenerActividadesPonente(_ponenteId, _token);
+            const eventos = await this.obtenerEventosPonente(_ponenteId, _token);
+
+            console.log(`Agenda del ponente: ${actividades.length} actividades en ${eventos.length} eventos`);
 
             return {
                 actividades,
@@ -27,17 +37,22 @@ export const ponenteAgendaService = {
             };
 
         } catch (error) {
-            console.error('💥 Error en obtenerAgendaPonente:', error);
+            console.error('Error en obtenerAgendaPonente:', error);
             throw error;
         }
     },
 
-    /**
-     * Obtiene las actividades asignadas al ponente
-     */
     async obtenerActividadesPonente(ponenteId, token) {
         try {
-            console.log(`🔍 Obteniendo actividades del ponente: ${ponenteId}`);
+            console.log(`Obteniendo actividades del ponente: ${ponenteId}`);
+
+            const user = JSON.parse(localStorage.getItem('user')) || {};
+            const ponenteIdReal = user?.rolData?.id_ponente || user?.id_ponente;
+
+            if (ponenteIdReal && ponenteIdReal !== ponenteId) {
+                console.log(`Usando ID real del ponente: ${ponenteIdReal}`);
+                ponenteId = ponenteIdReal;
+            }
 
             const response = await fetch(`${API_BASE}/ponente-actividad/ponente/${ponenteId}`, {
                 method: 'GET',
@@ -47,38 +62,95 @@ export const ponenteAgendaService = {
                 }
             });
 
-            console.log('📡 Response status actividades ponente:', response.status);
+            console.log('Response status actividades ponente:', response.status);
 
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error('❌ Error response actividades ponente:', errorText);
+                console.error('Error response actividades ponente (raw):', errorText);
+
+                let parsed;
+                try {
+                    parsed = JSON.parse(errorText);
+                } catch (parseErr) {
+                    parsed = null;
+                }
+
+                const isPonenteNotFound = parsed && parsed.message && parsed.message.toLowerCase().includes('ponente no encontrado');
+
+                if (response.status === 404 || isPonenteNotFound) {
+                    console.log('Ponente no encontrado con id proporcionado. Intentando fallback con id de usuario...');
+
+                    try {
+                        const user = JSON.parse(localStorage.getItem('user')) || {};
+                        const alternateId = user?.id;
+
+                        if (alternateId && alternateId !== ponenteId) {
+                            console.log(` Reintentando con id usuario: ${alternateId}`);
+                            const altResponse = await fetch(`${API_BASE}/ponente-actividad/ponente/${alternateId}`, {
+                                method: 'GET',
+                                headers: {
+                                    'Authorization': `Bearer ${token}`,
+                                    'Content-Type': 'application/json'
+                                }
+                            });
+
+                            console.log(' Response status (fallback):', altResponse.status);
+
+                            if (altResponse.ok) {
+                                const altResult = await altResponse.json();
+                                if (altResult.success) {
+                                    return this.formatearActividadesPonente(altResult.data || []);
+                                }
+                            }
+                        }
+                    } catch (fallbackError) {
+                        console.error(' Error durante fallback de id de ponente:', fallbackError);
+                    }
+
+                    if (isPonenteNotFound) {
+                        throw new Error('Ponente no encontrado');
+                    }
+
+                    console.log('ℹPonente no encontrado o sin actividades, devolviendo array vacío');
+                    return [];
+                }
+
                 throw new Error(`Error ${response.status}: ${response.statusText}`);
             }
 
             const result = await response.json();
-            console.log(`📦 Actividades del ponente ${ponenteId}:`, result);
+            console.log(`RESPUESTA CRUDA API actividades ponente ${ponenteId}:`, result);
 
             if (!result.success) {
-                throw new Error(result.message || 'Error al obtener actividades del ponente');
+                console.warn('API returned success: false', result.message);
+
+                if (result.message && result.message.toLowerCase().includes('ponente no encontrado')) {
+                    throw new Error('Ponente no encontrado');
+                }
+
+                if (result.data && Array.isArray(result.data)) {
+                    console.log('Intentando formatear datos aunque success: false');
+                    return this.formatearActividadesPonente(result.data);
+                }
+
+                return [];
             }
 
-            return this.formatearActividadesPonente(result.data || []);
+            const actividadesFormateadas = this.formatearActividadesPonente(result.data || []);
+            console.log(`${actividadesFormateadas.length} actividades formateadas:`, actividadesFormateadas);
+
+            return actividadesFormateadas;
         } catch (error) {
-            console.error('💥 Error en obtenerActividadesPonente:', error);
-            throw error;
+            console.error('Error en obtenerActividadesPonente:', error);
+            return [];
         }
     },
 
-    /**
-     * Obtiene los eventos donde el ponente tiene actividades
-     */
     async obtenerEventosPonente(ponenteId, token) {
         try {
             const actividades = await this.obtenerActividadesPonente(ponenteId, token);
-            
-            // Extraer eventos únicos de las actividades
             const eventosMap = new Map();
-            
+
             actividades.forEach(actividad => {
                 if (actividad.evento && !eventosMap.has(actividad.evento.id)) {
                     eventosMap.set(actividad.evento.id, actividad.evento);
@@ -87,17 +159,14 @@ export const ponenteAgendaService = {
 
             return Array.from(eventosMap.values());
         } catch (error) {
-            console.error('💥 Error en obtenerEventosPonente:', error);
+            console.error('Error en obtenerEventosPonente:', error);
             throw error;
         }
     },
 
-    /**
-     * Obtiene la agenda del ponente para un evento específico
-     */
     async obtenerAgendaPorEvento(eventoId, token) {
         try {
-            console.log(`📅 Obteniendo agenda del ponente para evento: ${eventoId}`);
+            console.log(`Obteniendo agenda del ponente para evento: ${eventoId}`);
 
             const user = JSON.parse(localStorage.getItem('user'));
             const ponenteId = user?.id_ponente || user?.id;
@@ -107,36 +176,31 @@ export const ponenteAgendaService = {
             }
 
             const actividades = await this.obtenerActividadesPonente(ponenteId, token);
-            
-            // Filtrar actividades por evento y solo las aceptadas
-            const actividadesEvento = actividades.filter(actividad => 
-                actividad.evento?.id === eventoId && 
+
+            const actividadesEvento = actividades.filter(actividad =>
+                actividad.evento?.id === eventoId &&
                 actividad.estado === 'aceptado'
             );
 
-            console.log(`✅ ${actividadesEvento.length} actividades para el evento ${eventoId}`);
+            console.log(`${actividadesEvento.length} actividades para el evento ${eventoId}`);
 
             return actividadesEvento;
         } catch (error) {
-            console.error('💥 Error en obtenerAgendaPorEvento:', error);
+            console.error('Error en obtenerAgendaPorEvento:', error);
             throw error;
         }
     },
 
-    /**
-     * Formatea las actividades del ponente
-     */
     formatearActividadesPonente(actividades) {
         return actividades.map(asignacion => ({
             id_asignacion: `${asignacion.id_ponente}-${asignacion.id_actividad}`,
             id_ponente: asignacion.id_ponente,
             id_actividad: asignacion.id_actividad,
-            estado: asignacion.estado, // pendiente, aceptado, rechazado, solicitud_cambio
+            estado: asignacion.estado,
             fecha_asignacion: asignacion.fecha_asignacion,
             fecha_respuesta: asignacion.fecha_respuesta,
             notas: asignacion.notas,
-            
-            // Información de la actividad
+
             actividad: {
                 id: asignacion.actividad?.id_actividad,
                 titulo: asignacion.actividad?.titulo,
@@ -168,13 +232,13 @@ export const ponenteAgendaService = {
      */
     async responderInvitacion(ponenteId, actividadId, aceptar, motivoRechazo = '', token) {
         try {
-            console.log(`📝 Respondiendo invitación: ponente ${ponenteId}, actividad ${actividadId}, aceptar: ${aceptar}`);
+            console.log(`Respondiendo invitación: ponente ${ponenteId}, actividad ${actividadId}, aceptar: ${aceptar}`);
 
-            const payload = aceptar 
+            const payload = aceptar
                 ? { aceptar: true }
-                : { 
-                    aceptar: false, 
-                    motivo_rechazo: motivoRechazo 
+                : {
+                    aceptar: false,
+                    motivo_rechazo: motivoRechazo
                 };
 
             const response = await fetch(
@@ -188,17 +252,16 @@ export const ponenteAgendaService = {
                     body: JSON.stringify(payload)
                 }
             );
-
-            console.log('📡 Response status responder invitación:', response.status);
+            console.log('Response status responder invitación:', response.status);
 
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error('❌ Error response responder invitación:', errorText);
+                console.error('Error response responder invitación:', errorText);
                 throw new Error(`Error ${response.status}: ${response.statusText}`);
             }
 
             const result = await response.json();
-            console.log('✅ Respuesta a invitación:', result);
+            console.log('Respuesta a invitación:', result);
 
             if (!result.success) {
                 throw new Error(result.message || 'Error al responder invitación');
@@ -206,7 +269,7 @@ export const ponenteAgendaService = {
 
             return result.data;
         } catch (error) {
-            console.error('💥 Error en responderInvitacion:', error);
+            console.error('Error en responderInvitacion:', error);
             throw error;
         }
     },
@@ -216,7 +279,7 @@ export const ponenteAgendaService = {
      */
     async solicitarCambios(ponenteId, actividadId, cambiosSolicitados, justificacion, token) {
         try {
-            console.log(`📋 Solicitando cambios: ponente ${ponenteId}, actividad ${actividadId}`, cambiosSolicitados);
+            console.log(`Solicitando cambios: ponente ${ponenteId}, actividad ${actividadId}`, cambiosSolicitados);
 
             const response = await fetch(
                 `${API_BASE}/ponente-actividad/${ponenteId}/${actividadId}/solicitar-cambio`,
@@ -233,16 +296,16 @@ export const ponenteAgendaService = {
                 }
             );
 
-            console.log('📡 Response status solicitar cambios:', response.status);
+            console.log('Response status solicitar cambios:', response.status);
 
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error('❌ Error response solicitar cambios:', errorText);
+                console.error(' Error response solicitar cambios:', errorText);
                 throw new Error(`Error ${response.status}: ${response.statusText}`);
             }
 
             const result = await response.json();
-            console.log('✅ Solicitud de cambios enviada:', result);
+            console.log('Solicitud de cambios enviada:', result);
 
             if (!result.success) {
                 throw new Error(result.message || 'Error al solicitar cambios');
@@ -250,7 +313,7 @@ export const ponenteAgendaService = {
 
             return result.data;
         } catch (error) {
-            console.error('💥 Error en solicitarCambios:', error);
+            console.error('Error en solicitarCambios:', error);
             throw error;
         }
     },
@@ -283,7 +346,7 @@ export const ponenteAgendaService = {
 
             return agrupadas;
         } catch (error) {
-            console.error('💥 Error en obtenerActividadesPorEstado:', error);
+            console.error('Error en obtenerActividadesPorEstado:', error);
             throw error;
         }
     },
@@ -324,7 +387,7 @@ export const ponenteAgendaService = {
                 eventos: [...new Set(Object.values(actividades).flat().map(a => a.evento?.id))].length
             };
         } catch (error) {
-            console.error('💥 Error en obtenerEstadisticasPonente:', error);
+            console.error('Error en obtenerEstadisticasPonente:', error);
             throw error;
         }
     }

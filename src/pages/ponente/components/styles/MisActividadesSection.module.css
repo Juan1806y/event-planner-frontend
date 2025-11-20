@@ -1,0 +1,407 @@
+/* Contenedor principal de actividades */
+.actividadesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #e2e8f0;
+    position: relative;
+    overflow: hidden;
+    min-height: 320px;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.cardHeader {
+    background: linear-gradient(135deg, #2C5F7C 0%, #1E4157 100%);
+    padding: 16px 20px;
+    color: white;
+    position: relative;
+}
+
+.cardHeader::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 20px;
+    width: 30px;
+    height: 2px;
+    background: #f59e0b;
+    border-radius: 1px;
+}
+
+.titulo {
+    font-size: 1rem;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 6px 0;
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.modalidadBadge {
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    display: inline-block;
+}
+
+.estadoBadge {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    padding: 4px 10px;
+    border-radius: 16px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.estadoBadge.pendiente {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #f59e0b;
+}
+
+.estadoBadge.aceptado {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #10b981;
+}
+
+.estadoBadge.rechazado {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #ef4444;
+}
+
+.estadoBadge.solicitudCambio {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #f59e0b;
+}
+
+.cardBody {
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 12px;
+}
+
+/* Progreso de estado más compacto */
+.estadoProgress {
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #f1f5f9;
+}
+
+.progressHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.progressLabel {
+    font-size: 0.75rem;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.progressPercentage {
+    font-size: 0.75rem;
+    color: #2C5F7C;
+    font-weight: 700;
+}
+
+.progressBar {
+    width: 100%;
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.progressFill {
+    height: 100%;
+    border-radius: 6px;
+    transition: width 0.3s ease;
+}
+
+.progressFill.pendiente {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    width: 30%;
+}
+
+.progressFill.aceptado {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    width: 100%;
+}
+
+.progressFill.rechazado {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    width: 100%;
+}
+
+.progressFill.solicitudCambio {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    width: 60%;
+}
+
+.progressText {
+    font-size: 0.7rem;
+    color: #64748b;
+    text-align: center;
+    display: block;
+    font-weight: 500;
+}
+
+/* Detalles más compactos */
+.detalles {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.detalleItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 6px 0;
+}
+
+.detalleItem:not(:last-child) {
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.detalleIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    background: #f0f7ff;
+    border-radius: 4px;
+    padding: 3px;
+    color: #2C5F7C;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.detalleContent {
+    flex: 1;
+    min-width: 0;
+}
+
+.detalleLabel {
+    display: block;
+    font-size: 0.7rem;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 2px;
+}
+
+.detalleValue {
+    display: block;
+    font-size: 0.8rem;
+    color: #374151;
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+/* Descripción compacta */
+.descripcionContainer {
+    background: #f8fafc;
+    padding: 10px;
+    border-radius: 6px;
+    border-left: 2px solid #2C5F7C;
+}
+
+.descripcionLabel {
+    font-size: 0.7rem;
+    color: #2C5F7C;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 4px;
+}
+
+.descripcionText {
+    font-size: 0.75rem;
+    color: #64748b;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Acciones más compactas */
+.actions {
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    gap: 8px;
+}
+
+.solicitarBtn, .detallesBtn {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    font-family: inherit;
+}
+
+.solicitarBtn {
+    background: linear-gradient(135deg, #554ccd 0%, #7a8dae 100%);
+    color: white;
+}
+
+.solicitarBtn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+.solicitarBtn:disabled {
+    background: #e2e8f0;
+    color: #94a3b8;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.detallesBtn {
+    background: linear-gradient(135deg, #2C5F7C 0%, #1E4157 100%);
+    color: white;
+}
+
+.detallesBtn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(44, 95, 124, 0.3);
+}
+
+/* Información de solicitud compacta */
+.solicitudInfo {
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-top: 8px;
+}
+
+.solicitudText {
+    margin: 0;
+    color: #92400e;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.solicitudText::before {
+    content: '⏳';
+    font-size: 0.8rem;
+}
+
+/* Grid responsive mejorado */
+@media (min-width: 1400px) {
+    .actividadesGrid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+@media (min-width: 1200px) and (max-width: 1399px) {
+    .actividadesGrid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+    .actividadesGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .actividadesGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 576px) and (max-width: 767px) {
+    .actividadesGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 575px) {
+    .actividadesGrid {
+        grid-template-columns: 1fr;
+    }
+    
+    .cardHeader {
+        padding: 14px 16px;
+    }
+    
+    .cardBody {
+        padding: 14px 16px;
+    }
+    
+    .actions {
+        flex-direction: column;
+    }
+}
+
+/* Animaciones suaves */
+@keyframes cardEntrance {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.card {
+    animation: cardEntrance 0.4s ease-out;
+}
