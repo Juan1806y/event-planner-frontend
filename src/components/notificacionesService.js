@@ -3,13 +3,17 @@ import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
-export async function obtenerMisNotificaciones() {
+/**
+ * Obtener mis notificaciones filtradas por estado
+ * @param {string} estado - 'pendiente' o 'leida'
+ */
+export async function obtenerMisNotificaciones(estado = 'pendiente') {
     try {
         const token = localStorage.getItem('access_token');
         if (!token) throw new Error('No hay token de autenticación');
 
         const response = await axios.get(
-            `${API_URL}/notificaciones/mis-notificaciones?estado=pendiente`,
+            `${API_URL}/notificaciones/mis-notificaciones?estado=${estado}`,
             {
                 headers: { Authorization: `Bearer ${token}` }
             }
@@ -18,6 +22,63 @@ export async function obtenerMisNotificaciones() {
         return response.data.data;
     } catch (error) {
         console.error('Error al obtener notificaciones:', error);
+        throw error;
+    }
+}
+
+/**
+ * Obtener notificaciones aprobadas o rechazadas
+ * @param {string} estadoSolicitud - 'aprobada' o 'rechazada'
+ */
+export async function obtenerNotificacionesPorEstadoSolicitud(estadoSolicitud) {
+    try {
+        const token = localStorage.getItem('access_token');
+        if (!token) throw new Error('No hay token de autenticación');
+
+        // Obtener todas las notificaciones leídas de tipo 1 (solicitudes)
+        const response = await axios.get(
+            `${API_URL}/notificaciones/mis-notificaciones?estado=leida`,
+            {
+                headers: { Authorization: `Bearer ${token}` }
+            }
+        );
+
+        const notificaciones = response.data.data || [];
+
+        // Filtrar solo las notificaciones de tipo 1 que tienen asignación
+        const notificacionesTipo1 = notificaciones.filter(n =>
+            (n.id_TipoNotificacion === 1 || n.id_TipoNotificacion === '1') &&
+            n.datos_adicionales?.id_ponente &&
+            n.datos_adicionales?.id_actividad
+        );
+
+        // Para cada notificación, consultar el estado de la solicitud
+        const notificacionesConEstado = await Promise.all(
+            notificacionesTipo1.map(async (notif) => {
+                try {
+                    const asignacion = await obtenerAsignacion(
+                        notif.datos_adicionales.id_ponente,
+                        notif.datos_adicionales.id_actividad
+                    );
+
+                    const asignacionData = asignacion.data || asignacion;
+                    return {
+                        ...notif,
+                        estado_solicitud: asignacionData.estado_solicitud
+                    };
+                } catch (error) {
+                    console.error('Error obteniendo estado de asignación:', error);
+                    return null;
+                }
+            })
+        );
+
+        // Filtrar por el estado solicitado y eliminar nulos
+        return notificacionesConEstado.filter(n =>
+            n && n.estado_solicitud === estadoSolicitud
+        );
+    } catch (error) {
+        console.error('Error al obtener notificaciones por estado de solicitud:', error);
         throw error;
     }
 }
@@ -41,6 +102,53 @@ export async function obtenerDetalleNotificacion(notificacionId) {
         return response.data.data;
     } catch (error) {
         console.error('Error al obtener detalle de notificación:', error);
+        throw error;
+    }
+}
+
+/**
+ * Marcar una notificación como leída
+ * @param {number} notificacionId 
+ */
+export async function marcarComoLeida(notificacionId) {
+    try {
+        const token = localStorage.getItem('access_token');
+        if (!token) throw new Error('No hay token de autenticación');
+
+        const response = await axios.put(
+            `${API_URL}/notificaciones/${notificacionId}/marcar-leida`,
+            {},
+            {
+                headers: { Authorization: `Bearer ${token}` }
+            }
+        );
+
+        return response.data.data;
+    } catch (error) {
+        console.error('Error al marcar notificación como leída:', error);
+        throw error;
+    }
+}
+
+/**
+ * Eliminar una notificación
+ * @param {number} notificacionId 
+ */
+export async function eliminarNotificacion(notificacionId) {
+    try {
+        const token = localStorage.getItem('access_token');
+        if (!token) throw new Error('No hay token de autenticación');
+
+        const response = await axios.delete(
+            `${API_URL}/notificaciones/${notificacionId}`,
+            {
+                headers: { Authorization: `Bearer ${token}` }
+            }
+        );
+
+        return response.data;
+    } catch (error) {
+        console.error('Error al eliminar notificación:', error);
         throw error;
     }
 }

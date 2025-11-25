@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, CheckCircle, XCircle, Clock, User, Calendar, MessageSquare, Loader2, AlertCircle, Edit } from 'lucide-react';
+import { Bell, CheckCircle, XCircle, Clock, User, Calendar, MessageSquare, Loader2, AlertCircle, Edit, Trash2, Archive } from 'lucide-react';
 import {
     obtenerMisNotificaciones,
     obtenerDetalleNotificacion,
     obtenerAsignacion,
-    procesarSolicitud
+    procesarSolicitud,
+    marcarComoLeida,
+    eliminarNotificacion
 } from '../../../components/notificacionesService';
 import { actualizarActividad } from '../../../components/eventosService';
 import './OrganizadorNotificaciones.css';
 import Sidebar from '../Sidebar';
 
 const OrganizadorNotificaciones = () => {
+    const [vistaActual, setVistaActual] = useState('pendientes'); // 'pendientes' o 'leidas'
     const [notificaciones, setNotificaciones] = useState([]);
     const [detalle, setDetalle] = useState(null);
     const [asignacion, setAsignacion] = useState(null);
@@ -19,15 +22,17 @@ const OrganizadorNotificaciones = () => {
     const [horaFin, setHoraFin] = useState('');
     const [cargando, setCargando] = useState(false);
     const [actualizandoActividad, setActualizandoActividad] = useState(false);
+    const [procesando, setProcesando] = useState(false);
 
     useEffect(() => {
         cargarNotificaciones();
-    }, []);
+    }, [vistaActual]);
 
     const cargarNotificaciones = async () => {
         setCargando(true);
         try {
-            const data = await obtenerMisNotificaciones();
+            const estado = vistaActual === 'pendientes' ? 'pendiente' : 'leida';
+            const data = await obtenerMisNotificaciones(estado);
             setNotificaciones(data);
         } catch (error) {
             alert('Error cargando notificaciones');
@@ -46,6 +51,17 @@ const OrganizadorNotificaciones = () => {
             setComentarios('');
             setHoraInicio('');
             setHoraFin('');
+
+            // Si estamos en vista de pendientes, marcar automáticamente como leída
+            if (vistaActual === 'pendientes') {
+                try {
+                    await marcarComoLeida(id);
+                    // Actualizar la lista después de un breve delay
+                    setTimeout(() => cargarNotificaciones(), 500);
+                } catch (error) {
+                    console.error('Error marcando como leída:', error);
+                }
+            }
 
             const esTipo1 = data.id_TipoNotificacion === 1 || data.id_TipoNotificacion === '1';
             console.log('Es tipo 1?:', esTipo1, 'Valor:', data.id_TipoNotificacion);
@@ -151,6 +167,47 @@ const OrganizadorNotificaciones = () => {
         }
     };
 
+    const manejarEliminar = async (notificacionId, event) => {
+        if (event) {
+            event.stopPropagation(); // Evitar que se abra el detalle
+        }
+
+        if (!window.confirm('¿Estás seguro de que deseas eliminar esta notificación?')) {
+            return;
+        }
+
+        setProcesando(true);
+        try {
+            await eliminarNotificacion(notificacionId);
+
+            // Si estamos viendo el detalle de esta notificación, cerrarlo
+            if (detalle?.id === notificacionId) {
+                setDetalle(null);
+                setAsignacion(null);
+                setComentarios('');
+                setHoraInicio('');
+                setHoraFin('');
+            }
+
+            // Recargar la lista
+            await cargarNotificaciones();
+            alert('Notificación eliminada correctamente');
+        } catch (error) {
+            console.error('Error eliminando notificación:', error);
+            alert('Error al eliminar la notificación');
+        } finally {
+            setProcesando(false);
+        }
+    };
+
+    const cerrarDetalle = () => {
+        setDetalle(null);
+        setAsignacion(null);
+        setComentarios('');
+        setHoraInicio('');
+        setHoraFin('');
+    };
+
     return (
         <div className="organizador-container">
             <Sidebar />
@@ -159,17 +216,44 @@ const OrganizadorNotificaciones = () => {
                 <div className="organizador-header">
                     <div className="header-title">
                         <Bell className="icon-lg" style={{ color: '#4f46e5' }} />
-                        <h2>Notificaciones Pendientes</h2>
+                        <h2>Notificaciones</h2>
                     </div>
                     <p className="header-subtitle">Gestiona las solicitudes y notificaciones de tu evento</p>
+                </div>
+
+                {/* Tabs de Vista */}
+                <div className="tabs-container">
+                    <button
+                        className={`tab-button ${vistaActual === 'pendientes' ? 'tab-active' : ''}`}
+                        onClick={() => setVistaActual('pendientes')}
+                    >
+                        <Bell className="icon-sm" />
+                        Pendientes
+                    </button>
+                    <button
+                        className={`tab-button ${vistaActual === 'leidas' ? 'tab-active' : ''}`}
+                        onClick={() => setVistaActual('leidas')}
+                    >
+                        <Archive className="icon-sm" />
+                        Leídas
+                    </button>
                 </div>
 
                 <div className="notificaciones-grid">
                     {/* Lista de Notificaciones */}
                     <div className="notificaciones-list-card">
                         <h3 className="notificaciones-list-header">
-                            <Bell className="icon-md" style={{ color: '#4f46e5' }} />
-                            Bandeja de Entrada
+                            {vistaActual === 'pendientes' ? (
+                                <>
+                                    <Bell className="icon-md" style={{ color: '#4f46e5' }} />
+                                    Bandeja de Entrada
+                                </>
+                            ) : (
+                                <>
+                                    <Archive className="icon-md" style={{ color: '#4f46e5' }} />
+                                    Notificaciones Leídas
+                                </>
+                            )}
                         </h3>
 
                         {cargando ? (
@@ -179,7 +263,11 @@ const OrganizadorNotificaciones = () => {
                         ) : notificaciones.length === 0 ? (
                             <div className="estado-vacio">
                                 <AlertCircle className="estado-vacio-icono" />
-                                <p className="estado-vacio-texto">No hay notificaciones pendientes</p>
+                                <p className="estado-vacio-texto">
+                                    {vistaActual === 'pendientes'
+                                        ? 'No hay notificaciones pendientes'
+                                        : 'No hay notificaciones leídas'}
+                                </p>
                             </div>
                         ) : (
                             <ul className="notificaciones-list">
@@ -187,17 +275,43 @@ const OrganizadorNotificaciones = () => {
                                     <li key={n.id} onClick={() => verDetalle(n.id)}>
                                         <div className="notificacion-item">
                                             <div className="notificacion-contenido">
-                                                <div className="notificacion-punto"></div>
-                                                <span className="notificacion-titulo">{n.titulo}</span>
+                                                {vistaActual === 'pendientes' && (
+                                                    <div className="notificacion-punto"></div>
+                                                )}
+                                                <div className="notificacion-info">
+                                                    <span className="notificacion-titulo">{n.titulo}</span>
+                                                    {n.fecha_creada && (
+                                                        <span className="notificacion-fecha">
+                                                            {new Date(n.fecha_creada).toLocaleDateString('es-ES', {
+                                                                day: '2-digit',
+                                                                month: 'short',
+                                                                hour: '2-digit',
+                                                                minute: '2-digit'
+                                                            })}
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </div>
-                                            <svg
-                                                className="notificacion-flecha"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                            >
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                            </svg>
+                                            <div className="notificacion-acciones">
+                                                {vistaActual === 'leidas' && (
+                                                    <button
+                                                        className="btn-eliminar-mini"
+                                                        onClick={(e) => manejarEliminar(n.id, e)}
+                                                        disabled={procesando}
+                                                        title="Eliminar notificación"
+                                                    >
+                                                        <Trash2 className="icon-sm" />
+                                                    </button>
+                                                )}
+                                                <svg
+                                                    className="notificacion-flecha"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    stroke="currentColor"
+                                                >
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                </svg>
+                                            </div>
                                         </div>
                                     </li>
                                 ))}
@@ -209,7 +323,12 @@ const OrganizadorNotificaciones = () => {
                     <div>
                         {detalle && (
                             <div className="detalle-card">
-                                <h3>Detalle de Notificación</h3>
+                                <div className="detalle-header">
+                                    <h3>Detalle de Notificación</h3>
+                                    <button className="btn-cerrar" onClick={cerrarDetalle}>
+                                        <XCircle className="icon-md" />
+                                    </button>
+                                </div>
                                 <div className="detalle-info">
                                     <div className="detalle-row">
                                         <span className="detalle-label">ID:</span>
@@ -228,20 +347,12 @@ const OrganizadorNotificaciones = () => {
 
                                 {/* Mostrar JSON de cambios solicitados */}
                                 {detalle.datos_adicionales?.cambios_solicitados && (
-                                    <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f3f4f6', borderRadius: '0.5rem', border: '1px solid #d1d5db' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                                    <div className="cambios-solicitados">
+                                        <div className="cambios-header">
                                             <Edit className="icon-sm" style={{ color: '#059669' }} />
                                             <strong style={{ color: '#059669' }}>Cambios Solicitados (JSON):</strong>
                                         </div>
-                                        <pre style={{
-                                            backgroundColor: '#1f2937',
-                                            color: '#10b981',
-                                            padding: '1rem',
-                                            borderRadius: '0.375rem',
-                                            overflow: 'auto',
-                                            fontSize: '0.875rem',
-                                            fontFamily: 'monospace'
-                                        }}>
+                                        <pre className="cambios-json">
                                             {JSON.stringify(detalle.datos_adicionales.cambios_solicitados, null, 2)}
                                         </pre>
                                         <div style={{ marginTop: '0.75rem' }}>
@@ -253,17 +364,31 @@ const OrganizadorNotificaciones = () => {
                                             >
                                                 {actualizandoActividad ? (
                                                     <>
-                                                        <Loader2 className="icon-md" style={{ animation: 'spin 1s linear infinite' }} />
+                                                        <Loader2 className="icon-md cargando-spinner" />
                                                         Aplicando...
                                                     </>
                                                 ) : (
                                                     <>
                                                         <CheckCircle className="icon-md" />
-                                                        Aplicar Cambios a Actividad (PUT)
+                                                        Aplicar Cambios a Actividad
                                                     </>
                                                 )}
                                             </button>
                                         </div>
+                                    </div>
+                                )}
+
+                                {/* Botón para eliminar desde el detalle (solo en vista de leídas) */}
+                                {vistaActual === 'leidas' && (
+                                    <div style={{ marginTop: '1rem' }}>
+                                        <button
+                                            className="btn btn-eliminar"
+                                            onClick={(e) => manejarEliminar(detalle.id, e)}
+                                            disabled={procesando}
+                                        >
+                                            <Trash2 className="icon-md" />
+                                            Eliminar Notificación
+                                        </button>
                                     </div>
                                 )}
                             </div>

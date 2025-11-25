@@ -404,3 +404,175 @@
     width: 2rem;
     height: 2rem;
 }
+
+/* Agregar estos estilos a OrganizadorNotificaciones.css */
+
+/* Tabs de vista */
+.tabs-container {
+    background-color: white;
+    border-radius: 1rem;
+    padding: 0.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    display: flex;
+    gap: 0.5rem;
+}
+
+.tab-button {
+    flex: 1;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.75rem;
+    background-color: transparent;
+    color: #6b7280;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+}
+
+.tab-button:hover {
+    background-color: #f3f4f6;
+}
+
+.tab-active {
+    background-color: #4f46e5 !important;
+    color: white !important;
+}
+
+/* Información adicional en notificaciones */
+.notificacion-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.notificacion-fecha {
+    font-size: 0.75rem;
+    color: #9ca3af;
+}
+
+/* Acciones de notificación */
+.notificacion-acciones {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.btn-eliminar-mini {
+    padding: 0.5rem;
+    border: none;
+    border-radius: 0.375rem;
+    background-color: #fee2e2;
+    color: #dc2626;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s;
+}
+
+.btn-eliminar-mini:hover {
+    background-color: #fecaca;
+}
+
+.btn-eliminar-mini:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Botón de cerrar detalle */
+.detalle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 1.5rem;
+}
+
+.btn-cerrar {
+    padding: 0.5rem;
+    border: none;
+    border-radius: 0.375rem;
+    background-color: #f3f4f6;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    color: #6b7280;
+    transition: all 0.2s;
+}
+
+.btn-cerrar:hover {
+    background-color: #e5e7eb;
+}
+
+/* Contenedor de cambios solicitados */
+.cambios-solicitados {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background-color: #f0fdf4;
+    border-radius: 0.5rem;
+    border: 1px solid #86efac;
+}
+
+.cambios-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.cambios-json {
+    background-color: #1f2937;
+    color: #10b981;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    overflow: auto;
+    font-size: 0.875rem;
+    font-family: monospace;
+    margin: 0;
+}
+
+/* Botón de eliminar principal */
+.btn-eliminar {
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    background-color: #dc2626;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+}
+
+.btn-eliminar:hover {
+    background-color: #b91c1c;
+}
+
+.btn-eliminar:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Animación de spinner */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.cargando-spinner {
+    animation: spin 1s linear infinite;
+}
