@@ -6,6 +6,7 @@ const ListaEncuestas = ({
     onEditar,
     onActivar,
     onEliminar,
+    onEnviar, // Nueva prop
     onCrearPrimera
 }) => {
     if (encuestas.length === 0) {
@@ -66,6 +67,17 @@ const ListaEncuestas = ({
                                 <span className="stat-number">{encuesta.respuestas_count || 0}</span>
                                 <span className="stat-label">respuestas</span>
                             </div>
+
+                            {/* Botón para enviar encuesta - NUEVO */}
+                            <button
+                                className="btn-icon btn-enviar-icon"
+                                onClick={() => onEnviar(encuesta)}
+                                title="Enviar a Asistentes"
+                                disabled={encuesta.estado === 'cerrada'}
+                            >
+                                📧
+                            </button>
+
                             <button
                                 className="btn-icon"
                                 onClick={() => onVerResultados(encuesta)}

@@ -3,6 +3,7 @@ import './EncuestasManager.css';
 import { obtenerEventos, obtenerPerfil, obtenerActividadesEvento } from '../../../components/eventosService';
 import ListaEncuestas from './ListaEncuestas';
 import FormularioEncuesta from './FormularioEncuesta';
+import EnviarEncuestaAsistentes from './EnviarEncuestaAsistentes'; // NUEVO IMPORT
 import Sidebar from "../Sidebar";
 
 const BASE_URL = process.env.NODE_ENV === 'production'
@@ -18,6 +19,7 @@ const EncuestasManager = () => {
     const [modoEdicion, setModoEdicion] = useState(false);
     const [encuestaSeleccionada, setEncuestaSeleccionada] = useState(null);
     const [mostrarResultados, setMostrarResultados] = useState(false);
+    const [mostrarEnvioEncuesta, setMostrarEnvioEncuesta] = useState(false); // NUEVO ESTADO
     const [errores, setErrores] = useState({});
     const [mensaje, setMensaje] = useState({ tipo: '', texto: '' });
     const [cargando, setCargando] = useState(false);
@@ -147,6 +149,7 @@ const EncuestasManager = () => {
         setActividades([]);
         setMostrarFormulario(false);
         setMostrarResultados(false);
+        setMostrarEnvioEncuesta(false); // NUEVO
     };
 
     const handleInputChange = (e) => {
@@ -197,7 +200,6 @@ const EncuestasManager = () => {
         setErrores(nuevosErrores);
         return Object.keys(nuevosErrores).length === 0;
     };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -210,10 +212,17 @@ const EncuestasManager = () => {
 
         try {
             setCargando(true);
+
+            // Log del payload que se está enviando
+            console.log('📤 Enviando datos de encuesta:', formData);
+
             const metodo = modoEdicion ? 'PUT' : 'POST';
             const url = modoEdicion
                 ? `${BASE_URL}/encuestas/${encuestaSeleccionada.id}`
                 : `${BASE_URL}/encuestas`;
+
+            console.log('🔗 URL:', url);
+            console.log('📋 Método:', metodo);
 
             const response = await fetch(url, {
                 method: metodo,
@@ -221,15 +230,39 @@ const EncuestasManager = () => {
                 body: JSON.stringify(formData)
             });
 
+            console.log('📥 Response status:', response.status);
+
+            // Intentar leer el body de la respuesta
+            let errorData;
+            try {
+                errorData = await response.json();
+                console.log('📝 Response data:', errorData);
+            } catch (jsonError) {
+                console.error('❌ No se pudo parsear la respuesta como JSON');
+                const textResponse = await response.text();
+                console.log('📄 Response text:', textResponse);
+            }
+
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || `Error al guardar encuesta: ${response.status}`);
+                // Mostrar el error específico del backend
+                const errorMessage = errorData?.message
+                    || errorData?.error
+                    || errorData?.errors
+                    || `Error ${response.status}: ${response.statusText}`;
+
+                console.error('❌ Error del servidor:', errorMessage);
+                console.error('📋 Detalles completos:', errorData);
+
+                throw new Error(errorMessage);
             }
 
             mostrarMensaje('success', modoEdicion ? 'Encuesta actualizada correctamente' : 'Encuesta creada correctamente');
             cerrarFormulario();
             cargarEncuestas(eventoSeleccionado.id);
         } catch (error) {
+            console.error('💥 Error capturado:', error);
+            console.error('📊 Stack trace:', error.stack);
+
             mostrarMensaje('error', error.message || 'Error al guardar la encuesta.');
         } finally {
             setCargando(false);
@@ -344,6 +377,24 @@ const EncuestasManager = () => {
         }
     };
 
+    // NUEVA FUNCIÓN: Manejar envío de encuestas
+    const abrirEnvioEncuesta = (encuesta) => {
+        setEncuestaSeleccionada(encuesta);
+        setMostrarEnvioEncuesta(true);
+    };
+
+    // NUEVA FUNCIÓN: Cerrar modal de envío
+    const cerrarEnvioEncuesta = () => {
+        setMostrarEnvioEncuesta(false);
+        setEncuestaSeleccionada(null);
+    };
+
+    // NUEVA FUNCIÓN: Callback cuando el envío es exitoso
+    const handleEnvioExitoso = (resultado) => {
+        mostrarMensaje('success', `Encuesta enviada a ${resultado.total_enviadas} asistentes`);
+        cargarEncuestas(eventoSeleccionado.id);
+    };
+
     const verResultados = async (encuesta) => {
         setEncuestaSeleccionada(encuesta);
         setMostrarResultados(true);
@@ -434,6 +485,7 @@ const EncuestasManager = () => {
                     onEditar={editarEncuesta}
                     onActivar={activarEncuesta}
                     onEliminar={eliminarEncuesta}
+                    onEnviar={abrirEnvioEncuesta} // NUEVA PROP
                     onCrearPrimera={abrirFormularioNuevo}
                 />
             )}
@@ -449,6 +501,16 @@ const EncuestasManager = () => {
                     onInputChange={handleInputChange}
                     onSubmit={handleSubmit}
                     onCerrar={cerrarFormulario}
+                />
+            )}
+
+            {/* NUEVO: Modal para enviar encuestas */}
+            {mostrarEnvioEncuesta && encuestaSeleccionada && eventoSeleccionado && (
+                <EnviarEncuestaAsistentes
+                    encuesta={encuestaSeleccionada}
+                    eventoId={eventoSeleccionado.id}
+                    onCerrar={cerrarEnvioEncuesta}
+                    onEnvioExitoso={handleEnvioExitoso}
                 />
             )}
 
