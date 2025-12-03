@@ -21,7 +21,6 @@ const Agenda = ({ misInscripciones, onRegisterAttendance }) => {
     const [detallesCompletos, setDetallesCompletos] = useState(null);
     const [cargandoDetalles, setCargandoDetalles] = useState(false);
 
-    // Función para obtener eventos inscritos del usuario
     const obtenerEventosInscritos = async () => {
         setCargandoEventos(true);
         try {
@@ -43,10 +42,8 @@ const Agenda = ({ misInscripciones, onRegisterAttendance }) => {
             }
 
             const result = await response.json();
-            console.log('📋 Eventos inscritos:', result);
 
             if (result.success && result.data) {
-                // Extraer eventos únicos de las asistencias
                 const eventosMap = new Map();
                 result.data.forEach(item => {
                     if (item.evento && !eventosMap.has(item.evento.id)) {
@@ -64,14 +61,12 @@ const Agenda = ({ misInscripciones, onRegisterAttendance }) => {
                 setEventosInscritos([]);
             }
         } catch (error) {
-            console.error('Error obteniendo eventos inscritos:', error);
             setEventosInscritos([]);
         } finally {
             setCargandoEventos(false);
         }
     };
 
-    // Función para obtener actividades de la agenda
     const obtenerActividadesAgenda = async () => {
         if (misInscripciones.length === 0) {
             setActividades([]);
@@ -86,26 +81,15 @@ const Agenda = ({ misInscripciones, onRegisterAttendance }) => {
                 throw new Error('No hay token disponible');
             }
 
-            console.log(`🎯 Solicitando actividades con filtro: ${filtro}`);
-
             const actividadesData = await agendaService.obtenerActividadesPorFecha(
                 misInscripciones,
                 token,
                 filtro
             );
 
-            console.log(`📦 Actividades recibidas para filtro "${filtro}":`, actividadesData.length);
-            console.log('📝 Detalles actividades:', actividadesData.map(a => ({
-                titulo: a.titulo,
-                fecha: a.fecha_actividad,
-                hora: a.hora_inicio
-            })));
-
             setActividades(actividadesData);
-            // Aplicar filtro actual también al cargar nuevas actividades
             aplicarFiltros(actividadesData, filtroEvento);
         } catch (error) {
-            console.error('Error obteniendo actividades de agenda:', error);
             setActividades([]);
             setActividadesFiltradas([]);
         } finally {
@@ -113,11 +97,9 @@ const Agenda = ({ misInscripciones, onRegisterAttendance }) => {
         }
     };
 
-    // Función para aplicar filtros
     const aplicarFiltros = (actividadesData, eventoFiltro) => {
         let actividadesFiltradas = actividadesData;
 
-        // Aplicar filtro por evento
         if (eventoFiltro !== 'todos') {
             actividadesFiltradas = actividadesFiltradas.filter(
                 actividad => actividad.evento.id.toString() === eventoFiltro
@@ -127,34 +109,25 @@ const Agenda = ({ misInscripciones, onRegisterAttendance }) => {
         setActividadesFiltradas(actividadesFiltradas);
     };
 
-    // Efecto para aplicar filtros cuando cambian los filtros o las actividades
     useEffect(() => {
         if (actividades.length > 0) {
             aplicarFiltros(actividades, filtroEvento);
         }
     }, [filtroEvento, actividades]);
 
-    // Efecto para cargar eventos y actividades al iniciar
     useEffect(() => {
         obtenerEventosInscritos();
         obtenerActividadesAgenda();
     }, [misInscripciones, filtro]);
 
-    // Función para manejar cambio de filtro de evento
     const handleFiltroEventoChange = (event) => {
         setFiltroEvento(event.target.value);
     };
 
-    // Función para limpiar filtro de evento
     const limpiarFiltroEvento = () => {
         setFiltroEvento('todos');
     };
 
-    useEffect(() => {
-        obtenerActividadesAgenda();
-    }, [misInscripciones, filtro]);
-
-    // Función para cargar detalles completos de la actividad
     const cargarDetallesCompletos = async (actividad) => {
         setCargandoDetalles(true);
         try {
@@ -163,60 +136,41 @@ const Agenda = ({ misInscripciones, onRegisterAttendance }) => {
                 throw new Error('No hay token disponible');
             }
 
-            console.log('🔍 Cargando detalles completos para actividad:', actividad.id_actividad);
-
-            // Cargar información de múltiples endpoints en paralelo
             const [detallesActividad, ponentesResponse, detallesEvento] = await Promise.all([
-                // Endpoint 1: Detalles completos de la actividad
                 fetch(`http://localhost:3000/api/actividades/${actividad.id_actividad}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 }).then(r => r.json()),
 
-                // Endpoint 2: Ponentes de la actividad
                 fetch(`http://localhost:3000/api/ponente-actividad/actividad/${actividad.id_actividad}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 }).then(r => r.json()),
 
-                // Endpoint 3: Detalles del evento para obtener la empresa
                 fetch(`http://localhost:3000/api/eventos/${actividad.evento.id}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 }).then(r => r.json())
             ]);
 
-            console.log('📊 Detalles actividad:', detallesActividad);
-            console.log('📊 Ponentes RESPONSE:', ponentesResponse);
-            console.log('📊 Detalles evento:', detallesEvento);
-
-            // CORRECCIÓN: Procesar correctamente los ponentes según la estructura de tu base de datos
             let ponentesProcesados = [];
             if (ponentesResponse.success && ponentesResponse.data && Array.isArray(ponentesResponse.data)) {
-                console.log('🔍 ESTRUCTURA COMPLETA de ponentesResponse.data:', ponentesResponse.data);
-
-                ponentesProcesados = ponentesResponse.data.map((item, index) => {
-                    console.log(`📝 Item ponente [${index}]:`, item);
-
+                ponentesProcesados = ponentesResponse.data.map((item) => {
                     try {
-                        // Verificar diferentes estructuras posibles
                         let nombre = 'Ponente por confirmar';
                         let especialidad = '';
                         let descripcion = '';
                         let correo = '';
 
-                        // Opción 1: Estructura con ponente.usuario
                         if (item.ponente && item.ponente.usuario) {
                             nombre = item.ponente.usuario.nombre || nombre;
                             correo = item.ponente.usuario.correo || correo;
                             especialidad = item.ponente.especialidad || especialidad;
                             descripcion = item.ponente.descripcion || descripcion;
                         }
-                        // Opción 2: Estructura directa
                         else if (item.usuario) {
                             nombre = item.usuario.nombre || nombre;
                             correo = item.usuario.correo || correo;
                             especialidad = item.especialidad || especialidad;
                             descripcion = item.descripcion || descripcion;
                         }
-                        // Opción 3: Estructura plana
                         else {
                             nombre = item.nombre || nombre;
                             correo = item.correo || correo;
@@ -231,7 +185,6 @@ const Agenda = ({ misInscripciones, onRegisterAttendance }) => {
                             correo
                         };
                     } catch (error) {
-                        console.error(`Error procesando ponente ${index}:`, error);
                         return {
                             nombre: 'Ponente por confirmar',
                             especialidad: '',
@@ -242,8 +195,6 @@ const Agenda = ({ misInscripciones, onRegisterAttendance }) => {
                 });
             }
 
-            console.log('👨‍🏫 Ponentes procesados FINAL:', ponentesProcesados);
-
             setDetallesCompletos({
                 actividad: detallesActividad.success ? detallesActividad.data : null,
                 ponentes: ponentesProcesados,
@@ -251,8 +202,6 @@ const Agenda = ({ misInscripciones, onRegisterAttendance }) => {
             });
 
         } catch (error) {
-            console.error('Error cargando detalles completos:', error);
-            // Si hay error, usar datos básicos
             setDetallesCompletos({
                 actividad: null,
                 ponentes: [],
@@ -263,34 +212,29 @@ const Agenda = ({ misInscripciones, onRegisterAttendance }) => {
         }
     };
 
-    // Función para abrir modal de detalles
     const abrirModalDetalles = async (actividad) => {
         setActividadSeleccionada(actividad);
         setModalDetallesAbierto(true);
         await cargarDetallesCompletos(actividad);
     };
 
-    // Función para cerrar modal
     const cerrarModalDetalles = () => {
         setModalDetallesAbierto(false);
         setActividadSeleccionada(null);
         setDetallesCompletos(null);
     };
 
-    // Función para formatear el rango de horas
     const formatRangoHoras = (horaInicio, horaFin) => {
         const inicio = formatHora(horaInicio);
         const fin = formatHora(horaFin);
         return `${inicio} - ${fin}`;
     };
 
-    // Función para obtener lugares como string
     const obtenerLugaresTexto = (lugares) => {
         if (!lugares || lugares.length === 0) return 'Virtual';
         return lugares.map(lugar => lugar.nombre).join(', ');
     };
 
-    // Función para obtener la clase de estado de la actividad
     const getEstadoActividad = (actividad) => {
         if (agendaService.estaEnCurso(actividad)) {
             return styles.enCurso;
@@ -301,7 +245,6 @@ const Agenda = ({ misInscripciones, onRegisterAttendance }) => {
         return styles.pasada;
     };
 
-    // Función para obtener el texto del estado
     const getTextoEstado = (actividad) => {
         if (agendaService.estaEnCurso(actividad)) {
             return 'En curso';
@@ -334,7 +277,6 @@ const Agenda = ({ misInscripciones, onRegisterAttendance }) => {
                 <p className={styles.subtitle}>Consulta las actividades de tus eventos inscritos</p>
             </div>
 
-            {/* Filtros */}
             <div className={styles.filtersSection}>
                 <div className={styles.filterGroup}>
                     <button
@@ -364,7 +306,6 @@ const Agenda = ({ misInscripciones, onRegisterAttendance }) => {
                 </div>
 
                 <div className={styles.filtersRight}>
-                    {/* Filtro por evento */}
                     <div className={styles.eventFilterGroup}>
                         <label htmlFor="filtroEvento" className={styles.filterLabel}>
                             Filtrar por evento:
@@ -506,7 +447,6 @@ const Agenda = ({ misInscripciones, onRegisterAttendance }) => {
                                         )}
                                     </div>
 
-                                    {/* Botón para ver detalles completos */}
                                     <div className={styles.detallesActions}>
                                         <button
                                             className={styles.btnVerDetalles}
@@ -522,7 +462,6 @@ const Agenda = ({ misInscripciones, onRegisterAttendance }) => {
                 </div>
             )}
 
-            {/* Modal de detalles completos */}
             {modalDetallesAbierto && actividadSeleccionada && (
                 <div className={styles.modalOverlay}>
                     <div className={`${styles.modalContent} ${styles.large}`}>
@@ -547,7 +486,6 @@ const Agenda = ({ misInscripciones, onRegisterAttendance }) => {
                                     <div className={styles.infoSection}>
                                         <h3>Información General</h3>
                                         <div className={styles.infoGrid}>
-                                            {/* Empresa - viene en evento.empresa.nombre */}
                                             <div className={styles.infoItem}>
                                                 <strong>Empresa:</strong>
                                                 <span>
@@ -558,19 +496,16 @@ const Agenda = ({ misInscripciones, onRegisterAttendance }) => {
                                                 </span>
                                             </div>
 
-                                            {/* Evento */}
                                             <div className={styles.infoItem}>
                                                 <strong>Evento:</strong>
                                                 <span>{actividadSeleccionada.evento.titulo}</span>
                                             </div>
 
-                                            {/* Actividad */}
                                             <div className={styles.infoItem}>
                                                 <strong>Actividad:</strong>
                                                 <span>{actividadSeleccionada.titulo}</span>
                                             </div>
 
-                                            {/* Modalidad */}
                                             <div className={styles.infoItem}>
                                                 <strong>Modalidad:</strong>
                                                 <span>
@@ -582,7 +517,6 @@ const Agenda = ({ misInscripciones, onRegisterAttendance }) => {
                                         </div>
                                     </div>
 
-                                    {/* Descripción de la actividad */}
                                     {actividadSeleccionada.descripcion && (
                                         <div className={styles.infoSection}>
                                             <h3>Descripción</h3>
@@ -592,7 +526,6 @@ const Agenda = ({ misInscripciones, onRegisterAttendance }) => {
                                         </div>
                                     )}
 
-                                    {/* Lugares */}
                                     <div className={styles.infoSection}>
                                         <h3>Lugares</h3>
                                         {actividadSeleccionada.lugares && actividadSeleccionada.lugares.length > 0 ? (
@@ -619,7 +552,6 @@ const Agenda = ({ misInscripciones, onRegisterAttendance }) => {
                                         )}
                                     </div>
 
-                                    {/* Información del Organizador (opcional) */}
                                     <div className={styles.infoSection}>
                                         <h3>Organizador</h3>
                                         <div className={styles.infoGrid}>
@@ -634,7 +566,6 @@ const Agenda = ({ misInscripciones, onRegisterAttendance }) => {
                                         </div>
                                     </div>
 
-                                    {/* Ponentes */}
                                     <div className={styles.infoSection}>
                                         <h3>Ponentes</h3>
                                         {detallesCompletos?.ponentes && detallesCompletos.ponentes.length > 0 ? (
@@ -672,7 +603,6 @@ const Agenda = ({ misInscripciones, onRegisterAttendance }) => {
                                         )}
                                     </div>
 
-                                    {/* Información de fecha y hora */}
                                     <div className={styles.infoSection}>
                                         <h3>Horario</h3>
                                         <div className={styles.horarioInfo}>
@@ -685,7 +615,6 @@ const Agenda = ({ misInscripciones, onRegisterAttendance }) => {
                                         </div>
                                     </div>
 
-                                    {/* Enlace de la actividad */}
                                     {actividadSeleccionada.url && (
                                         <div className={styles.infoSection}>
                                             <h3>Enlace de la Actividad</h3>

@@ -79,7 +79,6 @@ export const AuthProvider = ({ children }) => {
                 dispatch({ type: 'INIT_COMPLETE' });
 
             } catch (error) {
-                console.error('Error during auth initialization:', error);
                 authService.logout();
                 dispatch({ type: 'INIT_COMPLETE' });
             }
@@ -97,8 +96,6 @@ export const AuthProvider = ({ children }) => {
             if (result.success) {
                 dispatch({ type: 'LOGIN_SUCCESS', payload: { user: result.user } });
                 const redirectPath = getRedirectPath(result.user);
-                console.log('AuthProvider.login - user:', result.user);
-                console.log('AuthProvider.login - redirectPath:', redirectPath);
                 return { success: true, redirectPath };
             } else {
                 dispatch({ type: 'LOGIN_FAILURE', payload: result.error });

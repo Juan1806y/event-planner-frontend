@@ -10,8 +10,8 @@
 
 .teGustaraRegistrarContainer {
   width: calc(100% - 80px);
-  margin: 40px 40px 20px 40px;
-  font-size: 16px;
+  margin: 10px 40px 20px 40px;
+  font-size: 13px;
   color: #6b6969;
   text-align: center;
   display: inline-block;

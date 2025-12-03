@@ -1,0 +1,909 @@
+.encuestasContainer {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 0.5rem 0;
+}
+
+.subtitle {
+    font-size: 1rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.filtros {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.filtroSelect {
+    padding: 0.75rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background: white;
+    min-width: 200px;
+    transition: border-color 0.3s ease;
+}
+
+.filtroSelect:focus {
+    outline: none;
+    border-color: #2C5F7C;
+}
+
+.refreshButton {
+    background: #f8fafc;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.refreshButton:hover {
+    background: #2C5F7C;
+    color: white;
+    border-color: #2C5F7C;
+}
+
+/* Stats Section */
+.stats {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.statCard {
+    flex: 1;
+    min-width: 120px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.statNumber {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2C5F7C;
+    line-height: 1;
+}
+
+.statLabel {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-top: 0.5rem;
+}
+
+/* Encuestas Grid */
+.encuestasGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Encuesta Card */
+.encuestaCard {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.encuestaCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.cardHeader {
+    padding: 1.5rem;
+    border-left: 4px solid;
+}
+
+.cardHeaderContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.cardTitleSection {
+    flex: 1;
+    min-width: 0;
+}
+
+.encuestaTitulo {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 0.75rem 0;
+    line-height: 1.3;
+}
+
+.badges {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.tipoBadge {
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 16px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.obligatoriaBadge {
+    background: #fee2e2;
+    color: #dc2626;
+    padding: 0.25rem 0.75rem;
+    border-radius: 16px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 1px solid #fecaca;
+}
+
+.estadoBadge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 16px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.estadoCompletada {
+    background: #d1fae5;
+    color: #059669;
+    border: 1px solid #a7f3d0;
+}
+
+.estadoPendiente {
+    background: #fef3c7;
+    color: #d97706;
+    border: 1px solid #fde68a;
+}
+
+.estadoNoEnviada {
+    background: #f3f4f6;
+    color: #6b7280;
+    border: 1px solid #e5e7eb;
+}
+
+/* Card Content */
+.cardContent {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.descripcion p {
+    color: #6b7280;
+    line-height: 1.5;
+    font-size: 0.9rem;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.detalles {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.detalleItem {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.detalleLabel {
+    font-weight: 600;
+    color: #6b7280;
+    min-width: 80px;
+}
+
+.detalleValue {
+    color: #374151;
+    flex: 1;
+}
+
+.acciones {
+    margin-top: 0.5rem;
+}
+
+.btnAccion {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    font-size: 0.9rem;
+}
+
+.btnAcceder {
+    background: linear-gradient(135deg, #2C5F7C 0%, #1E4157 100%);
+    color: white;
+}
+
+.btnAcceder:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(44, 95, 124, 0.3);
+}
+
+.btnAcceder:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.completadaInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.completadaTexto {
+    text-align: center;
+    color: #059669;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.btnVerRespuesta {
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+}
+
+.btnVerRespuesta:hover {
+    background: #e5e7eb;
+}
+
+/* Modal Styles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+    backdrop-filter: blur(4px);
+}
+
+.modalContent {
+    background: white;
+    border-radius: 16px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalAppear 0.3s ease-out;
+}
+
+@keyframes modalAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.modalTitle {
+    margin: 0;
+    color: #1f2937;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #6b7280;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.closeButton:hover {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.modalBody {
+    padding: 1.5rem;
+}
+
+.modalInfo {
+    margin-bottom: 2rem;
+}
+
+.modalBadges {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+}
+
+.modalTipo,
+.modalObligatoria,
+.modalEstado {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.modalTipo {
+    color: white;
+}
+
+.modalObligatoria {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.modalDescripcion h4,
+.modalDetalles h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #374151;
+    margin: 0 0 0.75rem 0;
+}
+
+.modalDescripcion p {
+    color: #6b7280;
+    line-height: 1.6;
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.modalDetalles {
+    margin-top: 1.5rem;
+}
+
+.detalleGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+}
+
+.modalAcciones {
+    border-top: 1px solid #e5e7eb;
+    padding-top: 1.5rem;
+}
+
+.btnModal {
+    width: 100%;
+    padding: 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.btnAccederModal {
+    color: white;
+}
+
+.btnAccederModal:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.instrucciones {
+    color: #6b7280;
+    font-size: 0.875rem;
+    text-align: center;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.completadaContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.completadaMensaje {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: #d1fae5;
+    padding: 1.5rem;
+    border-radius: 12px;
+    width: 100%;
+}
+
+.completadaIcon {
+    background: #059669;
+    color: white;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.completadaMensaje h4 {
+    margin: 0 0 0.25rem 0;
+    color: #065f46;
+}
+
+.completadaMensaje p {
+    margin: 0;
+    color: #047857;
+}
+
+.btnVerFormulario {
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+}
+
+.btnVerFormulario:hover {
+    background: #e5e7eb;
+}
+
+/* Confirmación Styles */
+.confirmacionContainer {
+    text-align: center;
+    padding: 1rem 0;
+}
+
+.confirmacionIcon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.confirmacionContainer h3 {
+    color: #1f2937;
+    margin: 0 0 1rem 0;
+    font-size: 1.5rem;
+}
+
+.confirmacionTexto {
+    color: #6b7280;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    font-size: 1rem;
+}
+
+.confirmacionAcciones {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.btnCancelar {
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+    flex: 1;
+}
+
+.btnCancelar:hover:not(:disabled) {
+    background: #e5e7eb;
+}
+
+.btnConfirmar {
+    color: white;
+    flex: 2;
+}
+
+.btnConfirmar:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.btnConfirmar:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.btnReabrir {
+    background: none;
+    border: none;
+    color: #2C5F7C;
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0.5rem;
+    text-decoration: underline;
+}
+
+.btnReabrir:hover {
+    color: #1E4157;
+}
+
+.spinnerSmall {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s linear infinite;
+    margin-right: 8px;
+}
+
+/* Estados vacíos y errores */
+.noActividad,
+.loadingContainer,
+.errorContainer,
+.noEncuestas {
+    background: white;
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    text-align: center;
+    border: 2px dashed #e5e7eb;
+}
+
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f4f6;
+    border-top: 4px solid #2C5F7C;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.errorIcon,
+.emptyIcon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.errorContainer h3,
+.noEncuestas h3 {
+    color: #1f2937;
+    margin: 0 0 0.5rem 0;
+}
+
+.errorContainer p,
+.noEncuestas p {
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+}
+
+.retryButton {
+    background: #2C5F7C;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.retryButton:hover {
+    background: #1E4157;
+    transform: translateY(-1px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .encuestasContainer {
+        padding: 1rem;
+    }
+
+    .header {
+        flex-direction: column;
+    }
+
+    .filtros {
+        width: 100%;
+    }
+
+    .filtroSelect {
+        flex: 1;
+    }
+
+    .encuestasGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .modalContent {
+        margin: 0;
+        border-radius: 8px;
+    }
+
+    .confirmacionAcciones {
+        flex-direction: column;
+    }
+}
+
+.alerta {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    min-width: 300px;
+    max-width: 400px;
+    border-radius: 8px;
+    padding: 16px 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: slideIn 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.alerta.success {
+    background-color: #10B981;
+    color: white;
+    border-left: 4px solid #059669;
+}
+
+.alerta.error {
+    background-color: #EF4444;
+    color: white;
+    border-left: 4px solid #DC2626;
+}
+
+.alertaContenido {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.cerrarAlerta {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    margin-left: 15px;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.cerrarAlerta:hover {
+    opacity: 1;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+.filtrosCascada {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #f8fafc;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+}
+
+.filtroGrupo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filtroLabel {
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 5px;
+}
+
+.filtroSelect {
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: white;
+    transition: all 0.2s;
+}
+
+.filtroSelect:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.filtroSelect:disabled {
+    background-color: #f1f5f9;
+    color: #64748b;
+    cursor: not-allowed;
+}
+
+.resetButton {
+    padding: 10px 20px;
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    align-self: flex-end;
+    height: fit-content;
+    margin-top: 24px;
+}
+
+.resetButton:hover {
+    background-color: #dc2626;
+}
+
+.sinActividades {
+    font-size: 12px;
+    color: #ef4444;
+    margin-top: 5px;
+}
+
+/* Estilos para estados de selección */
+.noSeleccion {
+    text-align: center;
+    padding: 60px 20px;
+    background-color: white;
+    border-radius: 10px;
+    border: 2px dashed #cbd5e1;
+    margin: 20px 0;
+}
+
+.infoIcon {
+    font-size: 48px;
+    margin-bottom: 20px;
+    color: #94a3b8;
+}
+
+.noSeleccion h3 {
+    color: #475569;
+    margin-bottom: 10px;
+}
+
+.noSeleccion p {
+    color: #64748b;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Actividad seleccionada */
+.actividadSeleccionada {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #dbeafe;
+    border-radius: 8px;
+    border-left: 4px solid #3b82f6;
+}
+
+.actividadSeleccionada h3 {
+    color: #1e40af;
+    margin: 0;
+    font-size: 18px;
+}
+
+.eventoBadge {
+    background-color: #f0f9ff;
+    color: #0369a1;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.actividadBadge {
+    background-color: #f0fdf4;
+    color: #059669;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}

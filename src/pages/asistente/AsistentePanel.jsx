@@ -11,6 +11,7 @@ import Agenda from './components/Agenda/Agenda';
 import AttendanceModal from './components/AttendanceModal/AttendanceModal';
 import eventService from '../../services/eventService';
 import Footer from '../../layouts/FooterAsistente/footer';
+import Encuestas from '../asistente/components/Encuestas/Encuestas'
 import { useEvents } from './hooks/useEvents';
 import { useInscriptions } from './hooks/useInscriptions';
 import { formatFecha, formatHora, formatFechaCompleta } from './utils/dateUtils';
@@ -20,6 +21,9 @@ const AsistentePanel = () => {
     const [vistaActual, setVistaActual] = useState('dashboard');
     const [selectedEvento, setSelectedEvento] = useState(null);
     const [selectedInscripcion, setSelectedInscripcion] = useState(null);
+    const [selectedActividad, setSelectedActividad] = useState('');
+    const [actividadesDisponibles, setActividadesDisponibles] = useState([]);
+    const [cargandoActividades, setCargandoActividades] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [modalType, setModalType] = useState('details');
     const [attendanceModalOpen, setAttendanceModalOpen] = useState(false);
@@ -28,9 +32,8 @@ const AsistentePanel = () => {
     const [inscribiendo, setInscribiendo] = useState(false);
     const [cargandoDetalles, setCargandoDetalles] = useState(false);
     const [userData, setUserData] = useState(null);
-    const [busqueda, setBusqueda] = useState(''); // Estado para la búsqueda
+    const [busqueda, setBusqueda] = useState('');
 
-    // Función para obtener datos del usuario
     const getUserData = () => {
         try {
             const userStr = localStorage.getItem('user');
@@ -44,13 +47,11 @@ const AsistentePanel = () => {
             }
             return null;
         } catch (error) {
-            console.error('Error obteniendo datos del usuario:', error);
             return null;
         }
     };
 
     useEffect(() => {
-        // Cargar datos del usuario al iniciar
         const userData = getUserData();
         setUserData(userData);
     }, []);
@@ -79,7 +80,6 @@ const AsistentePanel = () => {
         puedeRegistrarAsistencia
     } = useInscriptions();
 
-    // Función para filtrar eventos por búsqueda
     const filtrarEventosPorBusqueda = (eventos) => {
         if (!busqueda.trim()) return eventos;
 
@@ -91,7 +91,6 @@ const AsistentePanel = () => {
         );
     };
 
-    // Eventos filtrados por categoría Y búsqueda
     const eventosFiltradosFinal = filtrarEventosPorBusqueda(eventosFiltrados);
 
     useEffect(() => {
@@ -102,37 +101,42 @@ const AsistentePanel = () => {
 
             const hasToken = accessToken || token || authToken;
 
-            console.log('🔐 Verificación de autenticación:');
-            console.log('¿Tiene token?', hasToken);
-            console.log('Tokens disponibles:', { accessToken, token, authToken });
-
             if (!hasToken) {
-                console.error('❌ No hay token de autenticación. Redirigiendo al login...');
                 window.location.href = '/login';
                 return;
             }
         };
 
         checkAuth();
-    }, []);
-
-    useEffect(() => {
-        console.log('Inicializando AsistentePanel...');
         cargarEventosDisponibles();
         cargarMisInscripciones();
     }, []);
 
     useEffect(() => {
-        console.log('Eventos cargados:', eventos.length);
-        console.log('Eventos filtrados:', eventosFiltradosFinal.length);
-    }, [eventos, eventosFiltradosFinal]);
+        if (misInscripciones.length > 0 && !selectedActividad) {
+            const primeraActividad = misInscripciones.find(inscripcion =>
+                inscripcion.evento?.actividades?.[0]
+            )?.evento?.actividades?.[0];
+
+            if (primeraActividad) {
+                setSelectedActividad(primeraActividad.id_actividad);
+            }
+        }
+    }, [misInscripciones, selectedActividad]);
+
+    useEffect(() => {
+        if (vistaActual === 'encuestas' && misInscripciones && misInscripciones.length > 0) {
+            cargarActividadesDisponibles();
+        } else if (vistaActual !== 'encuestas') {
+            setActividadesDisponibles([]);
+        }
+    }, [vistaActual, misInscripciones]);
 
     const handleSidebarToggle = (isCollapsed) => {
         setSidebarCollapsed(isCollapsed);
     };
 
     const handleNavigation = (view) => {
-        console.log('Navegando a:', view);
         setVistaActual(view);
     };
 
@@ -147,22 +151,16 @@ const AsistentePanel = () => {
     const handleViewDetails = async (evento) => {
         setCargandoDetalles(true);
         try {
-            console.log('🔍 Cargando detalles completos del evento:', evento.id);
-
             const token = localStorage.getItem('access_token') || localStorage.getItem('token');
             if (!token) {
                 throw new Error('No hay token disponible');
             }
 
             const eventoCompleto = await eventService.getEventDetails(evento.id, token);
-            console.log('✅ Detalles completos cargados:', eventoCompleto);
-
             setSelectedEvento(eventoCompleto);
             setModalType('details');
             setDialogOpen(true);
         } catch (error) {
-            console.error('❌ Error cargando detalles del evento:', error);
-            // Usar datos básicos como fallback
             setSelectedEvento(evento);
             setModalType('details');
             setDialogOpen(true);
@@ -207,7 +205,6 @@ const AsistentePanel = () => {
             showSnackbar('Tu inscripción al evento se ha realizado exitosamente. Recibirás un correo de confirmación.', 'success');
             setDialogOpen(false);
 
-            // Recargar datos para actualizar cupos
             await cargarEventosDisponibles();
             await cargarMisInscripciones();
         } catch (error) {
@@ -235,29 +232,81 @@ const AsistentePanel = () => {
         }
     };
 
-    // Función para manejar el registro de asistencia directamente
     const handleRegistrarAsistenciaDirecta = async (inscripcion) => {
         try {
             await handleRegistrarAsistencia(inscripcion);
             showSnackbar('Asistencia registrada exitosamente', 'success');
-            // No necesitas llamar cargarMisInscripciones aquí porque 
-            // handleRegistrarAsistencia ya lo hace
         } catch (error) {
             showSnackbar(error.message, 'error');
         }
     };
 
-    // Función para limpiar búsqueda
     const limpiarBusqueda = () => {
         setBusqueda('');
     };
 
-    const renderVista = () => {
-        console.log('Renderizando vista:', vistaActual);
-        console.log('Eventos disponibles:', eventos.length);
-        console.log('Eventos filtrados:', eventosFiltradosFinal.length);
-        console.log('Asistencias registradas:', asistenciasRegistradas);
+    const cargarActividadesDisponibles = async () => {
+        if (misInscripciones.length === 0) {
+            setActividadesDisponibles([]);
+            return;
+        }
 
+        setCargandoActividades(true);
+        try {
+            const token = localStorage.getItem('access_token') || localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No hay token disponible');
+            }
+
+            const actividades = [];
+
+            for (const inscripcion of misInscripciones) {
+                try {
+                    const eventId = inscripcion.id_evento || inscripcion.evento?.id;
+
+                    if (!eventId) {
+                        continue;
+                    }
+
+                    const eventoDetalle = await eventService.getEventDetails(eventId, token);
+
+                    if (eventoDetalle.actividades && eventoDetalle.actividades.length > 0) {
+                        eventoDetalle.actividades.forEach(actividad => {
+                            const actividadInfo = {
+                                id_actividad: actividad.id_actividad,
+                                titulo: actividad.titulo,
+                                fecha_actividad: actividad.fecha_actividad,
+                                hora_inicio: actividad.hora_inicio,
+                                hora_fin: actividad.hora_fin,
+                                descripcion: actividad.descripcion,
+                                id_evento: eventoDetalle.id,
+                                evento_titulo: eventoDetalle.titulo,
+                                evento_fecha_inicio: eventoDetalle.fecha_inicio,
+                                evento_fecha_fin: eventoDetalle.fecha_fin,
+                                lugares: actividad.lugares || []
+                            };
+                            actividades.push(actividadInfo);
+                        });
+                    }
+                } catch (error) {
+                    continue;
+                }
+            }
+
+            setActividadesDisponibles(actividades);
+
+            if (actividades.length > 0 && !selectedActividad) {
+                const primeraActividadId = actividades[0].id_actividad.toString();
+                setSelectedActividad(primeraActividadId);
+            }
+        } catch (error) {
+            showSnackbar('Error al cargar las actividades disponibles', 'error');
+        } finally {
+            setCargandoActividades(false);
+        }
+    };
+
+    const renderVista = () => {
         switch (vistaActual) {
             case 'dashboard':
                 return (
@@ -390,6 +439,42 @@ const AsistentePanel = () => {
                     />
                 );
 
+            case 'encuestas':
+                return (
+                    <div className={styles.mainContent}>
+
+                        {cargandoActividades ? (
+                            <div className={styles.loadingContainer}>
+                                <div className={styles.spinner}></div>
+                                <p>Cargando actividades disponibles...</p>
+                            </div>
+                        ) : actividadesDisponibles.length === 0 ? (
+                            <div className={styles.noSelection}>
+                                <h3>No hay actividades disponibles</h3>
+                                <p>
+                                    {misInscripciones.length === 0
+                                        ? "No estás inscrito en ningún evento. Inscríbete en un evento primero."
+                                        : "Los eventos en los que estás inscrito no tienen actividades asignadas o no se pudieron cargar."
+                                    }
+                                </p>
+                                {misInscripciones.length === 0 && (
+                                    <button
+                                        className={styles.btnShowAll}
+                                        onClick={() => setVistaActual('eventos')}
+                                    >
+                                        Ver eventos disponibles
+                                    </button>
+                                )}
+                            </div>
+                        ) : (
+                            <Encuestas
+                                actividadesDisponibles={actividadesDisponibles}
+                                cargandoActividades={cargandoActividades}
+                            />
+                        )}
+                    </div>
+                );
+
             default:
                 return <Dashboard misInscripciones={misInscripciones} />;
         }
@@ -405,14 +490,13 @@ const AsistentePanel = () => {
 
             <div className={`${styles.mainPanel} ${sidebarCollapsed ? styles.mainPanelExpanded : ''}`}>
                 <Header
-                    userEmail="kerlycorzof109@gmail.com"
+                    userEmail={userData ? `${userData.nombre} (${userData.email})` : "Cargando..."}
                     userRole="Asistente"
                 />
 
                 {renderVista()}
             </div>
 
-            {/* Modales y Snackbar */}
             {dialogOpen && selectedEvento && (
                 <div className={styles.modalOverlay}>
                     <div className={styles.modalContent}>
@@ -470,7 +554,7 @@ const AsistentePanel = () => {
                     </button>
                 </div>
             )}
-            <Footer/>
+            <Footer />
         </div>
     );
 };

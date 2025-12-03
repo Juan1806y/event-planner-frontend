@@ -3,18 +3,9 @@ import styles from './EventCard.module.css';
 import Calendar from '../../../../assets/calendar.png';
 import Cupos from '../../../../assets/cupos.png';
 import Edificio from '../../../../assets/edificio.png';
-import { formatRangoFechas, debugFecha } from '../../utils/dateUtils'; // Importar funciones corregidas
+import { formatRangoFechas } from '../../utils/dateUtils';
 
 const EventCard = ({ evento, estado, onViewDetails, onInscribe, formatFecha, formatHora }) => {
-
-    // Debug para verificar las fechas
-    React.useEffect(() => {
-        console.log('📅 Debug EventCard:', evento.titulo);
-        debugFecha(evento.fecha_inicio, 'Fecha inicio');
-        debugFecha(evento.fecha_fin, 'Fecha fin');
-    }, [evento]);
-
-    // Usar la función corregida para mostrar el rango
     const rangoFechas = formatRangoFechas(evento.fecha_inicio, evento.fecha_fin);
     const hora = formatHora(evento.hora);
 

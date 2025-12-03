@@ -3,26 +3,15 @@ export const getEventStatus = (evento, eventosInscritos) => {
     const fechaInicio = new Date(evento.fecha_inicio + 'T00:00:00');
     const fechaFin = new Date(evento.fecha_fin + 'T23:59:59');
 
-    console.log(`📅 Estado evento "${evento.titulo}":`, {
-        hoy: hoy.toISOString(),
-        fechaInicio: fechaInicio.toISOString(),
-        fechaFin: fechaFin.toISOString(),
-        yaInscrito: eventosInscritos.has(evento.id),
-        cuposDisponibles: evento.cupos_disponibles
-    });
-
-    // 1. Verificar si ya está inscrito
     if (eventosInscritos.has(evento.id)) {
         return { texto: 'INSCRITO', clase: 'inscrito' };
     }
 
-    // 2. Verificar cupos
     const cuposDisponibles = evento.cupos_disponibles || 0;
     if (evento.cupo_total && cuposDisponibles <= 0) {
         return { texto: 'CUPOS AGOTADOS', clase: 'agotado' };
     }
 
-    // 3. Verificar fechas
     if (fechaFin < hoy) {
         return { texto: 'FINALIZADO', clase: 'finalizado' };
     }
@@ -31,7 +20,6 @@ export const getEventStatus = (evento, eventosInscritos) => {
         return { texto: 'POR COMENZAR', clase: 'disponible' };
     }
 
-    // 4. Evento en curso y disponible
     return { texto: 'DISPONIBLE', clase: 'disponible' };
 };
 

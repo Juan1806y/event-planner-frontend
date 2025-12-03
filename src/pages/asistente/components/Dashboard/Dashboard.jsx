@@ -9,7 +9,7 @@ import Location from '../../../../assets/lugar.png';
 import { formatFecha, formatHora } from '../../utils/dateUtils';
 import agendaService from '../../../../services/agendaService';
 import eventService from '../../../../services/eventService';
-import {inscriptionService} from '../../../../services/inscriptionService';
+import { inscriptionService } from '../../../../services/inscriptionService';
 
 const Dashboard = () => {
     const [metricas, setMetricas] = useState({

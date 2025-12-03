@@ -4,6 +4,8 @@ import styles from './NotificacionesDropdown.module.css';
 
 const NotificacionesDropdown = ({ notificationsIcon }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const [filtroEstado, setFiltroEstado] = useState(null);
+    const [filtroEntidad, setFiltroEntidad] = useState(null);
     const dropdownRef = useRef(null);
 
     const {
@@ -11,10 +13,13 @@ const NotificacionesDropdown = ({ notificationsIcon }) => {
         noLeidasCount,
         loading,
         error,
+        filtros,
         cargarNotificaciones,
         marcarComoLeida,
         eliminarNotificacion,
-        marcarTodasComoLeidas
+        marcarTodasComoLeidas,
+        cambiarFiltros,
+        limpiarFiltros
     } = useNotificaciones();
 
     // Cerrar dropdown al hacer clic fuera
@@ -41,6 +46,28 @@ const NotificacionesDropdown = ({ notificationsIcon }) => {
             }
         }
         setIsOpen(!isOpen);
+    };
+
+    const handleCambiarFiltro = async (nuevosFiltros) => {
+        setFiltroEstado(nuevosFiltros.estado || null);
+        setFiltroEntidad(nuevosFiltros.entidad_tipo || null);
+        try {
+            // cambiarFiltros ya carga las notificaciones automáticamente
+            await cambiarFiltros(nuevosFiltros);
+        } catch (err) {
+            console.error('Error aplicando filtros:', err);
+        }
+    };
+
+    const handleLimpiarFiltros = async () => {
+        setFiltroEstado(null);
+        setFiltroEntidad(null);
+        try {
+            // limpiarFiltros ya carga las notificaciones automáticamente
+            await limpiarFiltros();
+        } catch (err) {
+            console.error('Error limpiando filtros:', err);
+        }
     };
 
     const handleMarcarComoLeida = async (notificacionId, event) => {
@@ -119,6 +146,53 @@ const NotificacionesDropdown = ({ notificationsIcon }) => {
                                 disabled={loading}
                             >
                                 Marcar todas como leídas
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Filtros */}
+                    <div className={styles.filtrosContainer}>
+                        <div className={styles.filtroSection}>
+                            <label className={styles.filtroLabel}>Estado:</label>
+                            <select
+                                value={filtroEstado || ''}
+                                onChange={(e) => handleCambiarFiltro({
+                                    estado: e.target.value || null,
+                                    entidad_tipo: filtroEntidad
+                                })}
+                                className={styles.filtroSelect}
+                            >
+                                <option value="">Todos</option>
+                                <option value="pendiente">Pendiente</option>
+                                <option value="leida">Leída</option>
+                                <option value="procesada">Procesada</option>
+                                <option value="archivada">Archivada</option>
+                            </select>
+                        </div>
+
+                        <div className={styles.filtroSection}>
+                            <label className={styles.filtroLabel}>Tipo:</label>
+                            <select
+                                value={filtroEntidad || ''}
+                                onChange={(e) => handleCambiarFiltro({
+                                    estado: filtroEstado,
+                                    entidad_tipo: e.target.value || null
+                                })}
+                                className={styles.filtroSelect}
+                            >
+                                <option value="">Todos</option>
+                                <option value="evento">Evento</option>
+                                <option value="actividad">Actividad</option>
+                                <option value="ponente_actividad">Ponente Actividad</option>
+                            </select>
+                        </div>
+
+                        {(filtroEstado || filtroEntidad) && (
+                            <button
+                                className={styles.limpiarFiltrosBtn}
+                                onClick={handleLimpiarFiltros}
+                            >
+                                Limpiar filtros
                             </button>
                         )}
                     </div>
