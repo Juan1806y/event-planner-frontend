@@ -81,14 +81,19 @@ export const useOrganizerDashboard = () => {
 
             const data = await obtenerEventos();
             const eventos = Array.isArray(data?.data) ? data.data : [];
+            console.log("EVENTOS COMPLETOS:", eventos);
+            console.log("ID LOGUEADO:", idCreador);
 
             const eventosDelCreador = eventos.filter(
                 ev => String(ev.id_creador) === String(idCreador)
             );
+            console.log("EVENTOS DEL CREADOR:", eventosDelCreador);
+
 
             const eventosPublicados = eventosDelCreador.filter(ev => ev.estado === 1);
             const eventosMes = filterEventosDelMes(eventosDelCreador);
-
+            console.log(eventosPublicados)
+            console.log(eventosMes)
             setStats([
                 { label: 'Eventos Activos', value: eventosPublicados.length, color: 'bg-blue' },
                 { label: 'Eventos del Mes', value: eventosMes.length, color: 'bg-purple' }

@@ -4,6 +4,8 @@ import { Lock, X, Eye, EyeOff, Menu } from 'lucide-react';
 import EventosPage from './Eventos/EventosPageOrganizador';
 import './OrganizerDashboard.css';
 import ActividadesPage from './Actividades/ActividadesPage';
+import EncuestasManager from './Encuestas/EncuestasManager';
+
 export const PasswordModal = ({
     isOpen,
     onClose,
@@ -158,6 +160,7 @@ export const MainContent = ({ activeSection, stats, recentEvents }) => (
                         <StatCard key={index} {...stat} />
                     ))}
                 </div>
+
                 <div className="events-container">
                     <h2 className="events-title">Eventos Recientes</h2>
                     <div>
@@ -171,11 +174,16 @@ export const MainContent = ({ activeSection, stats, recentEvents }) => (
 
         {activeSection === 'eventos' && <EventosPage />}
         {activeSection === 'actividades' && <ActividadesPage />}
-        {activeSection !== 'inicio' && activeSection !== 'eventos' && (
-            <div className="placeholder-content">
-                <p>Contenido de {activeSection} - En desarrollo</p>
-            </div>
-        )}
+        {activeSection === 'encuestas' && <EncuestasManager />}  {/* <-- NUEVO */}
+
+        {activeSection !== 'inicio' &&
+            activeSection !== 'eventos' &&
+            activeSection !== 'actividades' &&
+            activeSection !== 'encuestas' && (
+                <div className="placeholder-content">
+                    <p>Contenido de {activeSection} - En desarrollo</p>
+                </div>
+            )}
     </div>
 );
 

@@ -32,6 +32,7 @@ import EventosPageOrganizador from './pages/organizador/Eventos/EventosPageOrgan
 import GestionAsistentes from './pages/organizador/asistencia';
 import EstadisticasAsistencia from './pages/organizador/EstadisticasAsistencia';
 import OrganizadorNotificaciones from './pages/organizador/Notificaciones/OrganizadorNotificaciones';
+import EncuestasManager from './pages/organizador/Encuestas/EncuestasManager';
 
 function App() {
   return (
@@ -228,6 +229,15 @@ function App() {
             element={
               <PrivateRoute>
                 <EstadisticasAsistencia />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/organizador/encuestas"
+            element={
+              <PrivateRoute>
+                <EncuestasManager />
               </PrivateRoute>
             }
           />
