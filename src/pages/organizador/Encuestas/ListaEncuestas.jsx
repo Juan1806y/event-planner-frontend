@@ -1,4 +1,3 @@
-// ListaEncuestas.jsx
 import React from 'react';
 
 const ListaEncuestas = ({
@@ -41,15 +40,23 @@ const ListaEncuestas = ({
                                                 encuesta.tipo_encuesta === 'satisfaccion_evento' ? 'Satisfacción de Evento' :
                                                     'General'}
                                 </span>
-
                             </div>
                             <div className="encuesta-detalles">
                                 {encuesta.actividad_nombre && (
                                     <span>🎯 Actividad: {encuesta.actividad_nombre}</span>
                                 )}
                                 <span>
-                                    ⏰ {encuesta.momento === 'antes' ? 'Antes' :
+                                    Tipo: {encuesta.momento === 'antes' ? 'Antes' :
                                         encuesta.momento === 'durante' ? 'Durante' : 'Después'} del evento
+                                </span>
+                                <span>
+                                    Fecha inicio: {encuesta.fecha_inicio}
+                                </span>
+                                <span>
+                                    Fecha fin: {encuesta.fecha_fin}
+                                </span>
+                                <span>
+                                    Descripción: {encuesta.descripcion}
                                 </span>
                             </div>
                         </div>
@@ -64,7 +71,7 @@ const ListaEncuestas = ({
                                 onClick={() => onVerResultados(encuesta)}
                                 title="Ver Estadísticas"
                             >
-                                📊
+                                👁️
                             </button>
                             <button
                                 className="btn-icon"
@@ -73,15 +80,6 @@ const ListaEncuestas = ({
                             >
                                 ✏️
                             </button>
-                            {encuesta.estado === 'borrador' && (
-                                <button
-                                    className="btn-icon btn-activar"
-                                    onClick={() => onActivar(encuesta.id)}
-                                    title="Activar"
-                                >
-                                    ▶️
-                                </button>
-                            )}
                             <button
                                 className="btn-icon btn-eliminar"
                                 onClick={() => onEliminar(encuesta.id)}

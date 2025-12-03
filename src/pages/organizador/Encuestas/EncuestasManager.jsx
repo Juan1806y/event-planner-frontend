@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './EncuestasManager.css';
-import { obtenerEventos, obtenerPerfil } from '../../../components/eventosService';
+import { obtenerEventos, obtenerPerfil, obtenerActividadesEvento } from '../../../components/eventosService';
 import ListaEncuestas from './ListaEncuestas';
 import FormularioEncuesta from './FormularioEncuesta';
 import Sidebar from "../Sidebar";
@@ -39,25 +39,6 @@ const EncuestasManager = () => {
 
     const getAuthToken = () => {
         return localStorage.getItem('access_token');
-    };
-
-    const obtenerIdUsuarioLogueado = () => {
-        const token = getAuthToken();
-        if (!token) return null;
-
-        try {
-            const base64Url = token.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-
-            const payload = JSON.parse(jsonPayload);
-            return payload.id || payload.user_id || payload.userId || payload.sub;
-        } catch (error) {
-            console.error('Error al decodificar el token:', error);
-            return null;
-        }
     };
 
     const getHeaders = () => ({
@@ -99,7 +80,6 @@ const EncuestasManager = () => {
             });
 
             setEventos(eventosDelCreador);
-            console.log(eventosDelCreador)
         } catch (error) {
             alert("Error al cargar eventos.");
         }
@@ -118,9 +98,7 @@ const EncuestasManager = () => {
             }
 
             const data = await response.json();
-            console.log('📦 Encuestas recibidas (raw):', data);
 
-            // Manejar diferentes formatos de respuesta del backend
             let listaEncuestas = [];
             if (Array.isArray(data)) {
                 listaEncuestas = data;
@@ -130,12 +108,8 @@ const EncuestasManager = () => {
                 listaEncuestas = data.encuestas;
             }
 
-            console.log('📋 Encuestas procesadas:', listaEncuestas);
-            console.log('📊 Total de encuestas:', listaEncuestas.length);
-
             setEncuestas(listaEncuestas);
         } catch (error) {
-            console.error('Error en cargarEncuestas:', error);
             setEncuestas([]);
             mostrarMensaje('error', 'Error al cargar las encuestas.');
         } finally {
@@ -144,26 +118,19 @@ const EncuestasManager = () => {
     };
 
     const cargarActividades = async (eventoId) => {
-        if (!eventoId) {
-            setActividades([]);
-            return;
-        }
-
         try {
-            const response = await fetch(`${BASE_URL}/eventos/${eventoId}/actividades`, {
-                method: 'GET',
-                headers: getHeaders()
-            });
+            const data = await obtenerActividadesEvento(eventoId);
+            console.log(data)
+            const lista = Array.isArray(data)
+                ? data
+                : Array.isArray(data?.data)
+                    ? data.data
+                    : Array.isArray(data?.actividades)
+                        ? data.actividades
+                        : [];
 
-            if (!response.ok) {
-                throw new Error(`Error al obtener actividades: ${response.status}`);
-            }
-
-            const data = await response.json();
-            console.log('📦 Actividades recibidas:', data);
-            setActividades(Array.isArray(data) ? data : []);
+            setActividades(lista);
         } catch (error) {
-            console.error('Error en cargarActividades:', error);
             setActividades([]);
         }
     };
@@ -185,15 +152,15 @@ const EncuestasManager = () => {
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
 
-        console.log('📝 Campo modificado:', {
-            nombre: name,
-            valor: type === 'checkbox' ? checked : value,
-            tipo: type
-        });
+        let valorFinal = type === 'checkbox' ? checked : value;
+
+        if (name === 'id_actividad') {
+            valorFinal = value === '' || value === 'null' ? null : parseInt(value, 10);
+        }
 
         setFormData(prev => ({
             ...prev,
-            [name]: type === 'checkbox' ? checked : value
+            [name]: valorFinal
         }));
 
         if (errores[name]) {
@@ -207,51 +174,25 @@ const EncuestasManager = () => {
     };
 
     const validarFormulario = () => {
-        console.log('🔍 INICIANDO VALIDACIÓN');
-        console.log('📋 FormData actual:', formData);
-
         const nuevosErrores = {};
 
-        // Validación título
         if (!formData.titulo.trim()) {
             nuevosErrores.titulo = 'El título es obligatorio.';
-            console.log('❌ Error en título:', formData.titulo);
-        } else {
-            console.log('✅ Título válido:', formData.titulo);
         }
 
-        // Validación URL (solo verifica que no esté vacía)
         if (!formData.url_google_form.trim()) {
             nuevosErrores.url_google_form = 'La URL del formulario es obligatoria.';
-            console.log('❌ Error: URL vacía');
-        } else {
-            console.log('✅ URL proporcionada:', formData.url_google_form);
         }
 
-        // Validación evento
         if (!formData.id_evento) {
             nuevosErrores.id_evento = 'Debes seleccionar un evento.';
-            console.log('❌ Error: Sin evento seleccionado');
-        } else {
-            console.log('✅ Evento seleccionado:', formData.id_evento);
         }
 
-        // Validación fechas
         if (formData.fecha_inicio && formData.fecha_fin) {
             if (new Date(formData.fecha_inicio) > new Date(formData.fecha_fin)) {
                 nuevosErrores.fecha_fin = 'La fecha de fin debe ser posterior a la fecha de inicio.';
-                console.log('❌ Error en fechas:', {
-                    inicio: formData.fecha_inicio,
-                    fin: formData.fecha_fin
-                });
-            } else {
-                console.log('✅ Fechas válidas');
             }
         }
-
-        console.log('📊 RESUMEN DE VALIDACIÓN:');
-        console.log('Errores encontrados:', nuevosErrores);
-        console.log('¿Es válido?', Object.keys(nuevosErrores).length === 0);
 
         setErrores(nuevosErrores);
         return Object.keys(nuevosErrores).length === 0;
@@ -260,21 +201,12 @@ const EncuestasManager = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        console.log('🚀 ===== INICIO DE SUBMIT =====');
-        console.log('📦 FormData completo:', JSON.stringify(formData, null, 2));
-        console.log('🎯 Evento seleccionado:', eventoSeleccionado);
-        console.log('✏️ Modo edición:', modoEdicion);
-
         const esValido = validarFormulario();
 
         if (!esValido) {
-            console.log('⛔ VALIDACIÓN FALLÓ - Deteniendo submit');
-            console.log('❌ Errores actuales:', errores);
             mostrarMensaje('error', 'Por favor corrige los errores en el formulario.');
             return;
         }
-
-        console.log('✅ VALIDACIÓN EXITOSA - Procediendo a enviar');
 
         try {
             setCargando(true);
@@ -283,39 +215,21 @@ const EncuestasManager = () => {
                 ? `${BASE_URL}/encuestas/${encuestaSeleccionada.id}`
                 : `${BASE_URL}/encuestas`;
 
-            console.log('🌐 Preparando petición:');
-            console.log('  - Método:', metodo);
-            console.log('  - URL:', url);
-            console.log('  - Headers:', getHeaders());
-            console.log('  - Body:', JSON.stringify(formData, null, 2));
-
             const response = await fetch(url, {
                 method: metodo,
                 headers: getHeaders(),
                 body: JSON.stringify(formData)
             });
 
-            console.log('📡 Respuesta recibida:');
-            console.log('  - Status:', response.status);
-            console.log('  - OK:', response.ok);
-
             if (!response.ok) {
                 const errorData = await response.json();
-                console.log('❌ Error del servidor:', errorData);
                 throw new Error(errorData.message || `Error al guardar encuesta: ${response.status}`);
             }
-
-            const responseData = await response.json();
-            console.log('✅ Respuesta exitosa:', responseData);
 
             mostrarMensaje('success', modoEdicion ? 'Encuesta actualizada correctamente' : 'Encuesta creada correctamente');
             cerrarFormulario();
             cargarEncuestas(eventoSeleccionado.id);
-
-            console.log('🎉 ===== SUBMIT COMPLETADO =====');
         } catch (error) {
-            console.error('💥 ERROR EN SUBMIT:', error);
-            console.error('Stack trace:', error.stack);
             mostrarMensaje('error', error.message || 'Error al guardar la encuesta.');
         } finally {
             setCargando(false);
@@ -328,9 +242,6 @@ const EncuestasManager = () => {
     };
 
     const abrirFormularioNuevo = () => {
-        console.log('🆕 Abriendo formulario nuevo');
-        console.log('Evento seleccionado:', eventoSeleccionado);
-
         const nuevoFormData = {
             titulo: '',
             tipo_encuesta: 'satisfaccion_evento',
@@ -346,8 +257,6 @@ const EncuestasManager = () => {
             descripcion: ''
         };
 
-        console.log('📋 Nuevo FormData:', nuevoFormData);
-
         setFormData(nuevoFormData);
         setModoEdicion(false);
         setEncuestaSeleccionada(null);
@@ -356,8 +265,6 @@ const EncuestasManager = () => {
     };
 
     const editarEncuesta = async (encuesta) => {
-        console.log('✏️ Editando encuesta:', encuesta);
-
         setFormData({
             titulo: encuesta.titulo,
             tipo_encuesta: encuesta.tipo_encuesta,
@@ -409,7 +316,6 @@ const EncuestasManager = () => {
             mostrarMensaje('success', 'Encuesta eliminada correctamente');
             cargarEncuestas(eventoSeleccionado.id);
         } catch (error) {
-            console.error('Error en eliminarEncuesta:', error);
             mostrarMensaje('error', 'Error al eliminar la encuesta.');
         } finally {
             setCargando(false);
@@ -432,7 +338,6 @@ const EncuestasManager = () => {
             mostrarMensaje('success', 'Encuesta activada y enviada a los asistentes');
             cargarEncuestas(eventoSeleccionado.id);
         } catch (error) {
-            console.error('Error en activarEncuesta:', error);
             mostrarMensaje('error', error.message || 'Error al activar la encuesta.');
         } finally {
             setCargando(false);
@@ -454,7 +359,6 @@ const EncuestasManager = () => {
                 setEncuestaSeleccionada(prev => ({ ...prev, ...estadisticas }));
             }
         } catch (error) {
-            console.error('Error al cargar estadísticas:', error);
         }
     };
 
