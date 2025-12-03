@@ -73,6 +73,33 @@ const CrearEventoPage = () => {
         );
     }
 
+    const fixDate = (dateString) => {
+        if (!dateString) return "";
+
+        if (typeof dateString === 'string' && dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            const date = new Date(dateString + 'T00:00:00');
+
+            const year = date.getUTCFullYear();
+            const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+            const day = String(date.getUTCDate()).padStart(2, '0');
+
+            return `${year}-${month}-${day}`;
+        }
+
+        if (typeof dateString === 'string' && dateString.includes('T')) {
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return "";
+
+            const year = date.getUTCFullYear();
+            const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+            const day = String(date.getUTCDate()).padStart(2, '0');
+
+            return `${year}-${month}-${day}`;
+        }
+
+        return "";
+    };
+
     return (
         <div className="crear-evento-page">
             <Sidebar />
@@ -146,7 +173,7 @@ const CrearEventoPage = () => {
                             <label className="form-label-crear">Fecha de Inicio *</label>
                             <input
                                 type="date"
-                                value={formData.fecha_inicio}
+                                value={fixDate(formData.fecha_inicio)}
                                 onChange={(e) =>
                                     handleInputChange("fecha_inicio", e.target.value)
                                 }
@@ -159,7 +186,7 @@ const CrearEventoPage = () => {
                             <label className="form-label-crear">Fecha de Fin *</label>
                             <input
                                 type="date"
-                                value={formData.fecha_fin}
+                                value={fixDate(formData.fecha_fin)}
                                 onChange={(e) => handleInputChange("fecha_fin", e.target.value)}
                                 className="form-input-crear"
                                 required

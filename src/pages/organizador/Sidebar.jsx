@@ -1,7 +1,8 @@
-import React from 'react';
+import { React } from 'react';
 import { Lock, LogOut, Menu, X, Eye, EyeOff } from 'lucide-react';
 import { useSidebar } from '../../components/SideBarOrganizador';
 import './Sidebar.css';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 const Sidebar = ({ onSectionChange }) => {
     const {
@@ -25,6 +26,8 @@ const Sidebar = ({ onSectionChange }) => {
         handleLogout
     } = useSidebar();
 
+    const navigate = useNavigate();
+
     const onMenuClickHandler = (sectionId) => {
         handleMenuClick(sectionId);
         if (onSectionChange) onSectionChange(sectionId);
@@ -42,7 +45,14 @@ const Sidebar = ({ onSectionChange }) => {
 
             <div className={`sidebar ${isOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
                 <div className="sidebar-header">
-                    <div className="user-info">
+                    <div
+                        className="user-info"
+                        onClick={() => {
+                            handleMenuClick('inicio');
+                            navigate('/organizador');
+                        }}
+                        style={{ cursor: 'pointer' }}
+                    >
                         <div className="user-avatar">
                             {user?.nombre?.[0]?.toUpperCase() || 'O'}
                         </div>
@@ -80,7 +90,7 @@ const Sidebar = ({ onSectionChange }) => {
                         <span>Cerrar Sesión</span>
                     </button>
                 </div>
-            </div>
+            </div >
 
             {showPasswordModal && (
                 <div className="modal-overlay" onClick={closePasswordModal}>
@@ -170,7 +180,8 @@ const Sidebar = ({ onSectionChange }) => {
                         </div>
                     </div>
                 </div>
-            )}
+            )
+            }
         </>
     );
 };

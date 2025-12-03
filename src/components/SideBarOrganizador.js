@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, useMatch } from 'react-router-dom';
-import { Calendar, Users, CalendarCheck, Settings, Book } from 'lucide-react';
+import { Calendar, Users, CalendarCheck, Settings, Book, FileText } from 'lucide-react';
 
 export const useSidebar = () => {
     const navigate = useNavigate();
@@ -31,6 +31,7 @@ export const useSidebar = () => {
         { id: 'actividades', label: 'Agenda', icon: CalendarCheck, path: '/organizador/agenda' },
         { id: 'reportes', label: 'Reportes', icon: Book, path: '/organizador/reportes' },
         { id: 'notificaciones', label: 'Notificaciones', icon: Book, path: '/organizador/notificaciones' },
+        { id: 'encuestas', label: 'Encuestas', icon: FileText, path: '/organizador/encuestas' },
         { id: 'configuracion', label: 'Configuración', icon: Settings, path: '/organizador/configuracion' }
     ];
 
@@ -45,7 +46,7 @@ export const useSidebar = () => {
     // SOLUCIÓN: Lógica mejorada para detectar rutas anidadas
     useEffect(() => {
         const path = location.pathname;
-        
+
         // Mapeo especial para rutas anidadas
         if (path.includes('/eventos/') && path.includes('/agenda')) {
             // Si la ruta es /organizador/eventos/:id/agenda, activar 'actividades'
