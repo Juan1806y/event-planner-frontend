@@ -15,16 +15,16 @@ const FormularioEncuesta = ({
     return (
         <div className="formulario-encuesta">
             <div className="formulario-header">
-                <h3>{modoEdicion ? 'Editar Encuesta' : 'Crear Nueva Encuesta'}</h3>
+                <h3>{modoEdicion ? '✏️ Editar Encuesta' : '➕ Crear Nueva Encuesta'}</h3>
                 <button className="btn-cerrar" onClick={onCerrar}>✕</button>
             </div>
 
             <div>
                 <div className="form-section">
-                    <h4>Información Básica</h4>
+                    <h4>📋 Información Básica</h4>
 
                     <div className="form-group">
-                        <label>Título de la Encuesta *</label>
+                        <label>Título *</label>
                         <input
                             type="text"
                             name="titulo"
@@ -33,7 +33,7 @@ const FormularioEncuesta = ({
                             placeholder="Ej: Encuesta de Satisfacción - Conferencia 2024"
                             className={errores.titulo ? 'input-error' : ''}
                         />
-                        {errores.titulo && <span className="error-text">{errores.titulo}</span>}
+                        {errores.titulo && <span className="error-text">⚠ {errores.titulo}</span>}
                     </div>
 
                     <div className="form-row">
@@ -46,7 +46,7 @@ const FormularioEncuesta = ({
                             >
                                 <option value="satisfaccion_evento">Satisfacción de Evento</option>
                                 <option value="post_actividad">Post-Actividad</option>
-                                <option value="pre_actividad">Pre-Actividad</option>                                <option value="pre_actividad">Pre-Actividad</option>
+                                <option value="pre_actividad">Pre-Actividad</option>
                                 <option value="durante_actividad">Durante-Actividad</option>
                             </select>
                         </div>
@@ -58,9 +58,9 @@ const FormularioEncuesta = ({
                                 value={formData.momento}
                                 onChange={onInputChange}
                             >
-                                <option value="antes">Antes del Evento</option>
-                                <option value="durante">Durante el Evento</option>
-                                <option value="despues">Después del Evento</option>
+                                <option value="antes">⏰ Antes del Evento</option>
+                                <option value="durante">🕐 Durante el Evento</option>
+                                <option value="despues">✅ Después del Evento</option>
                             </select>
                         </div>
                     </div>
@@ -78,16 +78,15 @@ const FormularioEncuesta = ({
                 </div>
 
                 <div className="form-section">
-                    <h4>Asociación</h4>
+                    <h4>🎯 Asociación</h4>
 
                     <div className="form-row">
                         <div className="form-group">
                             <label>Evento *</label>
                             <input
                                 type="text"
-                                value={eventoSeleccionado?.titulo || ''}
+                                value={eventoSeleccionado?.nombre || eventoSeleccionado?.titulo || 'Sin evento'}
                                 disabled
-                                style={{ backgroundColor: '#f0f0f0' }}
                             />
                         </div>
 
@@ -110,24 +109,24 @@ const FormularioEncuesta = ({
                 </div>
 
                 <div className="form-section">
-                    <h4>URLs de Google Forms</h4>
+                    <h4>🔗 URLs del Formulario</h4>
 
                     <div className="form-group">
-                        <label>URL del Formulario de Google *</label>
+                        <label>URL del Formulario *</label>
                         <input
                             type="url"
                             name="url_google_form"
                             value={formData.url_google_form}
                             onChange={onInputChange}
-                            placeholder="https://docs.google.com/forms/d/e/..."
+                            placeholder="https://docs.google.com/forms/d/e/[FORM_ID]/viewform"
                             className={errores.url_google_form ? 'input-error' : ''}
                         />
-                        {errores.url_google_form && <span className="error-text">{errores.url_google_form}</span>}
-                        <span className="help-text">URL pública del formulario que responderán los asistentes</span>
+                        {errores.url_google_form && <span className="error-text">⚠ {errores.url_google_form}</span>}
+                        <span className="help-text">💡 URL pública del formulario que responderán los asistentes</span>
                     </div>
 
                     <div className="form-group">
-                        <label>URL de Respuestas (opcional)</label>
+                        <label>URL de Respuestas (Google Sheets - opcional)</label>
                         <input
                             type="url"
                             name="url_respuestas"
@@ -135,12 +134,12 @@ const FormularioEncuesta = ({
                             onChange={onInputChange}
                             placeholder="https://docs.google.com/spreadsheets/d/..."
                         />
-                        <span className="help-text">URL de la hoja de cálculo con las respuestas</span>
+                        <span className="help-text">💡 URL de la hoja de cálculo con las respuestas</span>
                     </div>
                 </div>
 
                 <div className="form-section">
-                    <h4>Configuración</h4>
+                    <h4>⚙️ Configuración</h4>
 
                     <div className="form-row">
                         <div className="form-group">
@@ -150,9 +149,9 @@ const FormularioEncuesta = ({
                                 value={formData.estado}
                                 onChange={onInputChange}
                             >
-                                <option value="borrador">Borrador</option>
-                                <option value="activa">Activa</option>
-                                <option value="cerrada">Cerrada</option>
+                                <option value="borrador">📝 Borrador</option>
+                                <option value="activa">✅ Activa</option>
+                                <option value="cerrada">🔒 Cerrada</option>
                             </select>
                         </div>
 
@@ -189,7 +188,7 @@ const FormularioEncuesta = ({
                                 onChange={onInputChange}
                                 className={errores.fecha_fin ? 'input-error' : ''}
                             />
-                            {errores.fecha_fin && <span className="error-text">{errores.fecha_fin}</span>}
+                            {errores.fecha_fin && <span className="error-text">⚠ {errores.fecha_fin}</span>}
                         </div>
                     </div>
                 </div>
@@ -209,7 +208,7 @@ const FormularioEncuesta = ({
                         onClick={onSubmit}
                         disabled={cargando}
                     >
-                        {cargando ? 'Guardando...' : (modoEdicion ? 'Actualizar Encuesta' : 'Crear Encuesta')}
+                        {cargando ? '⏳ Guardando...' : (modoEdicion ? '💾 Actualizar Encuesta' : '✨ Crear Encuesta')}
                     </button>
                 </div>
             </div>

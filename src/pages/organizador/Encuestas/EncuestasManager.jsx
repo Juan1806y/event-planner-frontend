@@ -3,6 +3,7 @@ import './EncuestasManager.css';
 import { obtenerEventos, obtenerPerfil } from '../../../components/eventosService';
 import ListaEncuestas from './ListaEncuestas';
 import FormularioEncuesta from './FormularioEncuesta';
+import Sidebar from "../Sidebar";
 
 const BASE_URL = process.env.NODE_ENV === 'production'
     ? '/api'
@@ -459,18 +460,13 @@ const EncuestasManager = () => {
 
     return (
         <div className="encuestas-manager">
+            <Sidebar />
             <div className="encuestas-header">
                 <div className="header-left">
                     <div className="icon-title">
                         <span className="icon-encuestas">📋</span>
                         <h2>Gestionar Encuestas</h2>
                     </div>
-                    <p className="subtitle">
-                        {!eventoSeleccionado
-                            ? 'Selecciona un evento para gestionar sus encuestas'
-                            : `Encuestas del evento: ${eventoSeleccionado.nombre}`
-                        }
-                    </p>
                 </div>
                 {eventoSeleccionado && !mostrarFormulario && !mostrarResultados && (
                     <div style={{ display: 'flex', gap: '10px' }}>
@@ -511,11 +507,10 @@ const EncuestasManager = () => {
                             {eventos.map(evento => (
                                 <div key={evento.id} className="evento-card" onClick={() => seleccionarEvento(evento)}>
                                     <div className="evento-info">
-                                        <h4>{evento.nombre}</h4>
-                                        <p className="evento-descripcion">{evento.descripcion || 'Sin descripción'}</p>
+                                        <h4>{evento.titulo}</h4>
                                         <div className="evento-meta">
                                             <span>📅 {evento.fecha_inicio} - {evento.fecha_fin}</span>
-                                            <span>📍 {evento.ubicacion || 'Sin ubicación'}</span>
+                                            <span>🎟️ {evento.modalidad || 'Sin modalidad'}</span>
                                         </div>
                                     </div>
                                     <div className="evento-accion">
