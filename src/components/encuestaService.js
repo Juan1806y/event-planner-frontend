@@ -84,6 +84,23 @@ const encuestaService = {
         }
     },
 
+    // Agregar este método al objeto encuestaService
+    obtenerEstadisticas: async (encuestaId) => {
+        try {
+            const response = await axiosInstance.get(`/encuestas/${encuestaId}/estadisticas`);
+            return response.data;
+        } catch (error) {
+            console.error('Error al obtener estadísticas:', error);
+            if (error.response?.status === 401) {
+                throw new Error('No autorizado. Por favor, inicia sesión nuevamente.');
+            } else if (error.response?.status === 404) {
+                throw new Error('Encuesta no encontrada.');
+            } else {
+                throw new Error(error.response?.data?.message || 'Error al obtener estadísticas');
+            }
+        }
+    },
+
     eliminarEncuesta: async (id) => {
         try {
             const response = await axiosInstance.delete(`/encuestas/${id}`);

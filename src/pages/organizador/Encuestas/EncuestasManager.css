@@ -885,4 +885,26 @@
             margin-bottom: 0.5rem;
         }
     }
+
+    /* Estilos para el botón de estadísticas detalladas */
+    .btn-estadisticas-icon {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 18px;
+        transition: all 0.3s;
+    }
+
+    .btn-estadisticas-icon:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-estadisticas-icon:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
 }

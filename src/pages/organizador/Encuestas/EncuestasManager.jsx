@@ -5,6 +5,7 @@ import ListaEncuestas from './ListaEncuestas';
 import FormularioEncuesta from './FormularioEncuesta';
 import EnviarEncuestaAsistentes from './EnviarEncuestaAsistentes'; // NUEVO IMPORT
 import Sidebar from "../Sidebar";
+import EstadisticasEncuesta from './EstadisticasEncuesta';
 
 const BASE_URL = process.env.NODE_ENV === 'production'
     ? '/api'
@@ -23,6 +24,7 @@ const EncuestasManager = () => {
     const [errores, setErrores] = useState({});
     const [mensaje, setMensaje] = useState({ tipo: '', texto: '' });
     const [cargando, setCargando] = useState(false);
+    const [mostrarEstadisticas, setMostrarEstadisticas] = useState(false);
 
     const [formData, setFormData] = useState({
         titulo: '',
@@ -274,6 +276,18 @@ const EncuestasManager = () => {
         setTimeout(() => setMensaje({ tipo: '', texto: '' }), 5000);
     };
 
+    // Función para abrir estadísticas detalladas
+    const abrirEstadisticas = (encuesta) => {
+        setEncuestaSeleccionada(encuesta);
+        setMostrarEstadisticas(true);
+    };
+
+    // Función para cerrar estadísticas
+    const cerrarEstadisticas = () => {
+        setMostrarEstadisticas(false);
+        setEncuestaSeleccionada(null);
+    };
+
     const abrirFormularioNuevo = () => {
         const nuevoFormData = {
             titulo: '',
@@ -423,7 +437,7 @@ const EncuestasManager = () => {
                         <h2>Gestionar Encuestas</h2>
                     </div>
                 </div>
-                {eventoSeleccionado && !mostrarFormulario && !mostrarResultados && (
+                {eventoSeleccionado && !mostrarFormulario && !mostrarResultados && !mostrarEstadisticas && (
                     <div style={{ display: 'flex', gap: '10px' }}>
                         <button className="btn-volver" onClick={volverAEventos}>
                             ← Volver a Eventos
@@ -482,6 +496,7 @@ const EncuestasManager = () => {
                 <ListaEncuestas
                     encuestas={encuestas}
                     onVerResultados={verResultados}
+                    onVerEstadisticas={abrirEstadisticas}
                     onEditar={editarEncuesta}
                     onActivar={activarEncuesta}
                     onEliminar={eliminarEncuesta}
@@ -561,6 +576,13 @@ const EncuestasManager = () => {
                         </div>
                     </div>
                 </div>
+            )}
+            {/* NUEVO: Modal de estadísticas detalladas */}
+            {mostrarEstadisticas && encuestaSeleccionada && (
+                <EstadisticasEncuesta
+                    encuestaId={encuestaSeleccionada.id}
+                    onCerrar={cerrarEstadisticas}
+                />
             )}
         </div>
     );

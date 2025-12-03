@@ -3,10 +3,11 @@ import React from 'react';
 const ListaEncuestas = ({
     encuestas,
     onVerResultados,
+    onVerEstadisticas, // Nueva prop
     onEditar,
     onActivar,
     onEliminar,
-    onEnviar, // Nueva prop
+    onEnviar,
     onCrearPrimera
 }) => {
     if (encuestas.length === 0) {
@@ -56,9 +57,11 @@ const ListaEncuestas = ({
                                 <span>
                                     Fecha fin: {encuesta.fecha_fin}
                                 </span>
-                                <span>
-                                    Descripción: {encuesta.descripcion}
-                                </span>
+                                {encuesta.descripcion && (
+                                    <span>
+                                        Descripción: {encuesta.descripcion}
+                                    </span>
+                                )}
                             </div>
                         </div>
                         <div className="encuesta-acciones">
@@ -68,7 +71,16 @@ const ListaEncuestas = ({
                                 <span className="stat-label">respuestas</span>
                             </div>
 
-                            {/* Botón para enviar encuesta - NUEVO */}
+                            {/* NUEVO: Botón de estadísticas detalladas */}
+                            <button
+                                className="btn-icon btn-estadisticas-icon"
+                                onClick={() => onVerEstadisticas(encuesta)}
+                                title="Ver Estadísticas Detalladas"
+                            >
+                                📈
+                            </button>
+
+                            {/* Botón para enviar encuesta */}
                             <button
                                 className="btn-icon btn-enviar-icon"
                                 onClick={() => onEnviar(encuesta)}
@@ -81,7 +93,7 @@ const ListaEncuestas = ({
                             <button
                                 className="btn-icon"
                                 onClick={() => onVerResultados(encuesta)}
-                                title="Ver Estadísticas"
+                                title="Ver Resumen Rápido"
                             >
                                 👁️
                             </button>
