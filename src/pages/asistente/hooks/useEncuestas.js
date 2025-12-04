@@ -57,7 +57,7 @@ export const useEncuestas = () => {
             let endpoint = '';
 
             if (eventoId) {
-                endpoint = `/api/encuestas?evento_id=${eventoId}`;
+                endpoint = `/encuestas?evento_id=${eventoId}`;
             } else {
                 throw new Error('Se requiere eventoId');
             }
