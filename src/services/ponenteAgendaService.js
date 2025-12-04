@@ -184,12 +184,14 @@ export const ponenteAgendaService = {
                 tipo: asignacion.actividad?.tipo,
                 ubicacion: asignacion.actividad?.ubicacion,
                 materiales: asignacion.actividad?.materiales,
-                url: asignacion.actividad?.url
+                url: asignacion.actividad?.url,
+                // AÑADIR ESTO:
+                lugares: asignacion.actividad?.lugares || []  // ← ¡ESTO ES LO QUE FALTA!
             },
 
             evento: {
                 id: asignacion.actividad?.evento?.id,
-                nombre: asignacion.actividad?.evento?.nombre,
+                titulo: asignacion.actividad?.evento?.titulo,
                 descripcion: asignacion.actividad?.evento?.descripcion,
                 fecha_inicio: asignacion.actividad?.evento?.fecha_inicio,
                 fecha_fin: asignacion.actividad?.evento?.fecha_fin,

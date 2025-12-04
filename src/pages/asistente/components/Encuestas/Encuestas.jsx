@@ -29,6 +29,116 @@ const Encuestas = ({ actividadesDisponibles = [], cargandoActividades = false })
     const [mostrarAlerta, setMostrarAlerta] = useState(false);
     const [mensajeAlerta, setMensajeAlerta] = useState('');
     const [tipoAlerta, setTipoAlerta] = useState('success');
+    const [idAsistente, setIdAsistente] = useState(null);
+
+    // Función para obtener id_asistente del usuario actual
+    const obtenerIdAsistente = () => {
+        try {
+            // 1. Obtener usuario del localStorage
+            const userStr = localStorage.getItem('user');
+            if (!userStr) {
+                console.log('❌ No se encontró objeto user en localStorage');
+                return null;
+            }
+
+            const user = JSON.parse(userStr);
+            console.log('👤 Usuario encontrado en localStorage:', user);
+
+            // 2. Buscar id_asistente en diferentes propiedades
+            const posiblesPropiedades = [
+                'id_asistente',
+                'asistente_id',
+                'idAsistente',
+                'rolData.id_asistente'
+            ];
+
+            for (const prop of posiblesPropiedades) {
+                if (prop.includes('.')) {
+                    // Para propiedades anidadas como 'rolData.id_asistente'
+                    const parts = prop.split('.');
+                    let value = user;
+                    for (const part of parts) {
+                        if (value && typeof value === 'object') {
+                            value = value[part];
+                        } else {
+                            value = null;
+                            break;
+                        }
+                    }
+
+                    if (value) {
+                        console.log(`✅ Encontrado id_asistente en ${prop}:`, value);
+                        return value;
+                    }
+                } else {
+                    // Para propiedades directas
+                    if (user[prop]) {
+                        console.log(`✅ Encontrado id_asistente en ${prop}:`, user[prop]);
+                        return user[prop];
+                    }
+                }
+            }
+
+            // 3. Si no se encontró en las propiedades directas, intentar desde rolData
+            if (user.rolData) {
+                console.log('🔍 Buscando en rolData:', user.rolData);
+
+                if (user.rolData.id_asistente) {
+                    console.log('✅ Encontrado id_asistente en rolData:', user.rolData.id_asistente);
+                    return user.rolData.id_asistente;
+                }
+
+                // También verificar otras posibles propiedades en rolData
+                if (user.rolData.asistente_id) {
+                    console.log('✅ Encontrado asistente_id en rolData:', user.rolData.asistente_id);
+                    return user.rolData.asistente_id;
+                }
+            }
+
+            // 4. Intentar desde el token como último recurso
+            const token = localStorage.getItem('access_token');
+            if (token) {
+                try {
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    console.log('🔍 Buscando en payload del token:', payload);
+
+                    if (payload.rolData?.id_asistente) {
+                        console.log('✅ Encontrado id_asistente en token payload:', payload.rolData.id_asistente);
+                        return payload.rolData.id_asistente;
+                    }
+
+                    if (payload.id_asistente) {
+                        console.log('✅ Encontrado id_asistente directo en token:', payload.id_asistente);
+                        return payload.id_asistente;
+                    }
+                } catch (error) {
+                    console.log('❌ Error parseando token:', error);
+                }
+            }
+
+            console.log('⚠️ No se pudo encontrar id_asistente en ninguna propiedad conocida');
+            console.log('📋 Propiedades disponibles en user:', Object.keys(user));
+            if (user.rolData) {
+                console.log('📋 Propiedades disponibles en rolData:', Object.keys(user.rolData));
+            }
+
+            return null;
+        } catch (error) {
+            console.error('❌ Error obteniendo id_asistente:', error);
+            return null;
+        }
+    };
+
+    // Obtener id_asistente al montar el componente
+    useEffect(() => {
+        const asistenteId = obtenerIdAsistente();
+        setIdAsistente(asistenteId);
+
+        if (!asistenteId) {
+            console.warn('⚠️ IMPORTANTE: No se encontró id_asistente');
+            mostrarAlertaError('No se pudo identificar tu cuenta. Por favor, cierra sesión y vuelve a iniciar.');
+        }
+    }, []);
 
     useEffect(() => {
         if (actividadesDisponibles.length > 0) {
@@ -142,6 +252,10 @@ const Encuestas = ({ actividadesDisponibles = [], cargandoActividades = false })
 
     const confirmarCompletar = async () => {
         try {
+            if (!idAsistente) {
+                throw new Error('No se pudo identificar tu cuenta. Por favor, recarga la página.');
+            }
+
             await marcarComoCompletada(encuestaSeleccionada.id);
             mostrarAlertaExito('✅ Encuesta completada exitosamente');
             setModalAbierto(false);
@@ -402,6 +516,7 @@ const Encuestas = ({ actividadesDisponibles = [], cargandoActividades = false })
                                 loading={completando}
                                 esEncuestaEvento={encuesta.tipo_encuesta === 'satisfaccion_evento'}
                                 eventoNombre={eventoNombre}
+                                idAsistente={idAsistente} // ← Pasar id_asistente como prop
                             />
                         ))}
                     </div>
@@ -422,6 +537,7 @@ const Encuestas = ({ actividadesDisponibles = [], cargandoActividades = false })
                     color={getColorPorTipo(encuestaSeleccionada.tipo_encuesta)}
                     esEncuestaEvento={encuestaSeleccionada.tipo_encuesta === 'satisfaccion_evento'}
                     eventoNombre={eventoNombre}
+                    idAsistente={idAsistente} // ← Pasar también aquí
                 />
             )}
         </div>

@@ -1,7 +1,87 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';  // ← Agrega useEffect
 import styles from '../styles/SolicitudCambioModal.module.css';
+import { API_PREFIX } from '../../../../config/apiConfig';
+const API_BASE = API_PREFIX;
 
 const SolicitudCambioModal = ({ actividad, onClose, onSubmit }) => {
+    // DEBUG: Ver qué datos llegan realmente
+    console.log('Datos recibidos en modal (RAW):', actividad);
+
+    // Estado para cargar los datos completos
+    const [actividadCompleta, setActividadCompleta] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const cargarActividadCompleta = async () => {
+            try {
+                setLoading(true);
+
+                // Si ya tenemos los datos completos (con lugares), usarlos
+                if (actividad?.lugares || actividad?.actividad?.lugares) {
+                    console.log('Ya tiene lugares, usando datos directamente');
+                    setActividadCompleta(actividad);
+                    setLoading(false);
+                    return;
+                }
+
+                // Si no, necesitamos obtener los datos completos
+                console.log('Obteniendo datos completos de la actividad...');
+
+                // Obtener el token
+                const token = localStorage.getItem('access_token');
+                if (!token) {
+                    throw new Error('No hay token de autenticación');
+                }
+
+                // Obtener IDs
+                const ponenteId = actividad?.id_ponente;
+                const actividadId = actividad?.id_actividad || actividad?.id;
+
+                if (!ponenteId || !actividadId) {
+                    throw new Error('Faltan IDs para obtener los datos completos');
+                }
+
+                // Hacer la petición para obtener datos completos
+                const response = await fetch(
+                    `${API_BASE}/ponente-actividad/${ponenteId}/${actividadId}`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error(`Error ${response.status}: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+
+                if (result.success && result.data?.actividad) {
+                    console.log('Datos completos obtenidos:', result.data.actividad);
+                    setActividadCompleta(result.data.actividad);
+                } else {
+                    // Si no podemos obtener datos completos, usar los que tenemos
+                    console.log('Usando datos disponibles (sin lugares)');
+                    setActividadCompleta(actividad);
+                }
+
+            } catch (error) {
+                console.error('Error al cargar actividad completa:', error);
+                setError(error.message);
+                // Usar los datos que tenemos aunque sean incompletos
+                setActividadCompleta(actividad);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        cargarActividadCompleta();
+    }, [actividad]);
+
     const [formData, setFormData] = useState({
         cambios_solicitados: {
             fecha_actividad: '',
@@ -172,20 +252,62 @@ const SolicitudCambioModal = ({ actividad, onClose, onSubmit }) => {
         }
     };
 
+    const getUbicacionCompleta = (actividad) => {
+        if (!actividad) return 'No asignada';
+
+        // Intentar obtener lugares de diferentes formas
+        const lugares = actividad.lugares || actividad.actividad?.lugares;
+
+        if (!lugares || lugares.length === 0) {
+            return 'No asignada';
+        }
+
+        const lugar = lugares[0];
+        const partes = [];
+
+        // Nombre del lugar (ej: AG-404)
+        if (lugar.nombre?.trim()) {
+            partes.push(lugar.nombre.trim());
+        }
+
+        // Información de ubicación
+        if (lugar.ubicacion) {
+            if (lugar.ubicacion.lugar?.trim()) {
+                partes.push(lugar.ubicacion.lugar.trim());
+            }
+            if (lugar.ubicacion.direccion?.trim()) {
+                partes.push(lugar.ubicacion.direccion.trim());
+            }
+        }
+
+        // Descripción del lugar
+        if (lugar.descripcion?.trim()) {
+            partes.push(lugar.descripcion.trim());
+        }
+
+        return partes.length > 0 ? partes.join(' - ') : 'No asignada';
+    };
+
     const getValorActual = (campo) => {
+        // Usar actividadCompleta si está disponible, sino usar actividad
+        const datos = actividadCompleta || actividad;
+
         switch (campo) {
             case 'fecha_actividad':
-                return formatDateForDisplay(actividad.fecha);
+                // Intentar obtener fecha de diferentes formas
+                const fecha = datos?.fecha_actividad || datos?.fecha;
+                return formatDateForDisplay(fecha);
             case 'hora_inicio':
-                return actividad.hora_inicio ? actividad.hora_inicio.substring(0, 5) : 'No definida';
+                return datos?.hora_inicio ? datos.hora_inicio.substring(0, 5) : 'No definida';
             case 'hora_fin':
-                return actividad.hora_fin ? actividad.hora_fin.substring(0, 5) : 'No definida';
+                return datos?.hora_fin ? datos.hora_fin.substring(0, 5) : 'No definida';
             case 'titulo':
-                return actividad.nombre || actividad.titulo || 'No definido';
+                // Intentar obtener título de diferentes formas
+                return datos?.titulo || datos?.nombre || 'No definido';
             case 'descripcion':
-                return actividad.descripcion || 'No disponible';
+                return datos?.descripcion || 'No disponible';
             case 'ubicacion':
-                return actividad.ubicacion || 'No asignada';
+                return getUbicacionCompleta(datos);
             default:
                 return 'No disponible';
         }
@@ -195,32 +317,36 @@ const SolicitudCambioModal = ({ actividad, onClose, onSubmit }) => {
         handleInputChange(`cambios_solicitados.${field}`, '');
     };
 
-    return (
-        <div className={styles.modalOverlay}>
-            {showNotification && (
-                <div className={`${styles.notification} ${styles[notificationType]}`}>
-                    <div className={styles.notificationContent}>
-                        <span className={styles.notificationIcon}>
-                            {notificationType === 'success' ? '✅' : '❌'}
-                        </span>
-                        <span className={styles.notificationMessage}>
-                            {notificationMessage}
-                        </span>
-                        <button
-                            className={styles.notificationClose}
-                            onClick={() => setShowNotification(false)}
-                            aria-label="Cerrar notificación"
-                        >
-                            ×
-                        </button>
+    // Mostrar loading mientras se cargan datos
+    if (loading) {
+        return (
+            <div className={styles.modalOverlay}>
+                <div className={styles.modal}>
+                    <div className={styles.modalHeader}>
+                        <h2>Solicitar Cambio de Actividad</h2>
+                        <button className={styles.closeButton} onClick={onClose}>×</button>
+                    </div>
+                    <div className={styles.loading}>
+                        Cargando información de la actividad...
                     </div>
                 </div>
-            )}
+            </div>
+        );
+    }
 
+    // Si hay error
+    if (error) {
+        console.warn('Error al cargar datos completos:', error);
+        // Continuamos con los datos disponibles
+    }
+
+    return (
+        <div className={styles.modalOverlay}>
+            {/* ... (el resto del JSX se mantiene igual) ... */}
             <div className={styles.modal}>
                 <div className={styles.modalHeader}>
                     <h2>Solicitar Cambio de Actividad</h2>
-                    <button className={styles.closeButton} onClick={onClose} aria-label="Cerrar modal">×</button>
+                    <button className={styles.closeButton} onClick={onClose}>×</button>
                 </div>
 
                 <form onSubmit={handleSubmit} className={styles.form}>
@@ -232,6 +358,11 @@ const SolicitudCambioModal = ({ actividad, onClose, onSubmit }) => {
                             <p><strong>Fecha:</strong> {getValorActual('fecha_actividad')}</p>
                             <p><strong>Horario:</strong> {getValorActual('hora_inicio')} - {getValorActual('hora_fin')}</p>
                             <p><strong>Ubicación:</strong> {getValorActual('ubicacion')}</p>
+                            {error && (
+                                <p className={styles.warning}>
+                                    <small>Nota: No se pudieron cargar todos los detalles de la actividad</small>
+                                </p>
+                            )}
                         </div>
                     </div>
 

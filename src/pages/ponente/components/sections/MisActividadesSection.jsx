@@ -1,18 +1,57 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import ActividadCard from '../ui/ActividadCard';
 import styles from '../styles/MisActividadesSection.module.css';
 
 const MisActividadesSection = ({ actividades, onSolicitudEnviada, error }) => {
     const [filter, setFilter] = useState('todas');
     const [actividadesFiltradas, setActividadesFiltradas] = useState([]);
+    const [actividadesData, setActividadesData] = useState(actividades || []);
 
     useEffect(() => {
-        if (!actividades || !Array.isArray(actividades)) {
+        if (actividades && Array.isArray(actividades)) {
+            setActividadesData(actividades);
+        }
+    }, [actividades]);
+
+    // Función para actualizar el estado de una actividad
+    const handleActualizarEstadoActividad = useCallback((idActividad, nuevoEstado, fechaRespuesta) => {
+        console.log('🔄 [MisActividadesSection] Actualizando actividad:');
+        console.log('🔍 ID recibido:', idActividad);
+        console.log('🔍 Nuevo estado:', nuevoEstado);
+        console.log('🔍 Fecha respuesta:', fechaRespuesta);
+        console.log('📋 Actividades actuales:', actividadesData);
+
+        setActividadesData(prev => {
+            return prev.map(actividad => {
+                // Buscar la actividad por diferentes identificadores posibles
+                if (actividad.id_actividad === idActividad ||
+                    actividad.id_asignacion === idActividad ||
+                    (actividad.actividad && actividad.actividad.id_actividad === idActividad)) {
+
+                    console.log('✅ Actividad encontrada, actualizando estado...');
+
+                    // Crear una nueva versión de la actividad con el estado actualizado
+                    const actividadActualizada = {
+                        ...actividad,
+                        estado: nuevoEstado,
+                        fecha_respuesta: fechaRespuesta || new Date().toISOString()
+                    };
+
+                    return actividadActualizada;
+                }
+                return actividad;
+            });
+        });
+    }, []);
+
+    // Procesar actividades para mostrar
+    useEffect(() => {
+        if (!actividadesData || !Array.isArray(actividadesData)) {
             setActividadesFiltradas([]);
             return;
         }
 
-        const actividadesProcesadas = actividades.map(asignacion => {
+        const actividadesProcesadas = actividadesData.map(asignacion => {
             if (asignacion.nombre || asignacion.titulo) {
                 return asignacion;
             }
@@ -54,7 +93,7 @@ const MisActividadesSection = ({ actividades, onSolicitudEnviada, error }) => {
         });
 
         setActividadesFiltradas(filtradas);
-    }, [actividades, filter]);
+    }, [actividadesData, filter]);
 
     return (
         <div className={styles.actividades}>
@@ -124,6 +163,7 @@ const MisActividadesSection = ({ actividades, onSolicitudEnviada, error }) => {
                                 actividad={actividad}
                                 showActions={true}
                                 onSolicitudEnviada={onSolicitudEnviada}
+                                onActualizarEstado={handleActualizarEstadoActividad} // ← Nueva prop
                             />
                         ))
                     )}
