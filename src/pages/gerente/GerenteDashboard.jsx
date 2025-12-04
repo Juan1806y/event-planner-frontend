@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import GerenteSidebar from '../gerente/GerenteSidebar';
 import './GerenteDashboard.css';
 import Header from '../../layouts/Header/header';
+import Footer from '../../layouts/FooterAsistente/footer'
 
 const GerenteDashboard = () => {
   const navigate = useNavigate();
@@ -187,6 +188,7 @@ const GerenteDashboard = () => {
             </div>
           </div>
         </main>
+        <Footer/>
       </div>
     </div>
   );
