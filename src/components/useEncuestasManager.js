@@ -83,36 +83,58 @@ export const useEncuestasManager = () => {
     };
 
     const cargarEncuestas = async (eventoId) => {
-        try {
-            setCargando(true);
-            const response = await fetch(`${API_URL}/encuestas?evento_id=${eventoId}`, {
-                method: 'GET',
-                headers: getHeaders()
-            });
+    try {
+        setCargando(true);
+        const response = await fetch(`${API_URL}/encuestas?evento_id=${eventoId}`, {
+            method: 'GET',
+            headers: getHeaders()
+        });
 
-            if (!response.ok) {
-                throw new Error(`Error al obtener encuestas: ${response.status}`);
-            }
-
-            const data = await response.json();
-
-            let listaEncuestas = [];
-            if (Array.isArray(data)) {
-                listaEncuestas = data;
-            } else if (data.data && Array.isArray(data.data)) {
-                listaEncuestas = data.data;
-            } else if (data.encuestas && Array.isArray(data.encuestas)) {
-                listaEncuestas = data.encuestas;
-            }
-
-            setEncuestas(listaEncuestas);
-        } catch (error) {
-            setEncuestas([]);
-            mostrarMensaje('error', 'Error al cargar las encuestas.');
-        } finally {
-            setCargando(false);
+        if (!response. ok) {
+            throw new Error(`Error al obtener encuestas: ${response. status}`);
         }
-    };
+
+        const data = await response.json();
+
+        let listaEncuestas = [];
+        if (Array.isArray(data)) {
+            listaEncuestas = data;
+        } else if (data.data && Array.isArray(data.data)) {
+            listaEncuestas = data.data;
+        } else if (data.encuestas && Array. isArray(data. encuestas)) {
+            listaEncuestas = data. encuestas;
+        }
+
+        // Obtener estadísticas para cada encuesta
+        const encuestasConEstadisticas = await Promise.all(
+            listaEncuestas.map(async (encuesta) => {
+                try {
+                    const statsResponse = await fetch(
+                        `${API_URL}/encuestas/${encuesta.id}/estadisticas`,
+                        { method: 'GET', headers: getHeaders() }
+                    );
+                    if (statsResponse.ok) {
+                        const stats = await statsResponse. json();
+                        return {
+                            ... encuesta,
+                            total_completadas: stats.total_completadas || stats.data?. total_completadas || 0
+                        };
+                    }
+                } catch (error) {
+                    console.error(`Error obteniendo estadísticas para encuesta ${encuesta.id}:`, error);
+                }
+                return { ...encuesta, total_completadas: 0 };
+            })
+        );
+
+        setEncuestas(encuestasConEstadisticas);
+    } catch (error) {
+        setEncuestas([]);
+        mostrarMensaje('error', 'Error al cargar las encuestas.');
+    } finally {
+        setCargando(false);
+    }
+};
 
     const cargarActividades = async (eventoId) => {
         try {
