@@ -203,12 +203,16 @@ const EstadisticasEncuesta = ({ encuestaId, onCerrar }) => {
             setExportando(true);
             const { encuesta, estadisticas, respuestas } = data;
 
-            // Importación dinámica de jsPDF
-            const { jsPDF } = await import('jspdf');
+            // Importar jsPDF primero
+            const jsPDFModule = await import('jspdf');
+            const { jsPDF } = jsPDFModule;
+
+            // Luego importar autoTable (esto extiende jsPDF automáticamente)
             await import('jspdf-autotable');
 
             // Crear documento PDF
             const doc = new jsPDF();
+            // ... resto del código sin cambios
 
             // Título
             doc.setFontSize(18);

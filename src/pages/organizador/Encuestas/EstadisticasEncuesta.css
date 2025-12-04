@@ -153,59 +153,47 @@
 
 /* Dropdown de Exportación */
 .exportar-dropdown {
-    align-items: right;
     position: relative;
+    display: inline-block;
 }
 
 .menu-exportar {
     position: absolute;
-    top: calc(100% + 12px);
-    /* Más espacio desde el botón */
-    right: 0;
-    /* Alineado a la derecha del botón */
+    top: 100%;
+    left: 0;
+    /* Cambia esto - alinea el menú con el borde izquierdo del botón */
+    margin-top: 4px;
     background: white;
-    border-radius: 12px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    padding: 8px;
-    min-width: 220px;
-    z-index: 1100;
-    /* Mayor z-index */
-    animation: menuSlideDown 0.2s ease-out;
-}
-
-@keyframes menuSlideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    min-width: 200px;
+    /* Asegura que el menú tenga un ancho mínimo */
 }
 
 .opcion-exportar {
+    display: block;
     width: 100%;
     padding: 12px 16px;
-    background: transparent;
-    border: none;
-    border-radius: 8px;
     text-align: left;
+    border: none;
+    background: none;
     cursor: pointer;
     font-size: 14px;
-    font-weight: 500;
-    color: #374151;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    transition: background-color 0.2s;
 }
 
 .opcion-exportar:hover:not(:disabled) {
-    background: #f3f4f6;
-    color: #667eea;
-    transform: translateX(4px);
+    background-color: #f5f5f5;
+}
+
+.opcion-exportar:first-child {
+    border-radius: 8px 8px 0 0;
+}
+
+.opcion-exportar:last-child {
+    border-radius: 0 0 8px 8px;
 }
 
 .opcion-exportar:disabled {
