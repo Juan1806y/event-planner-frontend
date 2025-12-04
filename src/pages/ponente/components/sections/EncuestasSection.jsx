@@ -202,7 +202,7 @@ const EncuestasSection = ({ eventos = [], ponenteId }) => {
                 const totalEnviadas = response.data?.data?.total_enviadas || 0;
                 const asistentes = response.data?.data?.asistentes || [];
 
-                let mensaje = `Encuesta enviada a ${totalEnviadas} asistentes`;
+                let mensaje = `Encuesta enviada`;
 
                 if (asistentes.length > 0) {
                     const nombres = asistentes.map(a => a.nombre).join(', ');
