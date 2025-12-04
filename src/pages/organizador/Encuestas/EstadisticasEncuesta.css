@@ -93,20 +93,20 @@
     }
 }
 
-.modal-header {
+.modal-headerr {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 24px 32px;
     border-bottom: 2px solid #e5e7eb;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #122548;
     border-radius: 16px 16px 0 0;
     position: relative;
     overflow: visible;
     /* IMPORTANTE: permite que el menú se salga */
 }
 
-.modal-header h2 {
+.modal-headerr h2 {
     margin: 0;
     font-size: 24px;
     font-weight: 700;
@@ -153,59 +153,47 @@
 
 /* Dropdown de Exportación */
 .exportar-dropdown {
-    align-items: right;
     position: relative;
+    display: inline-block;
 }
 
 .menu-exportar {
     position: absolute;
-    top: calc(100% + 12px);
-    /* Más espacio desde el botón */
-    right: 0;
-    /* Alineado a la derecha del botón */
+    top: 100%;
+    left: 0;
+    /* Cambia esto - alinea el menú con el borde izquierdo del botón */
+    margin-top: 4px;
     background: white;
-    border-radius: 12px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    padding: 8px;
-    min-width: 220px;
-    z-index: 1100;
-    /* Mayor z-index */
-    animation: menuSlideDown 0.2s ease-out;
-}
-
-@keyframes menuSlideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    min-width: 200px;
+    /* Asegura que el menú tenga un ancho mínimo */
 }
 
 .opcion-exportar {
+    display: block;
     width: 100%;
     padding: 12px 16px;
-    background: transparent;
-    border: none;
-    border-radius: 8px;
     text-align: left;
+    border: none;
+    background: none;
     cursor: pointer;
     font-size: 14px;
-    font-weight: 500;
-    color: #374151;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    transition: background-color 0.2s;
 }
 
 .opcion-exportar:hover:not(:disabled) {
-    background: #f3f4f6;
-    color: #667eea;
-    transform: translateX(4px);
+    background-color: #f5f5f5;
+}
+
+.opcion-exportar:first-child {
+    border-radius: 8px 8px 0 0;
+}
+
+.opcion-exportar:last-child {
+    border-radius: 0 0 8px 8px;
 }
 
 .opcion-exportar:disabled {
@@ -335,7 +323,7 @@
 }
 
 .stat-card-modal {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #122548;
     padding: 24px;
     border-radius: 12px;
     color: white;
@@ -350,15 +338,15 @@
 }
 
 .stat-card-modal.completadas {
-    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    background: #122548;
 }
 
 .stat-card-modal.pendientes {
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    background: #122548;
 }
 
 .stat-card-modal.tasa {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    background: #122548;
 }
 
 .stat-icon-modal {
@@ -435,7 +423,7 @@
     justify-content: center;
     gap: 8px;
     padding: 12px 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #122548;
     color: white;
     text-decoration: none;
     border-radius: 8px;

@@ -73,7 +73,7 @@ export const obtenerLugares = async (idEmpresa, idUbicacion = null) => {
 };
 
 export const obtenerActividadesEvento = async (eventoId) => {
-    const response = await axios.get(`${API_URL}/${eventoId}/actividades`, getHeaders());
+    const response = await axios.get(`${API_URL}/eventos/${eventoId}/actividades`, getHeaders());
     return response.data;
 };
 
