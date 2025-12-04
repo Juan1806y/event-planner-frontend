@@ -1,4 +1,22 @@
-/* Modal Overlay */
+/* Modal Container - ANCHO AJUSTADO */
+.estadisticas-modal {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 900px;
+    /* Reducido de 1400px */
+    width: 95%;
+    /* Usa 95% del ancho disponible */
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: modalSlideIn 0.3s ease-out;
+    position: relative;
+    z-index: 1001;
+    margin: 0 auto;
+    /* Centrado */
+}
+
+/* Modal Overlay - MEJOR CENTRADO */
 .estadisticas-modal-overlay {
     position: fixed;
     top: 0;
@@ -12,18 +30,55 @@
     z-index: 1000;
     padding: 20px;
     backdrop-filter: blur(4px);
+    overflow-y: auto;
+    /* Permite scroll si es necesario */
 }
 
-/* Modal Container */
-.estadisticas-modal {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    max-width: 1400px;
-    width: 100%;
-    max-height: 90vh;
-    overflow-y: auto;
-    animation: modalSlideIn 0.3s ease-out;
+/* Responsive mejorado */
+@media (max-width: 1400px) {
+    .estadisticas-modal {
+        max-width: 1100px;
+        width: 95%;
+    }
+}
+
+@media (max-width: 1200px) {
+    .estadisticas-modal {
+        max-width: 900px;
+        width: 95%;
+    }
+}
+
+@media (max-width: 992px) {
+    .estadisticas-modal {
+        max-width: 100%;
+        width: 95%;
+    }
+}
+
+@media (max-width: 768px) {
+    .estadisticas-modal {
+        width: 100%;
+        max-height: 95vh;
+        border-radius: 12px;
+    }
+
+    .estadisticas-modal-overlay {
+        padding: 10px;
+    }
+
+    .modal-header {
+        padding: 20px;
+    }
+
+    .modal-content {
+        padding: 20px;
+    }
+}
+
+/* Ocultar scrollbar en WebKit */
+.estadisticas-modal::-webkit-scrollbar {
+    display: none;
 }
 
 @keyframes modalSlideIn {
@@ -38,7 +93,6 @@
     }
 }
 
-/* Modal Header */
 .modal-header {
     display: flex;
     justify-content: space-between;
@@ -47,6 +101,9 @@
     border-bottom: 2px solid #e5e7eb;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border-radius: 16px 16px 0 0;
+    position: relative;
+    overflow: visible;
+    /* IMPORTANTE: permite que el menú se salga */
 }
 
 .modal-header h2 {
@@ -54,12 +111,17 @@
     font-size: 24px;
     font-weight: 700;
     color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .modal-header-actions {
     display: flex;
     gap: 12px;
     align-items: center;
+    position: relative;
+    /* Para el dropdown */
 }
 
 /* Botón Exportar Principal */
@@ -91,19 +153,23 @@
 
 /* Dropdown de Exportación */
 .exportar-dropdown {
+    align-items: right;
     position: relative;
 }
 
 .menu-exportar {
     position: absolute;
-    top: calc(100% + 8px);
+    top: calc(100% + 12px);
+    /* Más espacio desde el botón */
     right: 0;
+    /* Alineado a la derecha del botón */
     background: white;
     border-radius: 12px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     padding: 8px;
-    min-width: 200px;
-    z-index: 1001;
+    min-width: 220px;
+    z-index: 1100;
+    /* Mayor z-index */
     animation: menuSlideDown 0.2s ease-out;
 }
 
@@ -147,26 +213,35 @@
     cursor: not-allowed;
 }
 
-/* Botón Cerrar */
+/* Botón Cerrar - CORREGIDO */
 .btn-cerrar-modal {
     background: rgba(255, 255, 255, 0.2);
     border: 2px solid white;
     color: white;
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    font-size: 20px;
+    font-size: 24px;
+    font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
+    /* No se comprime */
+    line-height: 1;
+    padding: 0;
 }
 
 .btn-cerrar-modal:hover {
     background: white;
     color: #667eea;
-    transform: rotate(90deg);
+    transform: rotate(90deg) scale(1.1);
+}
+
+.btn-cerrar-modal:active {
+    transform: rotate(90deg) scale(0.95);
 }
 
 /* Modal Content */

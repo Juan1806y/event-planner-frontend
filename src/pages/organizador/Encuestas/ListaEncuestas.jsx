@@ -66,50 +66,51 @@ const ListaEncuestas = ({
                         </div>
                         <div className="encuesta-acciones">
                             <div className="estadisticas-mini">
-                                <span className="stat-icon">📊</span>
                                 <span className="stat-number">{encuesta.respuestas_count || 0}</span>
                                 <span className="stat-label">respuestas</span>
                             </div>
 
-                            {/* NUEVO: Botón de estadísticas detalladas */}
+                            {/* Primera fila: 3 botones */}
                             <button
-                                className="btn-icon btn-estadisticas-icon"
+                                className="btn-accion btn-estadisticas"
                                 onClick={() => onVerEstadisticas(encuesta)}
                                 title="Ver Estadísticas Detalladas"
                             >
-                                📈
+                                Estadísticas
                             </button>
 
-                            {/* Botón para enviar encuesta */}
                             <button
-                                className="btn-icon btn-enviar-icon"
+                                className="btn-accion btn-enviarr"
                                 onClick={() => onEnviar(encuesta)}
                                 title="Enviar a Asistentes"
                                 disabled={encuesta.estado === 'cerrada'}
                             >
-                                📧
+                                Enviar
                             </button>
 
+                            {/* Segunda fila: 2 botones */}
                             <button
-                                className="btn-icon"
+                                className="btn-accion btn-ver"
                                 onClick={() => onVerResultados(encuesta)}
                                 title="Ver Resumen Rápido"
                             >
-                                👁️
+                                Ver
                             </button>
+
                             <button
-                                className="btn-icon"
+                                className="btn-accion btn-editar"
                                 onClick={() => onEditar(encuesta)}
                                 title="Editar"
                             >
-                                ✏️
+                                Editar
                             </button>
+
                             <button
-                                className="btn-icon btn-eliminar"
+                                className="btn-accion btn-eliminar"
                                 onClick={() => onEliminar(encuesta.id)}
                                 title="Eliminar"
                             >
-                                🗑️
+                                Eliminar
                             </button>
                         </div>
                     </div>
