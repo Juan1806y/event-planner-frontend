@@ -6,6 +6,7 @@ const ActividadDetallesModal = ({ actividadId, eventoId, onClose }) => {
     const [error, setError] = useState(null);
     const [detalle, setDetalle] = useState(null);
     const [eventoData, setEventoData] = useState(null);
+    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
     useEffect(() => {
         const fetchDetalle = async () => {
@@ -13,7 +14,7 @@ const ActividadDetallesModal = ({ actividadId, eventoId, onClose }) => {
                 setLoading(true);
                 setError(null);
                 const token = localStorage.getItem('access_token');
-                const API_BASE = (window.__env && window.__env.REACT_APP_API_URL) || 'http://localhost:3000';
+                //const API_BASE = (window.__env && window.__env.REACT_APP_API_URL) || 'http://localhost:3000';
 
                 console.log('Buscando detalles para:', { actividadId, eventoId });
 
@@ -21,7 +22,7 @@ const ActividadDetallesModal = ({ actividadId, eventoId, onClose }) => {
 
                 if (!eventoIdFinal) {
                     console.log('No hay eventoId, intentando obtener actividad directamente...');
-                    const actividadDirectaRes = await fetch(`${API_BASE}/api/actividades/${actividadId}`, {
+                    const actividadDirectaRes = await fetch(`${API_URL}/actividades/${actividadId}`, {
                         headers: {
                             'Authorization': `Bearer ${token}`,
                             'Content-Type': 'application/json'
@@ -42,7 +43,7 @@ const ActividadDetallesModal = ({ actividadId, eventoId, onClose }) => {
                 }
 
                 console.log('Obteniendo datos del evento:', eventoIdFinal);
-                const eventoRes = await fetch(`${API_BASE}/api/eventos/${eventoIdFinal}`, {
+                const eventoRes = await fetch(`${API_URL}/eventos/${eventoIdFinal}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
@@ -63,7 +64,7 @@ const ActividadDetallesModal = ({ actividadId, eventoId, onClose }) => {
                 console.log('Datos del evento obtenidos:', eventoJson.data);
 
                 console.log('Obteniendo actividades del evento...');
-                const actividadesRes = await fetch(`${API_BASE}/api/eventos/${eventoIdFinal}/actividades`, {
+                const actividadesRes = await fetch(`${API_URL}/eventos/${eventoIdFinal}/actividades`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'

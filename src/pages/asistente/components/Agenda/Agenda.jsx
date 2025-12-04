@@ -20,6 +20,7 @@ const Agenda = ({ misInscripciones, onRegisterAttendance }) => {
     const [actividadSeleccionada, setActividadSeleccionada] = useState(null);
     const [detallesCompletos, setDetallesCompletos] = useState(null);
     const [cargandoDetalles, setCargandoDetalles] = useState(false);
+    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
     const obtenerEventosInscritos = async () => {
         setCargandoEventos(true);
@@ -29,7 +30,7 @@ const Agenda = ({ misInscripciones, onRegisterAttendance }) => {
                 throw new Error('No hay token disponible');
             }
 
-            const response = await fetch('http://localhost:3000/api/asistencias/mis-asistencias', {
+            const response = await fetch(`${API_URL}/asistencias/mis-asistencias`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -137,15 +138,15 @@ const Agenda = ({ misInscripciones, onRegisterAttendance }) => {
             }
 
             const [detallesActividad, ponentesResponse, detallesEvento] = await Promise.all([
-                fetch(`http://localhost:3000/api/actividades/${actividad.id_actividad}`, {
+                fetch(`${API_URL}/actividades/${actividad.id_actividad}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 }).then(r => r.json()),
 
-                fetch(`http://localhost:3000/api/ponente-actividad/actividad/${actividad.id_actividad}`, {
+                fetch(`${API_URL}/ponente-actividad/actividad/${actividad.id_actividad}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 }).then(r => r.json()),
 
-                fetch(`http://localhost:3000/api/eventos/${actividad.evento.id}`, {
+                fetch(`${API_URL}/eventos/${actividad.evento.id}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 }).then(r => r.json())
             ]);

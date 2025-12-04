@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { obtenerEventos, obtenerPerfil, obtenerActividadesEvento } from '../../src/components/eventosService';
 
-const BASE_URL = process.env.NODE_ENV === 'production'
-    ? '/api'
-    : 'http://localhost:3000/api';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+
 
 export const useEncuestasManager = () => {
     const [encuestas, setEncuestas] = useState([]);
@@ -86,7 +85,7 @@ export const useEncuestasManager = () => {
     const cargarEncuestas = async (eventoId) => {
         try {
             setCargando(true);
-            const response = await fetch(`${BASE_URL}/encuestas?evento_id=${eventoId}`, {
+            const response = await fetch(`${API_URL}/encuestas?evento_id=${eventoId}`, {
                 method: 'GET',
                 headers: getHeaders()
             });
@@ -221,8 +220,8 @@ export const useEncuestasManager = () => {
 
             const metodo = modoEdicion ? 'PUT' : 'POST';
             const url = modoEdicion
-                ? `${BASE_URL}/encuestas/${encuestaSeleccionada.id}`
-                : `${BASE_URL}/encuestas`;
+                ? `${API_URL}/encuestas/${encuestaSeleccionada.id}`
+                : `${API_URL}/encuestas`;
 
             const response = await fetch(url, {
                 method: metodo,
@@ -328,7 +327,7 @@ export const useEncuestasManager = () => {
 
         try {
             setCargando(true);
-            const response = await fetch(`${BASE_URL}/encuestas/${id}`, {
+            const response = await fetch(`${API_URL}/encuestas/${id}`, {
                 method: 'DELETE',
                 headers: getHeaders()
             });
@@ -349,7 +348,7 @@ export const useEncuestasManager = () => {
     const activarEncuesta = async (id) => {
         try {
             setCargando(true);
-            const response = await fetch(`${BASE_URL}/encuestas/${id}/activar`, {
+            const response = await fetch(`${API_URL}/encuestas/${id}/activar`, {
                 method: 'PUT',
                 headers: getHeaders()
             });
@@ -388,7 +387,7 @@ export const useEncuestasManager = () => {
         setMostrarResultados(true);
 
         try {
-            const response = await fetch(`${BASE_URL}/encuestas/${encuesta.id}/estadisticas`, {
+            const response = await fetch(`${API_URL}/encuestas/${encuesta.id}/estadisticas`, {
                 method: 'GET',
                 headers: getHeaders()
             });

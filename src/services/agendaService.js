@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:3000/api';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
 export const agendaService = {
     async obtenerActividadesAgenda(misInscripciones, token) {
@@ -52,7 +52,7 @@ export const agendaService = {
 
     async obtenerActividadesEvento(eventoId, token) {
         try {
-            const response = await fetch(`${API_BASE}/eventos/${eventoId}/actividades`, {
+            const response = await fetch(`${API_URL}/eventos/${eventoId}/actividades`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,

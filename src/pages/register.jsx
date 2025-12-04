@@ -4,6 +4,8 @@ import '../pages/register.css';
 import logo from '../assets/evento-remove.png';
 
 export default function Register() {
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+
   const [selectedRole, setSelectedRole] = useState('asistente');
   const [formData, setFormData] = useState({
     nombre: '',
@@ -94,7 +96,7 @@ export default function Register() {
         payload.especialidad = formData.especialidad;
       }
 
-      const response = await fetch('http://localhost:3000/api/auth/register', {
+      const response = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

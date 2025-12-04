@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:3000/api/eventos";
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
 const getAuthToken = () => localStorage.getItem('access_token') || '';
 
@@ -44,21 +44,22 @@ export const eliminarEvento = async (id) => {
 };
 
 export const obtenerPerfil = async () => {
-    const response = await axios.get(`http://localhost:3000/api/auth/profile`, getHeaders());
+    const response = await axios.get(`${API_URL}/auth/profile`, getHeaders());
     console.log("Actuaaaaal", response.data)
     return response.data;
 };
 
 export const obtenerUbicaciones = async (idEmpresa) => {
     const response = await axios.get(
-        `http://localhost:3000/api/empresas/${idEmpresa}/ubicaciones`,
+        `${API_URL}/empresas/${idEmpresa}/ubicaciones`,
         getHeaders()
     );
+
     return response.data;
 };
 
 export const obtenerLugares = async (idEmpresa, idUbicacion = null) => {
-    let url = `http://localhost:3000/api/empresas/${idEmpresa}/lugares`;
+    let url = `${API_URL}/empresas/${idEmpresa}/lugares`;
 
     if (idUbicacion) {
         url += `?id_ubicacion=${idUbicacion}`;
@@ -79,18 +80,18 @@ export const crearActividad = async (eventoId, actividadData) => {
 };
 
 export const actualizarActividad = async (actividadId, datosActualizados) => {
-    const response = await axios.put(`http://localhost:3000/api/actividades/${actividadId}`, datosActualizados, getHeaders());
+    const response = await axios.put(`${API_URL}/actividades/${actividadId}`, datosActualizados, getHeaders());
     return response.data;
 };
 
 export const eliminarActividad = async (actividadId) => {
-    const response = await axios.delete(`http://localhost:3000/api/actividades/${actividadId}`, getHeaders());
+    const response = await axios.delete(`${API_URL}/actividades/${actividadId}`, getHeaders());
     return response.data;
 };
 
 export const obtenerPonentes = async () => {
     const response = await axios.get(
-        "http://localhost:3000/api/ponente-actividad/ponentes",
+        `${API_URL}/ponente-actividad/ponentes`,
         getHeaders()
     );
     return response.data;
@@ -98,7 +99,7 @@ export const obtenerPonentes = async () => {
 
 export const obtenerPonenteAsignado = async (actividadId) => {
     const response = await axios.get(
-        `http://localhost:3000/api/ponente-actividad/actividad/${actividadId}`,
+        `${API_URL}/ponente-actividad/actividad/${actividadId}`,
         getHeaders()
     );
     return response.data;

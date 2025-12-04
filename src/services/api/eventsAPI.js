@@ -10,7 +10,7 @@ class EventsAPI extends BaseService {
 
     obtenerEventos = async () => {
         try {
-            const response = await this.fetch('/api/eventos');
+            const response = await this.fetch('/eventos');
 
             if (!response.success) {
                 throw new Error(response.message || 'Error al obtener eventos');
@@ -26,7 +26,7 @@ class EventsAPI extends BaseService {
     obtenerEventosDisponibles = async () => {
         try {
             console.log('🌐 Obteniendo eventos disponibles desde API...');
-            const response = await this.fetch('/api/inscripciones/eventos-disponibles');
+            const response = await this.fetch('/inscripciones/eventos-disponibles');
 
             console.log('📊 Respuesta completa de eventos disponibles:', response);
 
@@ -47,7 +47,7 @@ class EventsAPI extends BaseService {
 
     getEventsByEmpresa = async (empresaId) => {
         try {
-            const response = await this.fetch(`/api/empresas/${empresaId}/eventos`);
+            const response = await this.fetch(`/empresas/${empresaId}/eventos`);
             return response.data || [];
         } catch (error) {
             console.error('Error fetching events by empresa:', error);

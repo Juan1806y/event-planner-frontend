@@ -1,10 +1,10 @@
-const API_BASE_URL = 'http://localhost:3000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
 const createApiClient = () => {
   const token = localStorage.getItem('access_token');
-  
+
   return {
-    baseURL: API_BASE_URL,
+    baseURL: API_URL,
     headers: {
       'Content-Type': 'application/json',
       ...(token && { 'Authorization': `Bearer ${token}` })
@@ -14,7 +14,7 @@ const createApiClient = () => {
 
 export const apiRequest = async (endpoint, options = {}) => {
   const config = createApiClient();
-  
+
   try {
     const response = await fetch(`${config.baseURL}${endpoint}`, {
       ...options,
@@ -26,7 +26,7 @@ export const apiRequest = async (endpoint, options = {}) => {
 
     if (response.status === 401) {
       const refreshed = await refreshAccessToken();
-      
+
       if (refreshed) {
         const newConfig = createApiClient();
         const retryResponse = await fetch(`${config.baseURL}${endpoint}`, {
@@ -53,13 +53,13 @@ export const apiRequest = async (endpoint, options = {}) => {
 
 export const refreshAccessToken = async () => {
   const refreshToken = localStorage.getItem('refresh_token');
-  
+
   if (!refreshToken) {
     return false;
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
+    const response = await fetch(`${API_URL}/auth/refresh`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -82,7 +82,7 @@ export const refreshAccessToken = async () => {
 
 export const login = async (email, password) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+    const response = await fetch(`${API_URL}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

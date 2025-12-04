@@ -4,6 +4,8 @@ import styles from './ubicaciones.module.css';
 import Header from '../../layouts/Header/header';
 import GerenteSidebar from '../gerente/GerenteSidebar';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+
 const Notification = ({ type, title, message, onClose, duration = 5000 }) => {
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -143,7 +145,7 @@ const Ubicaciones = () => {
             }
 
             console.log('🔍 Obteniendo perfil del usuario...');
-            const profileResponse = await fetch('http://localhost:3000/api/auth/profile', {
+            const profileResponse = await fetch(`${API_URL}/auth/profile`, {
                 headers: headers
             });
 
@@ -202,7 +204,7 @@ const Ubicaciones = () => {
             }
 
             console.log(`🔍 Obteniendo detalles de la empresa ID: ${empresaId}`);
-            const response = await fetch(`http://localhost:3000/api/empresas/${empresaId}`, {
+            const response = await fetch(`${API_URL}/empresas/${empresaId}`, {
                 headers: headers
             });
 
@@ -242,7 +244,7 @@ const Ubicaciones = () => {
             }
 
             console.log('🏢 Obteniendo lista de empresas...');
-            const response = await fetch('http://localhost:3000/api/empresas', {
+            const response = await fetch(`${API_URL}/empresas`, {
                 headers: headers
             });
 
@@ -279,7 +281,7 @@ const Ubicaciones = () => {
         }
     };
 
-    const fetchUbicacionesByEmpresa = async (empresaId, token = null, ciudadesList= ciudades) => {
+    const fetchUbicacionesByEmpresa = async (empresaId, token = null, ciudadesList = ciudades) => {
         try {
             const headers = {
                 'Content-Type': 'application/json'
@@ -291,7 +293,7 @@ const Ubicaciones = () => {
 
             console.log(`🔍 Buscando ubicaciones para empresa ID: ${empresaId}`);
 
-            const response = await fetch(`http://localhost:3000/api/empresas/${empresaId}/ubicaciones`, {
+            const response = await fetch(`${API_URL}/empresas/${empresaId}/ubicaciones`, {
                 headers: headers
             });
 
@@ -379,7 +381,7 @@ const Ubicaciones = () => {
             }
 
             console.log('🏙️ Obteniendo lista de ciudades...');
-            const response = await fetch('http://localhost:3000/api/ciudades', {
+            const response = await fetch(`${API_URL}/ciudades`, {
                 headers: headers
             });
 
@@ -421,7 +423,7 @@ const Ubicaciones = () => {
 
             console.log('📤 Creando nueva ubicación...', formData);
 
-            const response = await fetch(`http://localhost:3000/api/empresas/${empresa.id}/ubicaciones`, {
+            const response = await fetch(`${API_URL}/empresas/${empresa.id}/ubicaciones`, {
                 method: 'POST',
                 headers: headers,
                 body: JSON.stringify({
@@ -480,7 +482,7 @@ const Ubicaciones = () => {
 
             console.log('📤 Actualizando ubicación...', formData);
 
-            const response = await fetch(`http://localhost:3000/api/ubicaciones/${editingUbicacion.id}`, {
+            const response = await fetch(`${API_URL}/ubicaciones/${editingUbicacion.id}`, {
                 method: 'PUT',
                 headers: headers,
                 body: JSON.stringify({
@@ -530,7 +532,7 @@ const Ubicaciones = () => {
 
             console.log('🗑️ Eliminando ubicación...', deletingUbicacion.id);
 
-            const response = await fetch(`http://localhost:3000/api/ubicaciones/${deletingUbicacion.id}`, {
+            const response = await fetch(`${API_URL}/ubicaciones/${deletingUbicacion.id}`, {
                 method: 'DELETE',
                 headers: headers
             });

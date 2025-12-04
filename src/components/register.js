@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const API_BASE_URL = 'http://localhost:3000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
 export const useRegister = () => {
   const navigate = useNavigate();
-  
+
   const [selectedRole, setSelectedRole] = useState('asistente');
   const [formData, setFormData] = useState({
     nombre: '',
@@ -95,7 +95,7 @@ export const useRegister = () => {
 
       console.log('Enviando registro:', payload);
 
-      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+      const response = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -135,7 +135,7 @@ export const useRegister = () => {
       }
 
       console.log('Registro exitoso!');
-      
+
       // Redirigir al login después de 2 segundos
       setTimeout(() => {
         navigate('/login');
@@ -145,7 +145,7 @@ export const useRegister = () => {
 
     } catch (err) {
       console.error('Error durante el registro:', err);
-      
+
       if (err.name === 'TypeError' && err.message.includes('fetch')) {
         setError('No se pudo conectar con el servidor. Verifica tu conexión a internet.');
       } else if (err.message.includes('ETIMEDOUT') || err.message.includes('timeout')) {
@@ -153,7 +153,7 @@ export const useRegister = () => {
       } else {
         setError(err.message);
       }
-      
+
       return { success: false };
     } finally {
       setLoading(false);
@@ -180,7 +180,7 @@ export const useRegister = () => {
     showConfirmPassword,
     error,
     loading,
-    
+
     // Funciones
     handleRoleSelect,
     handleInputChange,

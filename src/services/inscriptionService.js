@@ -1,5 +1,5 @@
-import { API_PREFIX } from '../config/apiConfig';
-const API_BASE = API_PREFIX;
+import { API_URL } from '../config/apiConfig';
+const API_BASE = API_URL;
 
 export const inscriptionService = {
     async getMyInscriptions(token) {

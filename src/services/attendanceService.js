@@ -1,8 +1,8 @@
-const API_BASE = 'http://localhost:3000/api';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
 export const attendanceService = {
     async registerAttendance(code, token) {
-        const response = await fetch(`${API_BASE}/asistencias/codigo`, {
+        const response = await fetch(`${API_URL}/asistencias/codigo`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -30,7 +30,7 @@ export const attendanceService = {
     },
 
     async getMyAttendances(token) {
-        const response = await fetch(`${API_BASE}/asistencias/mis-asistencias`, {
+        const response = await fetch(`${API_URL}/asistencias/mis-asistencias`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,

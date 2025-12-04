@@ -3,7 +3,7 @@ import { BaseService } from './api/baseService';
 class EncuestaService extends BaseService {
     constructor() {
         super();
-        this.endpoint = '/api/encuestas';
+        this.endpoint = '/encuestas';
     }
 
     // Obtener encuestas por actividad

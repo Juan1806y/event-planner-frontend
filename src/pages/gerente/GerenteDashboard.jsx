@@ -21,9 +21,9 @@ const GerenteDashboard = () => {
   useEffect(() => {
     const userData = localStorage.getItem('user');
     const token = localStorage.getItem('access_token'); // CAMBIO AQUÍ
-    
+
     console.log('User Data:', userData);
-    
+
     if (!userData || !token) {
       console.log('No hay token o usuario, redirigiendo al login');
       navigate('/login');
@@ -46,18 +46,18 @@ const GerenteDashboard = () => {
       try {
         setLoading(true);
         const token = localStorage.getItem('access_token'); // CAMBIO AQUÍ
-        
+
         console.log('Fetching equipo con token:', token);
         console.log('ID Empresa:', user.rolData.id_empresa);
-        
+
         if (!token) {
           throw new Error('No hay token de autenticación');
         }
 
-        const API_URL = 'http://localhost:3000';
-        
+        const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+
         const response = await fetch(
-          `${API_URL}/api/empresas/${user.rolData.id_empresa}/equipo`,
+          `${API_URL}/empresas/${user.rolData.id_empresa}/equipo`,
           {
             method: 'GET',
             headers: {
@@ -101,7 +101,7 @@ const GerenteDashboard = () => {
   return (
     <div className="gerente-layout">
       <GerenteSidebar />
-      
+
       <div className="gerente-content">
         <Header />
 
@@ -122,8 +122,8 @@ const GerenteDashboard = () => {
               ) : error ? (
                 <div className="error-state">
                   <p>Error: {error}</p>
-                  <button 
-                    onClick={() => window.location.reload()} 
+                  <button
+                    onClick={() => window.location.reload()}
                     className="retry-button"
                   >
                     Reintentar

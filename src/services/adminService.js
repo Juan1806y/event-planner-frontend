@@ -16,15 +16,15 @@ export class AdminService extends BaseService {
   }
 
   async getAfiliaciones() {
-    return this.request('/api/empresas?incluir_pendientes=true');
+    return this.request('/empresas?incluir_pendientes=true');
   }
 
   async getAuditoria() {
-    return this.request('/api/auditoria');
+    return this.request('/auditoria');
   }
 
   async getUsuarios() {
-    return this.request('/api/gestion-usuarios/users');
+    return this.request('/gestion-usuarios/users');
   }
 
   async promoverAGerente(idUsuario, idEmpresa) {
@@ -33,7 +33,7 @@ export class AdminService extends BaseService {
 
   async aprobarEmpresaYPromover(id, data) {
     // Ejecutar la aprobación primero
-    const aprobarResp = await this.request(`/api/empresas/${id}/aprobar`, {
+    const aprobarResp = await this.request(`/empresas/${id}/aprobar`, {
       method: 'PATCH',
       body: JSON.stringify(data)
     });
@@ -57,16 +57,16 @@ export class AdminService extends BaseService {
     if (!data?.data) return { pendientes: 0, aprobadas: 0, rechazadas: 0 };
 
     let empresasData = Array.isArray(data.data) ? data.data : [data.data];
-    
-    const pendientes = empresasData.filter(e => 
+
+    const pendientes = empresasData.filter(e =>
       e.estado === 0 || e.estado === '0' || e.estado === 'pendiente'
     ).length;
-    
-    const aprobadas = empresasData.filter(e => 
+
+    const aprobadas = empresasData.filter(e =>
       e.estado === 1 || e.estado === '1' || e.estado === 'aprobado'
     ).length;
-    
-    const rechazadas = empresasData.filter(e => 
+
+    const rechazadas = empresasData.filter(e =>
       e.estado === 2 || e.estado === '2' || e.estado === 'rechazado'
     ).length;
 
@@ -75,7 +75,7 @@ export class AdminService extends BaseService {
 
   processAuditoriaData(data) {
     if (!data?.data) return [];
-    
+
     let auditoriaData = Array.isArray(data.data) ? data.data : [data.data];
     return auditoriaData.sort((a, b) => b.id - a.id);
   }

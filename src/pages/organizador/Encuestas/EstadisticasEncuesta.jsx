@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './EstadisticasEncuesta.css';
 
-const BASE_URL = process.env.NODE_ENV === 'production'
-    ? '/api'
-    : 'http://localhost:3000/api';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+
 
 const EstadisticasEncuesta = ({ encuestaId, onCerrar }) => {
     const [data, setData] = useState(null);
@@ -28,7 +27,7 @@ const EstadisticasEncuesta = ({ encuestaId, onCerrar }) => {
     const cargarEstadisticas = async () => {
         try {
             setLoading(true);
-            const response = await fetch(`${BASE_URL}/encuestas/${encuestaId}/estadisticas`, {
+            const response = await fetch(`${API_URL}/encuestas/${encuestaId}/estadisticas`, {
                 method: 'GET',
                 headers: getHeaders()
             });
