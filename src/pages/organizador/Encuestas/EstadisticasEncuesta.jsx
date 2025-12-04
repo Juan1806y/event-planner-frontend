@@ -345,46 +345,52 @@ const EstadisticasEncuesta = ({ encuestaId, onCerrar }) => {
                 <div className="modal-header">
                     <h2>📊 Estadísticas Detalladas</h2>
                     <div className="modal-header-actions">
-                        <div className="exportar-dropdown">
-                            <button
-                                className="btn-exportar-principal"
-                                onClick={() => setMostrarMenuExportar(!mostrarMenuExportar)}
-                                disabled={exportando}
-                            >
-                                {exportando ? '⏳ Exportando...' : '📥 Exportar'}
-                            </button>
 
-                            {mostrarMenuExportar && (
-                                <div className="menu-exportar">
-                                    <button
-                                        className="opcion-exportar"
-                                        onClick={exportarCSV}
-                                        disabled={exportando}
-                                    >
-                                        📄 Exportar a CSV
-                                    </button>
-                                    <button
-                                        className="opcion-exportar"
-                                        onClick={exportarExcel}
-                                        disabled={exportando}
-                                    >
-                                        📊 Exportar a Excel
-                                    </button>
-                                    <button
-                                        className="opcion-exportar"
-                                        onClick={exportarPDF}
-                                        disabled={exportando}
-                                    >
-                                        📑 Exportar a PDF
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                        <button onClick={onCerrar} className="btn-cerrar-modal">✕</button>
+                        <button
+                            onClick={onCerrar}
+                            className="btn-cerrar-modal"
+                            type="button"
+                        >
+                            ✕
+                        </button>
                     </div>
                 </div>
-
                 <div className="modal-content">
+                    <div className="exportar-dropdown">
+                        <button
+                            className="btn-exportar-principal"
+                            onClick={() => setMostrarMenuExportar(!mostrarMenuExportar)}
+                            disabled={exportando}
+                        >
+                            {exportando ? '⏳ Exportando...' : '📥 Exportar'}
+                        </button>
+
+                        {mostrarMenuExportar && (
+                            <div className="menu-exportar">
+                                <button
+                                    className="opcion-exportar"
+                                    onClick={exportarCSV}
+                                    disabled={exportando}
+                                >
+                                    📄 Exportar a CSV
+                                </button>
+                                <button
+                                    className="opcion-exportar"
+                                    onClick={exportarExcel}
+                                    disabled={exportando}
+                                >
+                                    📊 Exportar a Excel
+                                </button>
+                                <button
+                                    className="opcion-exportar"
+                                    onClick={exportarPDF}
+                                    disabled={exportando}
+                                >
+                                    📑 Exportar a PDF
+                                </button>
+                            </div>
+                        )}
+                    </div>
                     {/* Información de la encuesta */}
                     <div className="card-estadisticas info-encuesta">
                         <h3>{encuesta.titulo}</h3>
