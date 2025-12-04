@@ -160,7 +160,7 @@ export const useEncuestasPonente = (ponenteIdProp) => {
         setError(null);
 
         try {
-            const data = await fetchConAuth('/encuestas', {
+            const data = await fetchConAuth(`${API_BASE}/encuestas`, {
                 method: 'POST',
                 body: JSON.stringify(encuestaData)
             });
