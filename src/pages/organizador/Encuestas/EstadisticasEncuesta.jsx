@@ -68,9 +68,9 @@ const EstadisticasEncuesta = ({ encuestaId, onCerrar }) => {
 
     const obtenerBadgeEstado = (estado) => {
         const badges = {
-            'completada': { color: '#22c55e', texto: 'Completada' },
-            'pendiente': { color: '#f59e0b', texto: 'Pendiente' },
-            'enviada': { color: '#3b82f6', texto: 'Enviada' }
+            'activa': { color: '#22c55e', texto: 'Activa' },
+            'borrador': { color: '#f59e0b', texto: 'Borrador' },
+            'cerrada': { color: '#3b82f6', texto: 'Cerrada' }
         };
         const badge = badges[estado] || { color: '#6b7280', texto: estado };
         return <span className="badge-estado" style={{ backgroundColor: badge.color }}>{badge.texto}</span>;
@@ -320,7 +320,7 @@ const EstadisticasEncuesta = ({ encuestaId, onCerrar }) => {
     return (
         <div className="estadisticas-modal-overlay">
             <div className="estadisticas-modal">
-                <div className="modal-header">
+                <div className="modal-headerr">
                     <h2>📊 Estadísticas Detalladas</h2>
                     <div className="modal-header-actions">
                         <button
