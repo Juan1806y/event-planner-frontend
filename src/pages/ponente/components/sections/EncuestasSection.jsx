@@ -206,7 +206,7 @@ const EncuestasSection = ({ eventos = [], ponenteId }) => {
 
                 if (asistentes.length > 0) {
                     const nombres = asistentes.map(a => a.nombre).join(', ');
-                    mensaje = `Encuesta enviada a ${totalEnviadas} asistentes`;
+                    mensaje = `Encuesta enviada`;
                 }
 
                 mostrarAlerta('success', mensaje);
