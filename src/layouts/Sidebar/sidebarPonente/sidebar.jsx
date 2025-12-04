@@ -115,6 +115,27 @@ const Sidebar = ({ onToggle, onNavigate, currentView }) => {
                         {!isCollapsed && <span className={styles.menuLabel}>Mis Actividades</span>}
                     </div>
                 </div>
+
+                <div className={styles.menuItem}>
+                    <div
+                        className={`${styles.menuItemContent} ${isActive('encuestas') ? styles.activeMenuItem : ''}`}
+                        onClick={() => onNavigate('encuestas')}
+                        title={isCollapsed ? 'Encuestas' : ''}
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className={styles.menuIcon}>
+                            <rect x="5" y="4" width="14" height="16" rx="1"
+                                stroke="white" strokeWidth="2" />
+
+                            <line x1="8" y1="8" x2="16" y2="8"
+                                stroke="white" strokeWidth="2" strokeLinecap="round" />
+                            <line x1="8" y1="12" x2="16" y2="12"
+                                stroke="white" strokeWidth="2" strokeLinecap="round" />
+                            <line x1="8" y1="16" x2="12" y2="16"
+                                stroke="white" strokeWidth="2" strokeLinecap="round" />
+                        </svg>
+                        {!isCollapsed && <span className={styles.menuLabel}>Encuestas</span>}
+                    </div>
+                </div>
             </div>
 
             <button

@@ -10,7 +10,8 @@ const EncuestaCard = ({
     onCompletar,
     loading,
     esEncuestaEvento = false,
-    eventoNombre = ''
+    eventoNombre = '',
+    idAsistente = null
 }) => {
     const esObligatoria = encuesta.obligatoria;
     const esCompletada = estado.estado === 'completada';
@@ -30,6 +31,17 @@ const EncuestaCard = ({
         if (esPendiente) return ' Pendiente';
         return 'No enviada';
     };
+
+    const getRespuestaAsistente = () => {
+        if (!idAsistente || !encuesta.respuestas || encuesta.respuestas.length === 0) {
+            return null;
+        }
+        return encuesta.respuestas.find(respuesta =>
+            respuesta.id_asistente == idAsistente
+        );
+    };
+
+    const respuestaAsistente = getRespuestaAsistente();
 
     return (
         <div className={styles.encuestaCard}>
@@ -83,20 +95,20 @@ const EncuestaCard = ({
                         </span>
                     </div>
 
-                    {encuesta.respuestas?.[0]?.fecha_envio && (
+                    {respuestaAsistente?.fecha_envio && (
                         <div className={styles.detalleItem}>
                             <span className={styles.detalleLabel}>Enviada:</span>
                             <span className={styles.detalleValue}>
-                                {new Date(encuesta.respuestas[0].fecha_envio).toLocaleDateString()}
+                                {new Date(respuestaAsistente.fecha_envio).toLocaleDateString()}
                             </span>
                         </div>
                     )}
 
-                    {esCompletada && encuesta.respuestas?.[0]?.fecha_completado && (
+                    {esCompletada && respuestaAsistente?.fecha_completado && (
                         <div className={styles.detalleItem}>
                             <span className={styles.detalleLabel}>Completada:</span>
                             <span className={styles.detalleValue}>
-                                {new Date(encuesta.respuestas[0].fecha_completado).toLocaleDateString()}
+                                {new Date(respuestaAsistente.fecha_completado).toLocaleDateString()}
                             </span>
                         </div>
                     )}

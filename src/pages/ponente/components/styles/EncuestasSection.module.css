@@ -1,0 +1,455 @@
+/* Container */
+.encuestasContainer {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 0.5rem 0;
+}
+
+.subtitle {
+    font-size: 1rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.filtros {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.refreshButton {
+    background: #f8fafc;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.refreshButton:hover:not(:disabled) {
+    background: #2C5F7C;
+    color: white;
+    border-color: #2C5F7C;
+}
+
+.refreshButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.refreshButton.refreshing {
+    background: #2C5F7C;
+    color: white;
+    border-color: #2C5F7C;
+}
+
+.spinnerSmall {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Filtros en cascada */
+.filtrosCascada {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #f8fafc;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+}
+
+.filtroGrupo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filtroLabel {
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 5px;
+}
+
+.filtroSelect {
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: white;
+    transition: all 0.2s;
+}
+
+.filtroSelect:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.filtroSelect:disabled {
+    background-color: #f1f5f9;
+    color: #64748b;
+    cursor: not-allowed;
+}
+
+.resetButton {
+    padding: 10px 20px;
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    align-self: flex-end;
+    height: fit-content;
+    margin-top: 24px;
+}
+
+.resetButton:hover {
+    background-color: #dc2626;
+}
+
+.sinActividades {
+    font-size: 12px;
+    color: #ef4444;
+    margin-top: 5px;
+}
+
+/* Actividad seleccionada */
+.actividadSeleccionada {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #dbeafe;
+    border-radius: 8px;
+    border-left: 4px solid #3b82f6;
+}
+
+.actividadSeleccionada h3 {
+    color: #1e40af;
+    margin: 0 0 10px 0;
+    font-size: 18px;
+}
+
+.badges {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.eventoBadge {
+    background-color: #f0f9ff;
+    color: #0369a1;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.actividadBadge {
+    background-color: #f0fdf4;
+    color: #059669;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Stats Section */
+.stats {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.statCard {
+    flex: 1;
+    min-width: 120px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: default;
+}
+
+.statNumber {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2C5F7C;
+    line-height: 1;
+}
+
+.statLabel {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-top: 0.5rem;
+}
+
+.btnCrear {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #2C5F7C 0%, #1E4157 100%);
+    border: none;
+    color: white;
+}
+
+.btnCrear:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(44, 95, 124, 0.3);
+}
+
+.btnCrear .statNumber {
+    color: white;
+}
+
+.btnCrear .statLabel {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Encuestas Grid */
+.encuestasGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+/* No selección, loading, error states */
+.noSeleccion {
+    text-align: center;
+    padding: 60px 20px;
+    background-color: white;
+    border-radius: 10px;
+    border: 2px dashed #cbd5e1;
+    margin: 20px 0;
+}
+
+.infoIcon {
+    font-size: 48px;
+    margin-bottom: 20px;
+    color: #94a3b8;
+}
+
+.noSeleccion h3 {
+    color: #475569;
+    margin-bottom: 10px;
+}
+
+.noSeleccion p {
+    color: #64748b;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.loadingContainer {
+    background: white;
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    text-align: center;
+    border: 2px dashed #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f4f6;
+    border-top: 4px solid #2C5F7C;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+.errorContainer,
+.noEncuestas {
+    background: white;
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    text-align: center;
+    border: 2px dashed #e5e7eb;
+}
+
+.errorIcon,
+.emptyIcon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.errorContainer h3,
+.noEncuestas h3 {
+    color: #1f2937;
+    margin: 0 0 0.5rem 0;
+}
+
+.errorContainer p,
+.noEncuestas p {
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+}
+
+.retryButton {
+    background: #2C5F7C;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.retryButton:hover {
+    background: #1E4157;
+    transform: translateY(-1px);
+}
+
+/* Alertas */
+.alerta {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    min-width: 300px;
+    max-width: 400px;
+    border-radius: 8px;
+    padding: 16px 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: slideIn 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.alerta.success {
+    background-color: #10B981;
+    color: white;
+    border-left: 4px solid #059669;
+}
+
+.alerta.error {
+    background-color: #EF4444;
+    color: white;
+    border-left: 4px solid #DC2626;
+}
+
+.alertaContenido {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.cerrarAlerta {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    margin-left: 15px;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.cerrarAlerta:hover {
+    opacity: 1;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .encuestasContainer {
+        padding: 1rem;
+    }
+
+    .header {
+        flex-direction: column;
+    }
+
+    .filtrosCascada {
+        grid-template-columns: 1fr;
+    }
+
+    .resetButton {
+        margin-top: 0;
+        align-self: flex-start;
+    }
+
+    .encuestasGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .stats {
+        gap: 0.5rem;
+    }
+
+    .statCard {
+        min-width: 100px;
+        padding: 0.75rem;
+    }
+}

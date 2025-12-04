@@ -5,7 +5,7 @@ import ResponderInvitacionModal from './ResponderInvitacionModal';
 import ActividadDetallesModal from './ActividadDetallesModal';
 import ponenteAgendaService from '../../../../services/ponenteAgendaService';
 
-const ActividadCard = ({ actividad, showActions = true, onSolicitudEnviada, onRespuestaEnviada, onActualizarActividad, onShowNotification }) => {
+const ActividadCard = ({ actividad, showActions = true, onSolicitudEnviada, onActualizarEstado, onShowNotification }) => {
     const [showModal, setShowModal] = useState(false);
     const [showResponderModal, setShowResponderModal] = useState(false);
     const [showDetails, setShowDetails] = useState(false);
@@ -105,22 +105,26 @@ const ActividadCard = ({ actividad, showActions = true, onSolicitudEnviada, onRe
     };
 
     const getTextoBotonPrincipal = () => {
-        if (estadoLocal === 'pendiente') {
+        const estadoActual = estadoLocal || actividad.estado;
+
+        if (estadoActual === 'pendiente') {
             return 'Responder';
-        } else if (estadoLocal === 'aceptado') {
+        } else if (estadoActual === 'aceptado') {
             return 'Solicitar Cambio';
-        } else if (estadoLocal === 'rechazado') {
+        } else if (estadoActual === 'rechazado') {
             return 'Actividad Rechazada';
-        } else if (estadoLocal === 'solicitud_cambio') {
+        } else if (estadoActual === 'solicitud_cambio') {
             return 'Solicitud Enviada';
         }
         return 'Actividad';
     };
 
     const handleBotonPrincipal = () => {
-        if (estadoLocal === 'pendiente') {
+        const estadoActual = estadoLocal || actividad.estado;
+
+        if (estadoActual === 'pendiente') {
             handleResponderInvitacion();
-        } else if (estadoLocal === 'aceptado') {
+        } else if (estadoActual === 'aceptado') {
             handleSolicitarCambio();
         }
         // Para estado 'rechazado' y 'solicitud_cambio' no hace nada
@@ -130,6 +134,16 @@ const ActividadCard = ({ actividad, showActions = true, onSolicitudEnviada, onRe
         try {
             setIsLoading(true);
             const token = localStorage.getItem('access_token');
+
+            // Cambiar estado a solicitud_cambio
+            const nuevoEstado = 'solicitud_cambio';
+            setEstadoLocal(nuevoEstado);
+
+            // Notificar al padre
+            if (onActualizarEstado) {
+                onActualizarEstado(actividad.id_actividad, nuevoEstado, actividad.fecha_respuesta);
+            }
+
             await ponenteAgendaService.solicitarCambios(
                 actividad.id_ponente,
                 actividad.id_actividad,
@@ -139,11 +153,14 @@ const ActividadCard = ({ actividad, showActions = true, onSolicitudEnviada, onRe
             );
 
             showNotification('Tu solicitud de cambio ha sido enviada para revisión', 'success');
-            onSolicitudEnviada?.(solicitudData);
             setShowModal(false);
 
         } catch (error) {
             console.error('Error al enviar solicitud de cambio:', error);
+            setEstadoLocal(actividad.estado);
+            if (onActualizarEstado) {
+                onActualizarEstado(actividad.id_actividad, actividad.estado, actividad.fecha_respuesta);
+            }
             const mensaje = (error && error.message) ? error.message.toLowerCase() : '';
 
             if (mensaje.includes('pendiente') || mensaje.includes('ya tienes una solicitud')) {
@@ -162,56 +179,100 @@ const ActividadCard = ({ actividad, showActions = true, onSolicitudEnviada, onRe
         try {
             setIsLoading(true);
             const token = localStorage.getItem('access_token');
+            const nuevoEstado = respuestaData.aceptar ? 'aceptado' : 'rechazado';
+            const fechaRespuesta = new Date().toISOString();
+
+            console.log('📝 Intentando cambiar estado de pendiente a:', nuevoEstado);
+
+            // 1. Enviar al servidor PRIMERO
+            console.log('📡 Enviando respuesta al servidor...');
             const resultado = await ponenteAgendaService.responderInvitacion(
                 actividad.id_ponente,
                 actividad.id_actividad,
                 respuestaData.aceptar,
-                respuestaData.motivo_rechazo,
+                respuestaData.motivo_rechazo || '',
                 token
             );
 
-            const nuevoEstado = respuestaData.aceptar ? 'aceptado' : 'rechazado';
-            setEstadoLocal(nuevoEstado);
+            console.log('✅ Respuesta del servidor:', resultado);
 
-            if (onActualizarActividad) {
-                onActualizarActividad(actividad.id_actividad, {
-                    ...actividad,
-                    estado: nuevoEstado,
-                    fecha_respuesta: new Date().toISOString()
-                });
+            // 2. SI el servidor responde éxito, entonces actualizar localmente
+            if (resultado.success || resultado.exito) {
+                console.log('🔄 Servidor confirmó éxito, actualizando estado local...');
+
+                // Actualizar estado local
+                setEstadoLocal(nuevoEstado);
+
+                // Notificar al padre
+                if (onActualizarEstado) {
+                    onActualizarEstado(
+                        actividad.id_actividad,
+                        nuevoEstado,
+                        resultado.fecha_respuesta || fechaRespuesta
+                    );
+                }
+
+                // FORZAR una recarga de datos desde el servidor
+                // Si tienes acceso a una función refetch, llámala aquí
+                if (window.recargarActividades) {
+                    window.recargarActividades();
+                }
+
+                // O guardar en localStorage que ya respondió
+                localStorage.setItem(`actividad_${actividad.id_actividad}_respondida`, 'true');
+                localStorage.setItem(`actividad_${actividad.id_actividad}_estado`, nuevoEstado);
+
+                const mensajeExito = respuestaData.aceptar
+                    ? '¡Invitación aceptada correctamente!'
+                    : 'Invitación rechazada correctamente';
+
+                showNotification(mensajeExito, 'success');
+                setShowResponderModal(false);
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+
+            } else {
+                throw new Error(resultado.message || 'Error en la respuesta del servidor');
             }
 
-            const mensajeExito = respuestaData.aceptar
-                ? '¡Invitación aceptada correctamente!'
-                : 'Invitación rechazada correctamente';
-
-            showNotification(mensajeExito, 'success');
-            onRespuestaEnviada?.(resultado);
-            setShowResponderModal(false);
-
         } catch (error) {
-            console.error('Error al enviar respuesta:', error);
+            console.error('❌ Error completo:', error);
 
-            if (error.message.includes('Estado actual: aceptado')) {
-                setEstadoLocal('aceptado');
-                if (onActualizarActividad) {
-                    onActualizarActividad(actividad.id_actividad, {
-                        ...actividad,
-                        estado: 'aceptado'
-                    });
+            // Si el error es que ya está respondida
+            if (error.message && error.message.includes('ya fue respondida') ||
+                error.message.includes('Estado actual:')) {
+
+                console.log('⚠️ El servidor dice que ya fue respondida');
+
+                // Extraer el estado actual del mensaje de error
+                let estadoReal = 'aceptado';
+                if (error.message.includes('rechazada') || error.message.includes('rechazado')) {
+                    estadoReal = 'rechazado';
                 }
-                showNotification('Esta actividad ya fue aceptada anteriormente.', 'info');
-            } else if (error.message.includes('400') || error.message.includes('bad request')) {
-                showNotification('Error: No se pudo procesar tu respuesta. Verifica los datos e intenta nuevamente.', 'error');
-            } else if (error.message.includes('403') || error.message.includes('forbidden')) {
-                showNotification('No tienes permisos para realizar esta acción.', 'error');
-            } else if (error.message.includes('404') || error.message.includes('not found')) {
-                showNotification('No se encontró la actividad solicitada.', 'error');
-            } else if (error.message.includes('network') || error.message.includes('fetch')) {
-                showNotification('Error de conexión. Verifica tu internet e intenta nuevamente.', 'error');
+
+                // Sincronizar con lo que dice el servidor
+                setEstadoLocal(estadoReal);
+
+                if (onActualizarEstado) {
+                    onActualizarEstado(
+                        actividad.id_actividad,
+                        estadoReal,
+                        actividad.fecha_respuesta || new Date().toISOString()
+                    );
+                }
+
+                // Guardar en localStorage para persistencia
+                localStorage.setItem(`actividad_${actividad.id_actividad}_estado`, estadoReal);
+
+                showNotification(`Esta actividad ya fue ${estadoReal} anteriormente.`, 'info');
+
             } else {
                 showNotification(`Error: ${error.message}`, 'error');
             }
+
+            setShowResponderModal(false);
         } finally {
             setIsLoading(false);
         }
@@ -310,13 +371,6 @@ const ActividadCard = ({ actividad, showActions = true, onSolicitudEnviada, onRe
                                 disabled={estadoLocal === 'rechazado' || estadoLocal === 'solicitud_cambio' || isLoading}
                             >
                                 {isLoading ? 'Procesando...' : getTextoBotonPrincipal()}
-                            </button>
-                            <button
-                                className={styles.detallesBtn}
-                                onClick={handleVerDetalles}
-                                disabled={isLoading}
-                            >
-                                Ver Detalles
                             </button>
                         </div>
                     )}

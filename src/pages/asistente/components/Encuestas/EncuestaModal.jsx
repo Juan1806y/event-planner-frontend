@@ -8,7 +8,10 @@ const EncuestaModal = ({
     onClose,
     onCompletar,
     confirmandoCompletar,
-    color
+    color,
+    esEncuestaEvento = false,
+    eventoNombre = '',
+    idAsistente = null
 }) => {
     const esCompletada = estado.estado === 'completada';
     const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
@@ -85,7 +88,15 @@ const EncuestaModal = ({
                                             <div className={styles.detalleItem}>
                                                 <span className={styles.detalleLabel}>Completada:</span>
                                                 <span className={styles.detalleValue}>
-                                                    {new Date(encuesta.respuestas[0].fecha_completado).toLocaleDateString()}
+                                                    {/* Buscar la respuesta específica del asistente */}
+                                                    {(() => {
+                                                        const respuestaAsistente = encuesta.respuestas?.find(
+                                                            r => r.id_asistente == idAsistente
+                                                        );
+                                                        return respuestaAsistente?.fecha_completado
+                                                            ? new Date(respuestaAsistente.fecha_completado).toLocaleDateString()
+                                                            : 'Fecha no disponible';
+                                                    })()}
                                                 </span>
                                             </div>
                                         )}
