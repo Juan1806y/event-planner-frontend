@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api/';
 
 const getAuthToken = () => localStorage.getItem('access_token') || '';
 
@@ -12,7 +12,10 @@ export const getHeaders = () => ({
 });
 
 export const obtenerEventos = async (filtros = {}) => {
-    const response = await axios.get(API_URL, { params: filtros, ...getHeaders() });
+    const response = await axios.get(`${API_URL}/eventos`, {
+        params: filtros,
+        ...getHeaders()
+    });
     return response.data;
 };
 
