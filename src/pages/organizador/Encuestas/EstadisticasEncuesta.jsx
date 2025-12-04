@@ -1,8 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import './EstadisticasEncuesta.css';
-
+import * as pdfMake from "pdfmake/build/pdfmake";
+import * as pdfFonts from "pdfmake/build/vfs_fonts";
+pdfMake.vfs = pdfFonts.vfs;
+pdfMake.fonts = {
+    Roboto: {
+        normal: 'Roboto-Regular.ttf',
+        bold: 'Roboto-Medium.ttf',
+        italics: 'Roboto-Italic.ttf',
+        bolditalics: 'Roboto-MediumItalic.ttf'
+    }
+};
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
-
 
 const EstadisticasEncuesta = ({ encuestaId, onCerrar }) => {
     const [data, setData] = useState(null);
@@ -197,111 +206,76 @@ const EstadisticasEncuesta = ({ encuestaId, onCerrar }) => {
             setExportando(false);
         }
     };
-
     const exportarPDF = async () => {
         try {
             setExportando(true);
             const { encuesta, estadisticas, respuestas } = data;
 
-            // Importar jsPDF primero
-            const jsPDFModule = await import('jspdf');
-            const { jsPDF } = jsPDFModule;
+            // Importar jsPDF dinámicamente (sin autotable)
+            const { jsPDF } = await import('jspdf');
 
-            // Luego importar autoTable (esto extiende jsPDF automáticamente)
-            await import('jspdf-autotable');
-
-            // Crear documento PDF
             const doc = new jsPDF();
-            // ... resto del código sin cambios
+            let y = 10;
 
             // Título
-            doc.setFontSize(18);
-            doc.setFont(undefined, 'bold');
-            doc.text('Estadísticas de Encuesta', 14, 20);
+            doc.setFontSize(16);
+            doc.text(`Estadísticas: ${encuesta.titulo}`, 10, y);
+            y += 10;
 
-            // Información de la encuesta
-            doc.setFontSize(12);
-            doc.setFont(undefined, 'bold');
-            doc.text('Información General', 14, 35);
-
+            // Información básica
             doc.setFontSize(10);
-            doc.setFont(undefined, 'normal');
-            let yPos = 45;
+            doc.text(`Tipo: ${encuesta.tipo_encuesta.replace('_', ' ')}`, 10, y);
+            y += 7;
+            doc.text(`Estado: ${encuesta.estado}`, 10, y);
+            y += 7;
+            doc.text(`Total Enviadas: ${estadisticas.total_enviadas}`, 10, y);
+            y += 7;
+            doc.text(`Completadas: ${estadisticas.total_completadas}`, 10, y);
+            y += 7;
+            doc.text(`Pendientes: ${estadisticas.total_pendientes}`, 10, y);
+            y += 10;
 
-            const info = [
-                `Título: ${encuesta.titulo}`,
-                `Tipo: ${encuesta.tipo_encuesta.replace('_', ' ')}`,
-                `Momento: ${encuesta.momento}`,
-                `Estado: ${encuesta.estado}`,
-                `Obligatoria: ${encuesta.obligatoria ? 'Sí' : 'No'}`,
-                `Fecha Inicio: ${formatearFecha(encuesta.fecha_inicio)}`,
-                `Fecha Fin: ${formatearFecha(encuesta.fecha_fin)}`
-            ];
-
-            info.forEach(line => {
-                doc.text(line, 14, yPos);
-                yPos += 7;
-            });
-
-            if (encuesta.descripcion) {
-                doc.text(`Descripción: ${encuesta.descripcion}`, 14, yPos);
-                yPos += 7;
-            }
-
-            // Estadísticas generales
-            yPos += 8;
+            // Tabla manual (sin autotable)
             doc.setFontSize(12);
-            doc.setFont(undefined, 'bold');
-            doc.text('Estadísticas Generales', 14, yPos);
+            doc.text('Respuestas:', 10, y);
+            y += 10;
 
-            yPos += 10;
+            // Encabezados
             doc.setFontSize(10);
-            doc.setFont(undefined, 'normal');
-
-            const stats = [
-                `Total Enviadas: ${estadisticas.total_enviadas}`,
-                `Total Completadas: ${estadisticas.total_completadas}`,
-                `Total Pendientes: ${estadisticas.total_pendientes}`,
-                `Tasa de Respuesta: ${estadisticas.tasa_respuesta}`
-            ];
-
-            stats.forEach(stat => {
-                doc.text(stat, 14, yPos);
-                yPos += 7;
-            });
-
-            // Tabla de respuestas
-            yPos += 8;
-            doc.setFontSize(12);
             doc.setFont(undefined, 'bold');
-            doc.text('Detalle de Respuestas', 14, yPos);
+            doc.text('Asistente', 10, y);
+            doc.text('Correo', 60, y);
+            doc.text('Estado', 120, y);
+            doc.text('Fecha', 150, y);
+            y += 7;
 
-            const tableData = respuestas.map(respuesta => [
-                respuesta.id.toString(),
-                respuesta.asistente.nombre,
-                respuesta.asistente.correo,
-                respuesta.estado,
-                formatearFecha(respuesta.fecha_envio),
-                formatearFecha(respuesta.fecha_completado)
-            ]);
+            // Línea
+            doc.line(10, y, 200, y);
+            y += 5;
 
-            doc.autoTable({
-                startY: yPos + 5,
-                head: [['ID', 'Asistente', 'Correo', 'Estado', 'Fecha Envío', 'Fecha Completado']],
-                body: tableData,
-                styles: { fontSize: 8 },
-                headStyles: { fillColor: [102, 126, 234] },
-                alternateRowStyles: { fillColor: [245, 247, 250] },
-                margin: { top: 10 }
+            // Datos
+            doc.setFont(undefined, 'normal');
+            respuestas.forEach((r, i) => {
+                if (y > 270) { // Nueva página si se llena
+                    doc.addPage();
+                    y = 20;
+                }
+
+                doc.text(r.asistente.nombre.substring(0, 20), 10, y);
+                doc.text(r.asistente.correo.substring(0, 25), 60, y);
+                doc.text(r.estado, 120, y);
+                doc.text(formatearFecha(r.fecha_completado) || 'Pendiente', 150, y);
+                y += 7;
             });
 
-            // Descargar el PDF
-            doc.save(`estadisticas_${encuesta.titulo.replace(/[^a-z0-9]/gi, '_')}_${Date.now()}.pdf`);
+            // Guardar
+            doc.save(`estadisticas_${encuesta.titulo.replace(/[^a-z0-9]/gi, '_')}.pdf`);
 
             setMostrarMenuExportar(false);
-            alert('✅ PDF exportado correctamente');
+            alert('✅ PDF descargado');
+
         } catch (err) {
-            alert('❌ Error al exportar PDF: ' + err.message);
+            alert('❌ Error: ' + err.message);
         } finally {
             setExportando(false);
         }
@@ -349,7 +323,6 @@ const EstadisticasEncuesta = ({ encuestaId, onCerrar }) => {
                 <div className="modal-header">
                     <h2>📊 Estadísticas Detalladas</h2>
                     <div className="modal-header-actions">
-
                         <button
                             onClick={onCerrar}
                             className="btn-cerrar-modal"
@@ -395,6 +368,7 @@ const EstadisticasEncuesta = ({ encuestaId, onCerrar }) => {
                             </div>
                         )}
                     </div>
+
                     {/* Información de la encuesta */}
                     <div className="card-estadisticas info-encuesta">
                         <h3>{encuesta.titulo}</h3>
