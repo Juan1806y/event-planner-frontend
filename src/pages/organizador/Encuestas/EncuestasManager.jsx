@@ -159,10 +159,6 @@ const EncuestasManager = () => {
                                 <span className="stat-value">{encuestaSeleccionada.tasa_respuesta || '0%'}</span>
                                 <span className="stat-label">Tasa de Respuesta</span>
                             </div>
-                            <div className="stat-card">
-                                <span className="stat-value">{encuestaSeleccionada.calificacion_promedio || 'N/A'}</span>
-                                <span className="stat-label">Calificación Promedio</span>
-                            </div>
                         </div>
 
                         <div className="resultados-acciones">
@@ -174,10 +170,6 @@ const EncuestasManager = () => {
                             >
                                 Ver en Google Forms
                             </a>
-
-                            <button className="btn-exportar">
-                                Exportar Resultados
-                            </button>
                         </div>
 
                         <div className="info-message">
