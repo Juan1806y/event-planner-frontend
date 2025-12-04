@@ -65,8 +65,12 @@ const ListaEncuestas = ({
                             </div>
                         </div>
                         <div className="encuesta-acciones">
-                            <div className="estadisticas-mini">
-                                <span className="stat-number">{encuesta.total_completadas || 0}</span>
+                            <div className="estadisticas-mini">  
+                                <span className="stat-number">
+                                    {encuesta. total_completadas || 
+                                     (encuesta.respuestas?. filter(r => r. estado === 'completada').length) || 
+                                     0}
+                                </span>
                                 <span className="stat-label">respuestas</span>
                             </div>
 

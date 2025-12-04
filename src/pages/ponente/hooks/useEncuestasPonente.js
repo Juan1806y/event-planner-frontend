@@ -1,4 +1,6 @@
 import { useState, useCallback } from 'react';
+import { API_URL } from '../../../config/apiConfig';
+const API_BASE = API_URL;
 
 export const useEncuestasPonente = (ponenteIdProp) => {
     const [encuestas, setEncuestas] = useState([]);
@@ -86,7 +88,7 @@ export const useEncuestasPonente = (ponenteIdProp) => {
             }
 
             const data = await fetchConAuth(
-                `http://localhost:3000/api/encuestas?ponente_id=${ponenteId}&evento_id=${eventoId}`
+                `${API_BASE}/encuestas?ponente_id=${ponenteId}&evento_id=${eventoId}`
             );
 
             const encuestasData = data.data || data.encuestas || [];
@@ -117,7 +119,7 @@ export const useEncuestasPonente = (ponenteIdProp) => {
             }
 
             const data = await fetchConAuth(
-                `http://localhost:3000/api/encuestas?ponente_id=${ponenteId}&actividad_id=${actividadId}`
+                `${API_BASE}/encuestas?ponente_id=${ponenteId}&actividad_id=${actividadId}`
             );
 
             const encuestasData = data.data || data.encuestas || [];
@@ -138,7 +140,7 @@ export const useEncuestasPonente = (ponenteIdProp) => {
 
         try {
             const data = await fetchConAuth(
-                `http://localhost:3000/api/encuestas/ponente`
+                `${API_BASE}/encuestas/ponente`
             );
 
             const encuestasData = data.data || data.encuestas || [];
@@ -158,7 +160,7 @@ export const useEncuestasPonente = (ponenteIdProp) => {
         setError(null);
 
         try {
-            const data = await fetchConAuth('http://localhost:3000/api/encuestas', {
+            const data = await fetchConAuth(`${API_BASE}/encuestas`, {
                 method: 'POST',
                 body: JSON.stringify(encuestaData)
             });
@@ -183,7 +185,7 @@ export const useEncuestasPonente = (ponenteIdProp) => {
         setError(null);
 
         try {
-            const data = await fetchConAuth(`http://localhost:3000/api/encuestas/${encuestaId}`, {
+            const data = await fetchConAuth(`${API_BASE}/encuestas/${encuestaId}`, {
                 method: 'PUT',
                 body: JSON.stringify(datos)
             });
@@ -214,7 +216,7 @@ export const useEncuestasPonente = (ponenteIdProp) => {
         setError(null);
 
         try {
-            const data = await fetchConAuth(`http://localhost:3000/api/encuestas/${encuestaId}`, {
+            const data = await fetchConAuth(`${API_BASE}/encuestas/${encuestaId}`, {
                 method: 'DELETE'
             });
 
@@ -237,7 +239,7 @@ export const useEncuestasPonente = (ponenteIdProp) => {
         setError(null);
 
         try {
-            const response = await fetchConAuth(`http://localhost:3000/api/encuestas/${encuestaId}/enviar`, {
+            const response = await fetchConAuth(`${API_BASE}/encuestas/${encuestaId}/enviar`, {
                 method: 'POST'
             });
 
@@ -259,7 +261,7 @@ export const useEncuestasPonente = (ponenteIdProp) => {
         setError(null);
 
         try {
-            const data = await fetchConAuth(`http://localhost:3000/api/encuestas/${encuestaId}/estadisticas`);
+            const data = await fetchConAuth(`${API_BASE}/encuestas/${encuestaId}/estadisticas`);
 
             if (data.success || data.exito) {
                 return data.data || data.estadisticas;
@@ -277,7 +279,7 @@ export const useEncuestasPonente = (ponenteIdProp) => {
     const verificarEncuestaExistente = useCallback(async (tipo, id, titulo) => {
         try {
             const data = await fetchConAuth(
-                `http://localhost:3000/api/encuestas/verificar-existente?tipo=${tipo}&id=${id}&titulo=${encodeURIComponent(titulo)}`
+                `${API_BASE}/encuestas/verificar-existente?tipo=${tipo}&id=${id}&titulo=${encodeURIComponent(titulo)}`
             );
 
             return { existe: data.existe || false, encuesta: data.encuesta || null };
