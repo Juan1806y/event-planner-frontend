@@ -63,7 +63,7 @@ export const useAdminDashboard = () => {
   }, []);
 
   const fetchAfiliacionesData = useCallback(async () => {
-    const result = await fetchWithErrorHandling(`${API_URL}empresas?incluir_pendientes=true`);
+    const result = await fetchWithErrorHandling(`${API_URL}/empresas?incluir_pendientes=true`);
 
     if (result.success && result.data) {
       let empresasData = [];
