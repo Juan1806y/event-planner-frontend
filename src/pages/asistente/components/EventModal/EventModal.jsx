@@ -149,12 +149,12 @@ const EventModal = ({ evento, onClose, formatFecha, formatFechaCompleta }) => {
                         <span>{formatearCupos(evento.cupo_total)}</span>
                     </div>
                     <div className={styles.infoItem}>
-                        <label>Organizador:</label>
+                        <label>Gerente:</label>
                         <span>{evento.organizador || evento.creador?.nombre || 'No especificado'}</span>
                     </div>
                     {evento.correo_organizador && (
                         <div className={styles.infoItem}>
-                            <label>Correo del organizador:</label>
+                            <label>Correo del gerente:</label>
                             <span>{evento.correo_organizador}</span>
                         </div>
                     )}
