@@ -97,11 +97,14 @@ const FormularioEncuesta = ({
                                 onChange={onInputChange}
                             >
                                 <option value="">Sin actividad específica</option>
-                                {Array.isArray(actividades) && actividades.map(actividad => (
-                                    <option key={actividad.id} value={actividad.id}>
-                                        {actividad.titulo}
-                                    </option>
-                                ))}
+                                {Array.isArray(actividades) && actividades.map(actividad => {
+                                    const actividadId = actividad.id || actividad.id_actividad;
+                                    return (
+                                        <option key={actividadId} value={actividadId}>
+                                            {actividad.titulo}
+                                        </option>
+                                    );
+                                })}
                             </select>
                         </div>
                     </div>
