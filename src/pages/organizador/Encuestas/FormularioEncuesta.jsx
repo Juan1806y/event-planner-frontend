@@ -1,4 +1,3 @@
-// FormularioEncuesta.jsx
 import React from 'react';
 
 const FormularioEncuesta = ({
@@ -58,9 +57,9 @@ const FormularioEncuesta = ({
                                 value={formData.momento}
                                 onChange={onInputChange}
                             >
-                                <option value="antes">⏰ Antes del Evento</option>
-                                <option value="durante">🕐 Durante el Evento</option>
-                                <option value="despues">✅ Después del Evento</option>
+                                <option value="antes">Antes del Evento</option>
+                                <option value="durante">Durante el Evento</option>
+                                <option value="despues">Después del Evento</option>
                             </select>
                         </div>
                     </div>
@@ -98,11 +97,14 @@ const FormularioEncuesta = ({
                                 onChange={onInputChange}
                             >
                                 <option value="">Sin actividad específica</option>
-                                {Array.isArray(actividades) && actividades.map(actividad => (
-                                    <option key={actividad.id} value={actividad.id}>
-                                        {actividad.nombre}
-                                    </option>
-                                ))}
+                                {Array.isArray(actividades) && actividades.map(actividad => {
+                                    const actividadId = actividad.id || actividad.id_actividad;
+                                    return (
+                                        <option key={actividadId} value={actividadId}>
+                                            {actividad.titulo}
+                                        </option>
+                                    );
+                                })}
                             </select>
                         </div>
                     </div>
@@ -122,7 +124,6 @@ const FormularioEncuesta = ({
                             className={errores.url_google_form ? 'input-error' : ''}
                         />
                         {errores.url_google_form && <span className="error-text">⚠ {errores.url_google_form}</span>}
-                        <span className="help-text">💡 URL pública del formulario que responderán los asistentes</span>
                     </div>
 
                     <div className="form-group">
@@ -134,7 +135,6 @@ const FormularioEncuesta = ({
                             onChange={onInputChange}
                             placeholder="https://docs.google.com/spreadsheets/d/..."
                         />
-                        <span className="help-text">💡 URL de la hoja de cálculo con las respuestas</span>
                     </div>
                 </div>
 
@@ -149,9 +149,9 @@ const FormularioEncuesta = ({
                                 value={formData.estado}
                                 onChange={onInputChange}
                             >
-                                <option value="borrador">📝 Borrador</option>
-                                <option value="activa">✅ Activa</option>
-                                <option value="cerrada">🔒 Cerrada</option>
+                                <option value="borrador">Borrador</option>
+                                <option value="activa">Activa</option>
+                                <option value="cerrada">Cerrada</option>
                             </select>
                         </div>
 
@@ -208,7 +208,7 @@ const FormularioEncuesta = ({
                         onClick={onSubmit}
                         disabled={cargando}
                     >
-                        {cargando ? '⏳ Guardando...' : (modoEdicion ? '💾 Actualizar Encuesta' : '✨ Crear Encuesta')}
+                        {cargando ? '⏳ Guardando...' : (modoEdicion ? 'Actualizar Encuesta' : 'Crear Encuesta')}
                     </button>
                 </div>
             </div>

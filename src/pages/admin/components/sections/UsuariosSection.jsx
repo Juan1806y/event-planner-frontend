@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../../contexts/AuthContext';
 import styles from './usuarios.module.css';
 
-const API_BASE_URL = 'http://localhost:3000/api';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 const ROLES_DEFAULT = [
     { id: 2, nombre: 'Gerente', tipo: 'gerente' },
     { id: 3, nombre: 'Organizador', tipo: 'organizador' },
@@ -92,7 +92,7 @@ const UsuariosSection = () => {
         setLoading(true);
         try {
             const token = getToken();
-            const response = await fetch(`${API_BASE_URL}/gestion-usuarios`, {
+            const response = await fetch(`${API_URL}/gestion-usuarios`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -121,7 +121,7 @@ const UsuariosSection = () => {
         setLoadingEmpresas(true);
         try {
             const token = getToken();
-            const response = await fetch(`${API_BASE_URL}/empresas?incluir_pendientes=true`, {
+            const response = await fetch(`${API_URL}/empresas?incluir_pendientes=true`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -212,7 +212,7 @@ const UsuariosSection = () => {
                 return;
             }
 
-            const response = await fetch(`${API_BASE_URL}/gestion-usuarios/${usuario.id}`, {
+            const response = await fetch(`${API_URL}/gestion-usuarios/${usuario.id}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -252,7 +252,7 @@ const UsuariosSection = () => {
                 return;
             }
 
-            const response = await fetch(`${API_BASE_URL}/gestion-usuarios/${usuario.id}`, {
+            const response = await fetch(`${API_URL}/gestion-usuarios/${usuario.id}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -317,7 +317,7 @@ const UsuariosSection = () => {
                 correo: formData.email
             };
 
-            const responseProfile = await fetch(`${API_BASE_URL}/gestion-usuarios/${selectedUsuario.id}/profile`, {
+            const responseProfile = await fetch(`${API_URL}/gestion-usuarios/${selectedUsuario.id}/profile`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -342,7 +342,7 @@ const UsuariosSection = () => {
             }
 
             if (Object.keys(roleData).length > 0 || formData.rol !== selectedUsuario.rol) {
-                const responseRole = await fetch(`${API_BASE_URL}/gestion-usuarios/${selectedUsuario.id}/role-data`, {
+                const responseRole = await fetch(`${API_URL}/gestion-usuarios/${selectedUsuario.id}/role-data`, {
                     method: 'PUT',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -400,7 +400,7 @@ const UsuariosSection = () => {
             if (!validarFormularioCreacion()) return;
 
             const requestBody = construirRequestBodyCreacion();
-            const response = await fetch(`${API_BASE_URL}/auth/crear-usuario`, {
+            const response = await fetch(`${API_URL}/auth/crear-usuario`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -438,7 +438,7 @@ const UsuariosSection = () => {
                     return;
                 }
 
-                const response = await fetch(`${API_BASE_URL}/gestion-usuarios/${id}/status`, {
+                const response = await fetch(`${API_URL}/gestion-usuarios/${id}/status`, {
                     method: 'PATCH',
                     headers: {
                         'Authorization': `Bearer ${token}`,

@@ -39,12 +39,13 @@ const ActividadesPage = () => {
     }, [cargarDatos]);
 
     const formatearFecha = (fecha) => {
-        return new Date(fecha).toLocaleDateString('es-ES', {
+        if (!fecha) return '';
+        const [year, month, day] = fecha.split('T')[0].split('-');
+        const fechaObj = new Date(year, month - 1, day);
+        return fechaObj.toLocaleDateString('es-ES', {
             day: '2-digit',
             month: 'long',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
+            year: 'numeric'
         });
     };
 

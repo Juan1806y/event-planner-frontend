@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { adminService } from '../../services/adminService';
-import { API_PREFIX } from '../../config/apiConfig';
+import { API_URL } from '../../config/apiConfig';
 import styles from './afiliaciones.module.css';
 
 const AfiliacionesPendientes = () => {
@@ -17,16 +17,16 @@ const AfiliacionesPendientes = () => {
   const fetchEmpresas = async () => {
     setLoading(true);
     setError('');
-    
+
     try {
       const token = localStorage.getItem('access_token');
-      
+
       if (!token) {
         setError('No hay sesión activa');
         return;
       }
 
-      const response = await fetch(`${API_PREFIX}/empresas/pendientes`, {
+      const response = await fetch(`${API_URL}/empresas/pendientes`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -42,7 +42,7 @@ const AfiliacionesPendientes = () => {
 
       if (response.ok) {
         const result = await response.json();
-        
+
         if (result.success && result.data) {
           const empresasPendientes = result.data.filter(e => e.estado === 0);
           setEmpresas(empresasPendientes);
@@ -65,7 +65,7 @@ const AfiliacionesPendientes = () => {
 
   const attemptFallbackPromotion = async (requesterId, empresaId, token) => {
     try {
-      const promoteResp = await fetch(`${API_PREFIX}/promover-gerente/${requesterId}`, {
+      const promoteResp = await fetch(`${API_URL}/promover-gerente/${requesterId}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -113,7 +113,7 @@ const AfiliacionesPendientes = () => {
   const fetchEmpresaById = async (empresaId) => {
     try {
       const token = localStorage.getItem('access_token');
-      const resp = await fetch(`${API_PREFIX}/empresas/${empresaId}`, {
+      const resp = await fetch(`${API_URL}/empresas/${empresaId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -172,7 +172,7 @@ const AfiliacionesPendientes = () => {
   const handleReject = async (id, nombre) => {
     const motivo = prompt(`¿Por qué rechazas la empresa "${nombre}"?`);
     if (motivo === null) return;
-    
+
     if (!motivo.trim()) {
       alert('Debes proporcionar un motivo para el rechazo');
       return;
@@ -180,22 +180,22 @@ const AfiliacionesPendientes = () => {
 
     try {
       const token = localStorage.getItem('access_token');
-      
-        const response = await fetch(`${API_PREFIX}/empresas/${id}/aprobar`, {
+
+      const response = await fetch(`${API_URL}/empresas/${id}/aprobar`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           aprobar: false,
-          motivo: motivo 
+          motivo: motivo
         })
       });
 
       if (response.ok) {
         alert('❌ Empresa rechazada');
-        fetchEmpresas(); 
+        fetchEmpresas();
       } else {
         const result = await response.json();
         alert(result.message || 'Error al rechazar empresa');
@@ -220,8 +220,8 @@ const AfiliacionesPendientes = () => {
       {filteredEmpresas.length > 0 && (
         <div className={styles.alertBanner}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className={styles.alertIcon}>
-            <circle cx="12" cy="12" r="10" stroke="#ff9800" strokeWidth="2" fill="none"/>
-            <path d="M12 8v4M12 16h.01" stroke="#ff9800" strokeWidth="2" strokeLinecap="round"/>
+            <circle cx="12" cy="12" r="10" stroke="#ff9800" strokeWidth="2" fill="none" />
+            <path d="M12 8v4M12 16h.01" stroke="#ff9800" strokeWidth="2" strokeLinecap="round" />
           </svg>
           <span className={styles.alertText}>
             Solicitudes de Afiliación Pendientes ({filteredEmpresas.length})
@@ -239,8 +239,8 @@ const AfiliacionesPendientes = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className={styles.searchIcon}>
-            <circle cx="8" cy="8" r="6" stroke="#757575" strokeWidth="2"/>
-            <path d="M13 13l5 5" stroke="#757575" strokeWidth="2" strokeLinecap="round"/>
+            <circle cx="8" cy="8" r="6" stroke="#757575" strokeWidth="2" />
+            <path d="M13 13l5 5" stroke="#757575" strokeWidth="2" strokeLinecap="round" />
           </svg>
         </div>
       </div>
@@ -258,9 +258,9 @@ const AfiliacionesPendientes = () => {
         <div className={styles.loading}>Cargando empresas...</div>
       ) : filteredEmpresas.length === 0 ? (
         <div className={styles.noResults}>
-          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" style={{margin: '0 auto 16px'}}>
-            <circle cx="32" cy="32" r="30" stroke="#ddd" strokeWidth="2" fill="none"/>
-            <path d="M32 20v16M32 44h.01" stroke="#ddd" strokeWidth="3" strokeLinecap="round"/>
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" style={{ margin: '0 auto 16px' }}>
+            <circle cx="32" cy="32" r="30" stroke="#ddd" strokeWidth="2" fill="none" />
+            <path d="M32 20v16M32 44h.01" stroke="#ddd" strokeWidth="3" strokeLinecap="round" />
           </svg>
           <p>{searchTerm ? 'No se encontraron empresas con ese criterio' : 'No hay solicitudes pendientes'}</p>
         </div>

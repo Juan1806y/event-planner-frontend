@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, Users, FileText, MapPin, Building2, CheckCircle, AlertCircle } from 'lucide-react';
 
 const CrearEvento = () => {
+    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+
     const [formData, setFormData] = useState({
         titulo: '',
         descripcion: '',
@@ -24,7 +26,7 @@ const CrearEvento = () => {
     const obtenerDatosEmpresa = async () => {
         try {
             const token = localStorage.getItem('access_token');
-            const response = await fetch('http://localhost:3000/api/auth/profile', {
+            const response = await fetch(`${API_URL}/auth/profile`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
@@ -56,7 +58,7 @@ const CrearEvento = () => {
                 id_empresa: empresa.id
             };
 
-            const response = await fetch('http://localhost:3000/api/eventos', {
+            const response = await fetch(`${API_URL}/eventos`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,

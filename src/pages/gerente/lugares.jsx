@@ -4,6 +4,8 @@ import styles from './lugares.module.css';
 import Header from '../../layouts/Header/header';
 import GerenteSidebar from '../gerente/GerenteSidebar';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+
 const Notification = ({ type, title, message, onClose, duration = 5000 }) => {
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -133,7 +135,7 @@ const Lugares = () => {
                 headers['Authorization'] = `Bearer ${token}`;
             }
 
-            const response = await fetch(`http://localhost:3000/api/empresas/${empresaId}/lugares`, {
+            const response = await fetch(`${API_URL}/empresas/${empresaId}/lugares`, {
                 headers: headers
             });
 
@@ -154,7 +156,7 @@ const Lugares = () => {
                 console.log('Ubicaciones para enriquecer:', ubicacionesEmpresa);
 
                 const lugaresConUbicaciones = result.data.map(lugar => {
-                    const ubicacion = Array.isArray(ubicacionesEmpresa) 
+                    const ubicacion = Array.isArray(ubicacionesEmpresa)
                         ? ubicacionesEmpresa.find(u => u.id === lugar.id_ubicacion)
                         : null;
                     return {
@@ -185,7 +187,7 @@ const Lugares = () => {
                 headers['Authorization'] = `Bearer ${token}`;
             }
 
-            const response = await fetch('http://localhost:3000/api/empresas', {
+            const response = await fetch(`${API_URL}/empresas`, {
                 headers: headers
             });
 
@@ -222,7 +224,7 @@ const Lugares = () => {
                 headers['Authorization'] = `Bearer ${token}`;
             }
 
-            const response = await fetch(`http://localhost:3000/api/empresas/${empresaId}/ubicaciones`, {
+            const response = await fetch(`${API_URL}/empresas/${empresaId}/ubicaciones`, {
                 headers: headers
             });
 
@@ -236,12 +238,12 @@ const Lugares = () => {
 
             const result = await response.json();
             console.log('Ubicaciones obtenidas:', result);
-            
+
             return result.success && result.data ? result.data : [];
         } catch (error) {
             console.error('Error al obtener ubicaciones por empresa:', error);
             showNotification('error', 'Error', 'Error al cargar las ubicaciones de la empresa.');
-            return []; 
+            return [];
         }
     };
 
@@ -259,7 +261,7 @@ const Lugares = () => {
 
             console.log('Enviando datos del lugar:', formData);
 
-            const response = await fetch(`http://localhost:3000/api/empresas/${empresaSeleccionada.id}/lugares`, {
+            const response = await fetch(`${API_URL}/empresas/${empresaSeleccionada.id}/lugares`, {
                 method: 'POST',
                 headers: headers,
                 body: JSON.stringify({
@@ -330,7 +332,7 @@ const Lugares = () => {
 
             console.log('Actualizando lugar:', formData);
 
-            const response = await fetch(`http://localhost:3000/api/lugares/${editingLugar.id}`, {
+            const response = await fetch(`${API_URL}/lugares/${editingLugar.id}`, {
                 method: 'PUT',
                 headers: headers,
                 body: JSON.stringify({
@@ -379,7 +381,7 @@ const Lugares = () => {
 
             console.log('Eliminando lugar:', deletingLugar.id);
 
-            const response = await fetch(`http://localhost:3000/api/lugares/${deletingLugar.id}`, {
+            const response = await fetch(`${API_URL}/lugares/${deletingLugar.id}`, {
                 method: 'DELETE',
                 headers: headers
             });

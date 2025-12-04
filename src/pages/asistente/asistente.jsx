@@ -10,6 +10,8 @@ import Codigo from '../../assets/codigo.png';
 import Footer from '../../layouts/FooterAsistente/footer';
 
 const Asistente = () => {
+	const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+
 	const [eventos, setEventos] = useState([]);
 	const [eventosFiltrados, setEventosFiltrados] = useState([]);
 	const [misInscripciones, setMisInscripciones] = useState([]);
@@ -66,7 +68,7 @@ const Asistente = () => {
 				return;
 			}
 
-			const response = await fetch('http://localhost:3000/api/inscripciones/eventos-disponibles', {
+			const response = await fetch(`${API_URL}/inscripciones/eventos-disponibles`, {
 				method: 'GET',
 				headers: {
 					'Authorization': `Bearer ${token}`,
@@ -144,7 +146,7 @@ const Asistente = () => {
 				throw new Error('No se encontró token de autenticación');
 			}
 
-			const response = await fetch('http://localhost:3000/api/inscripciones/mis-inscripciones', {
+			const response = await fetch(`${API_URL}/inscripciones/mis-inscripciones`, {
 				method: 'GET',
 				headers: {
 					'Authorization': `Bearer ${token}`,
@@ -222,7 +224,7 @@ const Asistente = () => {
 
 			let response;
 			try {
-				response = await fetch('http://localhost:3000/api/asistencias/codigo', {
+				response = await fetch(`${API_URL}/asistencias/codigo`, {
 					method: 'POST',
 					headers: {
 						'Authorization': `Bearer ${token}`,
@@ -386,7 +388,7 @@ const Asistente = () => {
 				id_evento: selectedEvento.id
 			};
 
-			const response = await fetch('http://localhost:3000/api/inscripciones', {
+			const response = await fetch(`${API_URL}/inscripciones`, {
 				method: 'POST',
 				headers: {
 					'Authorization': `Bearer ${token}`,

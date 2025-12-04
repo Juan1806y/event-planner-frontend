@@ -4,7 +4,7 @@ import { getRedirectPath } from '../utils/roleUtils';
 import { useAuth } from '../contexts/AuthContext';
 
 // Configuración de la API
-const API_BASE_URL = 'http://localhost:3000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
 // Mapeo de roles de la UI a roles del backend
 const ROLE_MAPPING = {

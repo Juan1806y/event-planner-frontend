@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const API_BASE_URL = 'http://localhost:3000/api/auth';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
 export const useForgotPassword = () => {
   const navigate = useNavigate();
@@ -57,7 +57,7 @@ export const useForgotPassword = () => {
 
       const payload = { correo: email.trim(), contraseña: newPassword.trim() };
 
-      const response = await fetch(`${API_BASE_URL}/recuperar-contrasena`, {
+      const response = await fetch(`${API_URL}/recuperar-contrasena`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

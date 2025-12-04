@@ -1,6 +1,6 @@
 // src/services/organizadorService.js
 
-const API_URL = 'http://localhost:3000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
 /**
  * Obtiene el token de autenticación del localStorage
@@ -38,7 +38,7 @@ const getHeaders = () => {
 
 export const crearOrganizador = async (organizadorData) => {
   try {
-    const response = await fetch(`${API_URL}/api/auth/crear-organizador`, {
+    const response = await fetch(`${API_URL}/auth/crear-organizador`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify(organizadorData)
@@ -68,7 +68,7 @@ export const crearOrganizador = async (organizadorData) => {
  */
 export const obtenerEquipo = async (idEmpresa) => {
   try {
-    const response = await fetch(`${API_URL}/api/empresas/${idEmpresa}/equipo`, {
+    const response = await fetch(`${API_URL}/empresas/${idEmpresa}/equipo`, {
       method: 'GET',
       headers: getHeaders()
     });
@@ -143,7 +143,7 @@ export const validarDatosOrganizador = (data) => {
  */
 export const actualizarOrganizador = async (id, datosActualizados) => {
   try {
-    const response = await fetch(`${API_URL}/api/organizadores/${id}`, {
+    const response = await fetch(`${API_URL}/organizadores/${id}`, {
       method: 'PUT',
       headers: getHeaders(),
       body: JSON.stringify(datosActualizados)
@@ -172,7 +172,7 @@ export const actualizarOrganizador = async (id, datosActualizados) => {
  */
 export const eliminarOrganizador = async (id) => {
   try {
-    const response = await fetch(`${API_URL}/api/organizadores/${id}`, {
+    const response = await fetch(`${API_URL}/organizadores/${id}`, {
       method: 'DELETE',
       headers: getHeaders()
     });

@@ -4,6 +4,7 @@ import { useNotifications } from './useNotifications';
 
 export const useEvents = () => {
   const { showNotification, closeNotification } = useNotifications();
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
   const [state, setState] = useState({
     eventos: [],
@@ -182,7 +183,7 @@ export const useEvents = () => {
       // Para detalles completos, obtener información adicional del endpoint /eventos
       const token = localStorage.getItem('access_token') || localStorage.getItem('token');
       if (token) {
-        const response = await fetch(`http://localhost:3000/api/eventos/${evento.id}`, {
+        const response = await fetch(`${API_URL}/eventos/${evento.id}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,

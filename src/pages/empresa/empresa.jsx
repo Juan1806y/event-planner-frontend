@@ -4,6 +4,8 @@ import styles from './empresa.module.css';
 import HeaderAfiliar from '../../layouts/Header/headerAfiliar/headerAfiliar';
 
 const Empresa = () => {
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     nombre: '',
@@ -43,7 +45,7 @@ const Empresa = () => {
         return;
       }
 
-      const response = await fetch('http://localhost:3000/api/paises/', {
+      const response = await fetch(`${API_URL}/paises/`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -82,7 +84,7 @@ const Empresa = () => {
         return;
       }
 
-      const response = await fetch(`http://localhost:3000/api/ciudades`, {
+      const response = await fetch(`${API_URL}/ciudades`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -143,7 +145,7 @@ const Empresa = () => {
         return;
       }
 
-      const response = await fetch('http://localhost:3000/api/empresas/', {
+      const response = await fetch(`${API_URL}/empresas/`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -359,7 +361,7 @@ const Empresa = () => {
               <div className={styles.successIcon}>✓</div>
               <h3>¡Empresa Creada Exitosamente!</h3>
             </div>
-            
+
             <div className={styles.modalBody}>
               <div className={styles.successMessage}>
                 <span className={styles.messageIcon}>📧</span>

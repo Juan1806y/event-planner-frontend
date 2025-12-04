@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import styles from './afiliaciones.module.css';
 
 const AfiliacionesAprobadas = () => {
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+
   const [empresas, setEmpresas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -14,17 +16,17 @@ const AfiliacionesAprobadas = () => {
   const fetchEmpresas = async () => {
     setLoading(true);
     setError('');
-    
+
     try {
       const token = localStorage.getItem('access_token');
-      
+
       if (!token) {
         setError('No hay sesión activa');
         return;
       }
 
       // Usar la ruta base con query param para incluir todas las empresas
-      const response = await fetch('http://localhost:3000/api/empresas?incluir_pendientes=true', {
+      const response = await fetch(`${API_URL}/empresas?incluir_pendientes=true`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -40,7 +42,7 @@ const AfiliacionesAprobadas = () => {
 
       if (response.ok) {
         const result = await response.json();
-        
+
         if (result.success && result.data) {
           const empresasAprobadas = result.data.filter(e => e.estado === 1);
           setEmpresas(empresasAprobadas);
@@ -86,8 +88,8 @@ const AfiliacionesAprobadas = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className={styles.searchIcon}>
-            <circle cx="8" cy="8" r="6" stroke="#757575" strokeWidth="2"/>
-            <path d="M13 13l5 5" stroke="#757575" strokeWidth="2" strokeLinecap="round"/>
+            <circle cx="8" cy="8" r="6" stroke="#757575" strokeWidth="2" />
+            <path d="M13 13l5 5" stroke="#757575" strokeWidth="2" strokeLinecap="round" />
           </svg>
         </div>
       </div>
@@ -103,9 +105,9 @@ const AfiliacionesAprobadas = () => {
         <div className={styles.loading}>Cargando empresas...</div>
       ) : filteredEmpresas.length === 0 ? (
         <div className={styles.noResults}>
-          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" style={{margin: '0 auto 16px'}}>
-            <circle cx="32" cy="32" r="30" stroke="#4caf50" strokeWidth="2" fill="none"/>
-            <path d="M20 32l8 8 16-16" stroke="#4caf50" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" style={{ margin: '0 auto 16px' }}>
+            <circle cx="32" cy="32" r="30" stroke="#4caf50" strokeWidth="2" fill="none" />
+            <path d="M20 32l8 8 16-16" stroke="#4caf50" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
           <p>{searchTerm ? 'No se encontraron empresas con ese criterio' : 'No hay empresas aprobadas'}</p>
         </div>
@@ -138,8 +140,8 @@ const AfiliacionesAprobadas = () => {
 
               <div className={styles.statusBadgeSuccess}>
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <circle cx="10" cy="10" r="9" fill="#4caf50"/>
-                  <path d="M6 10l2 2 6-6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <circle cx="10" cy="10" r="9" fill="#4caf50" />
+                  <path d="M6 10l2 2 6-6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
                 <span>Aprobada</span>
               </div>

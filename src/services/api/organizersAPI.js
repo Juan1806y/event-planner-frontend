@@ -9,14 +9,14 @@ class OrganizersAPI extends BaseService {
 
   getEmpresaGerente = async () => {
     try {
-      const response = await this.fetch('/api/empresas');
+      const response = await this.fetch('/empresas');
 
       let empresaData;
 
       if (response.success && response.data) {
         if (Array.isArray(response.data) && response.data.length > 0) {
           empresaData = response.data[0];
-        } 
+        }
 
         else if (typeof response.data === 'object') {
           empresaData = response.data;
@@ -34,18 +34,18 @@ class OrganizersAPI extends BaseService {
       };
     } catch (error) {
       console.error('Error al cargar empresa del gerente:', error);
-      
+
       if (error.message.includes('404')) {
         throw new Error('El endpoint /api/empresas no está disponible. Verifica la configuración del servidor.');
       }
-      
+
       throw new Error(error.message || 'No se pudieron cargar los datos de la empresa.');
     }
   }
 
   crearOrganizador = async (datos) => {
     try {
-      const response = await this.fetch('/api/auth/crear-organizador', {
+      const response = await this.fetch('/auth/crear-organizador', {
         method: 'POST',
         body: JSON.stringify(datos)
       });

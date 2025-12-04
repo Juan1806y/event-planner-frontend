@@ -12,6 +12,7 @@ const Usuarios = () => {
     handleSearch,
     fetchUsuarios
   } = useUsuarios();
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
   const [filterBy, setFilterBy] = useState('todas');
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -25,7 +26,7 @@ const Usuarios = () => {
   const [loadingAction, setLoadingAction] = useState(false);
   const [notification, setNotification] = useState(null);
 
- 
+
   const [formData, setFormData] = useState({
     nombre: '',
     apellidos: '',
@@ -78,7 +79,7 @@ const Usuarios = () => {
         return;
       }
 
-      const response = await fetch('http://localhost:3000/api/empresas?incluir_pendientes=true', {
+      const response = await fetch(`${API_URL}/empresas?incluir_pendientes=true`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -147,7 +148,7 @@ const Usuarios = () => {
         return;
       }
 
-      const response = await fetch(`http://localhost:3000/api/gestion-usuarios/${usuario.id}/profile`, {
+      const response = await fetch(`${API_URL}/gestion-usuarios/${usuario.id}/profile`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -199,7 +200,7 @@ const Usuarios = () => {
         return;
       }
 
-      const response = await fetch(`http://localhost:3000/api/gestion-usuarios/${usuario.id}`, {
+      const response = await fetch(`${API_URL}/gestion-usuarios/${usuario.id}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -273,7 +274,7 @@ const Usuarios = () => {
         correo: formData.email
       };
 
-      const response = await fetch(`http://localhost:3000/api/gestion-usuarios/${selectedUsuario.id}/profile`, {
+      const response = await fetch(`${API_URL}/gestion-usuarios/${selectedUsuario.id}/profile`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -313,7 +314,7 @@ const Usuarios = () => {
           roleDataPayload.roleData.empresa_id = parseInt(formData.empresa);
         }
 
-        const roleDataResponse = await fetch(`http://localhost:3000/api/gestion-usuarios/${selectedUsuario.id}/role-data`, {
+        const roleDataResponse = await fetch(`${API_URL}/gestion-usuarios/${selectedUsuario.id}/role-data`, {
           method: 'PUT',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -377,7 +378,7 @@ const Usuarios = () => {
         requestBody.especialidad = formData.especialidad;
       }
 
-      const response = await fetch('http://localhost:3000/api/auth/crear-usuario', {
+      const response = await fetch(`${API_URL}/auth/crear-usuario`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -431,7 +432,7 @@ const Usuarios = () => {
           return;
         }
 
-        const response = await fetch(`http://localhost:3000/api/gestion-usuarios/${id}/status`, {
+        const response = await fetch(`${API_URL}/gestion-usuarios/${id}/status`, {
           method: 'PATCH',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -463,7 +464,7 @@ const Usuarios = () => {
           await fetchUsuarios();
 
           if (selectedUsuario && selectedUsuario.id === id) {
-            const profileResponse = await fetch(`http://localhost:3000/api/gestion-usuarios/${id}/profile`, {
+            const profileResponse = await fetch(`${API_URL}/gestion-usuarios/${id}/profile`, {
               method: 'PUT',
               headers: {
                 'Authorization': `Bearer ${token}`,

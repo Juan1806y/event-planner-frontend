@@ -5,6 +5,7 @@ import { formatFecha, debugFecha } from '../../utils/dateUtils';
 const EventModal = ({ evento, onClose, formatFecha, formatFechaCompleta }) => {
     const [ponentesPorActividad, setPonentePorActividad] = React.useState({});
     const [cargandoPonentes, setCargandoPonentes] = React.useState(false);
+    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
     // Debug para verificar toda la información del evento
     React.useEffect(() => {
@@ -25,7 +26,7 @@ const EventModal = ({ evento, onClose, formatFecha, formatFechaCompleta }) => {
     React.useEffect(() => {
         const cargarPonentes = async () => {
             if (!evento.actividades || evento.actividades.length === 0) return;
-            
+
             setCargandoPonentes(true);
             const token = localStorage.getItem('access_token'); // Ajusta según tu implementación
             const ponentesData = {};
@@ -33,7 +34,7 @@ const EventModal = ({ evento, onClose, formatFecha, formatFechaCompleta }) => {
             try {
                 for (const actividad of evento.actividades) {
                     const response = await fetch(
-                        `http://localhost:3000/api/ponente-actividad/actividad/${actividad.id_actividad}`,
+                        `${API_URL}/ponente-actividad/actividad/${actividad.id_actividad}`,
                         {
                             headers: {
                                 'Authorization': `Bearer ${token}`,
@@ -50,7 +51,7 @@ const EventModal = ({ evento, onClose, formatFecha, formatFechaCompleta }) => {
                         ) || [];
                     }
                 }
-                
+
                 setPonentePorActividad(ponentesData);
             } catch (error) {
                 console.error('Error cargando ponentes:', error);
@@ -79,7 +80,7 @@ const EventModal = ({ evento, onClose, formatFecha, formatFechaCompleta }) => {
     // ✅ Función para ordenar actividades cronológicamente
     const obtenerActividadesOrdenadas = () => {
         if (!evento.actividades || evento.actividades.length === 0) return [];
-        
+
         return [...evento.actividades].sort((a, b) => {
             const fechaHoraA = new Date(`${a.fecha_actividad}T${a.hora_inicio}`);
             const fechaHoraB = new Date(`${b.fecha_actividad}T${b.hora_inicio}`);
@@ -189,32 +190,32 @@ const EventModal = ({ evento, onClose, formatFecha, formatFechaCompleta }) => {
                         <h4>Cronograma de Actividades</h4>
                         {actividadesOrdenadas.map((actividad, index) => {
                             const ponentes = ponentesPorActividad[actividad.id_actividad] || [];
-                            
+
                             return (
-                                <div key={actividad.id_actividad} style={{ 
+                                <div key={actividad.id_actividad} style={{
                                     marginBottom: index < actividadesOrdenadas.length - 1 ? '16px' : '0',
                                     paddingBottom: index < actividadesOrdenadas.length - 1 ? '16px' : '0',
                                     borderBottom: index < actividadesOrdenadas.length - 1 ? '1px solid #e5e7eb' : 'none'
                                 }}>
-                                    <div style={{ 
-                                        marginBottom: '12px', 
-                                        paddingLeft: '8px', 
+                                    <div style={{
+                                        marginBottom: '12px',
+                                        paddingLeft: '8px',
                                         borderLeft: '3px solid #2C5F7C',
                                         background: 'white',
                                         padding: '12px',
                                         borderRadius: '8px'
                                     }}>
-                                        <div style={{ 
-                                            fontSize: '1rem', 
-                                            fontWeight: '600', 
+                                        <div style={{
+                                            fontSize: '1rem',
+                                            fontWeight: '600',
                                             color: '#2C5F7C',
                                             marginBottom: '8px'
                                         }}>
                                             {index + 1}. {actividad.titulo}
                                         </div>
-                                        
-                                        <div style={{ 
-                                            display: 'grid', 
+
+                                        <div style={{
+                                            display: 'grid',
                                             gap: '8px',
                                             fontSize: '0.9rem'
                                         }}>
@@ -253,7 +254,7 @@ const EventModal = ({ evento, onClose, formatFecha, formatFechaCompleta }) => {
                                                         Ponente(s):
                                                     </span>
                                                     <span style={{ color: '#6b7280' }}>
-                                                        {ponentes.map(pa => 
+                                                        {ponentes.map(pa =>
                                                             pa.ponente?.usuario?.nombre || 'Nombre no disponible'
                                                         ).join(', ')}
                                                     </span>
@@ -262,8 +263,8 @@ const EventModal = ({ evento, onClose, formatFecha, formatFechaCompleta }) => {
 
                                             {actividad.descripcion && (
                                                 <div style={{ marginTop: '4px' }}>
-                                                    <span style={{ 
-                                                        fontWeight: '600', 
+                                                    <span style={{
+                                                        fontWeight: '600',
                                                         color: '#374151',
                                                         display: 'block',
                                                         marginBottom: '4px'
@@ -286,7 +287,7 @@ const EventModal = ({ evento, onClose, formatFecha, formatFechaCompleta }) => {
                                                     <span style={{ fontWeight: '600', color: '#374151', minWidth: '80px' }}>
                                                         Enlace:
                                                     </span>
-                                                    <a 
+                                                    <a
                                                         href={actividad.url}
                                                         target="_blank"
                                                         rel="noopener noreferrer"

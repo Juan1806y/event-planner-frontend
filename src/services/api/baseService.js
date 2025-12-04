@@ -1,6 +1,9 @@
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+
 export class BaseService {
+
   constructor() {
-    this.baseURL = 'http://localhost:3000';
+    this.baseURL = API_URL;
     this.isRefreshing = false;
     this.failedQueue = [];
   }
@@ -78,7 +81,7 @@ export class BaseService {
     }
 
     try {
-      const response = await fetch(`${this.baseURL}/api/auth/refresh`, {
+      const response = await fetch(`${this.baseURL}/auth/refresh`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

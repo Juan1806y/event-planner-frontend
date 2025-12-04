@@ -5,6 +5,7 @@ import { Calendar, Users, CalendarCheck, Settings, Book, FileText } from 'lucide
 export const useSidebar = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
     const [isOpen, setIsOpen] = useState(true);
     const [user, setUser] = useState(null);
@@ -120,7 +121,7 @@ export const useSidebar = () => {
         setIsLoading(true);
 
         try {
-            const response = await fetch('http://localhost:3000/api/auth/cambiar-contrasena', {
+            const response = await fetch(`${API_URL}/auth/cambiar-contrasena`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

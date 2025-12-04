@@ -15,7 +15,7 @@ class LocationsAPI extends BaseService {
 
     getEmpresaUsuario = async () => {
         try {
-            const profileResult = await this.fetch('/api/auth/profile');
+            const profileResult = await this.fetch('/auth/profile');
 
             if (profileResult.success) {
                 let empresaId = null;
@@ -51,7 +51,7 @@ class LocationsAPI extends BaseService {
 
     getEmpresaDetalles = async (empresaId) => {
         try {
-            const result = await this.fetch(`/api/empresas/${empresaId}`);
+            const result = await this.fetch(`/empresas/${empresaId}`);
 
             if (result.success && result.data) {
                 return result.data;
@@ -65,7 +65,7 @@ class LocationsAPI extends BaseService {
 
     getPrimeraEmpresa = async () => {
         try {
-            const result = await this.fetch('/api/empresas');
+            const result = await this.fetch('/empresas');
 
             if (result.success && result.data && Array.isArray(result.data) && result.data.length > 0) {
                 return result.data[0];
@@ -85,7 +85,7 @@ class LocationsAPI extends BaseService {
 
     getUbicacionesByEmpresa = async (empresaId) => {
         try {
-            const result = await this.fetch(`/api/empresas/${empresaId}/ubicaciones`);
+            const result = await this.fetch(`/empresas/${empresaId}/ubicaciones`);
 
             if (result.success && result.data) {
                 let ubicacionesArray = result.data;
@@ -111,7 +111,7 @@ class LocationsAPI extends BaseService {
 
     getCiudades = async () => {
         try {
-            const result = await this.fetch('/api/ciudades');
+            const result = await this.fetch('/ciudades');
 
             if (result.success && result.data && Array.isArray(result.data)) {
                 return result.data;
@@ -125,7 +125,7 @@ class LocationsAPI extends BaseService {
 
     createUbicacion = async (empresaId, datos) => {
         try {
-            const result = await this.fetch(`/api/empresas/${empresaId}/ubicaciones`, {
+            const result = await this.fetch(`/empresas/${empresaId}/ubicaciones`, {
                 method: 'POST',
                 body: JSON.stringify({
                     lugar: datos.lugar,
@@ -156,7 +156,7 @@ class LocationsAPI extends BaseService {
 
     updateUbicacion = async (ubicacionId, datos) => {
         try {
-            const result = await this.fetch(`/api/ubicaciones/${ubicacionId}`, {
+            const result = await this.fetch(`/ubicaciones/${ubicacionId}`, {
                 method: 'PUT',
                 body: JSON.stringify({
                     lugar: datos.lugar,
@@ -178,7 +178,7 @@ class LocationsAPI extends BaseService {
 
     deleteUbicacion = async (ubicacionId) => {
         try {
-            const result = await this.fetch(`/api/ubicaciones/${ubicacionId}`, {
+            const result = await this.fetch(`/ubicaciones/${ubicacionId}`, {
                 method: 'DELETE'
             });
 

@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { adminService } from '../services/adminService';
-import { API_PREFIX } from '../config/apiConfig';
+import { API_URL } from '../config/apiConfig';
 
 export const useEmpresas = () => {
     const [empresas, setEmpresas] = useState([]);
@@ -29,7 +29,7 @@ export const useEmpresas = () => {
                 return;
             }
 
-            const response = await fetch(`${API_PREFIX}/${endpoint}`, {
+            const response = await fetch(`${API_URL}/${endpoint}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -71,7 +71,7 @@ export const useEmpresas = () => {
         try {
             const token = localStorage.getItem('access_token');
             const promoverAsistente = await adminService.promoverAGerente(creador, id);
-            const response = await fetch(`${API_PREFIX}/empresas/${id}/aprobar`, {
+            const response = await fetch(`${API_URL}/empresas/${id}/aprobar`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -105,7 +105,7 @@ export const useEmpresas = () => {
         try {
             const token = localStorage.getItem('access_token');
 
-            const response = await fetch(`${API_PREFIX}/empresas/${id}/aprobar`, {
+            const response = await fetch(`${API_URL}/empresas/${id}/aprobar`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,

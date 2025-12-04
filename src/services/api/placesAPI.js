@@ -13,7 +13,7 @@ class PlacesAPI extends BaseService {
 
   getEmpresas = async () => {
     try {
-      const response = await this.fetch('/api/empresas');
+      const response = await this.fetch('/empresas');
       if (response.success && response.data && response.data.length > 0) {
         return response.data;
       } else {
@@ -27,7 +27,7 @@ class PlacesAPI extends BaseService {
 
   getLugaresByEmpresa = async (empresaId) => {
     try {
-      const response = await this.fetch(`/api/empresas/${empresaId}/lugares`);
+      const response = await this.fetch(`/empresas/${empresaId}/lugares`);
       return response.success && response.data ? response.data : [];
     } catch (error) {
       console.error('Error al obtener lugares:', error);
@@ -37,7 +37,7 @@ class PlacesAPI extends BaseService {
 
   getUbicacionesByEmpresa = async (empresaId) => {
     try {
-      const response = await this.fetch(`/api/empresas/${empresaId}/ubicaciones`);
+      const response = await this.fetch(`/empresas/${empresaId}/ubicaciones`);
       return response.success && response.data ? response.data : [];
     } catch (error) {
       console.error('Error al obtener ubicaciones:', error);
@@ -47,7 +47,7 @@ class PlacesAPI extends BaseService {
 
   createLugar = async (empresaId, datos) => {
     try {
-      const result = await this.fetch(`/api/empresas/${empresaId}/lugares`, {
+      const result = await this.fetch(`/empresas/${empresaId}/lugares`, {
         method: 'POST',
         body: JSON.stringify({
           empresaId: parseInt(datos.empresaId),
@@ -71,7 +71,7 @@ class PlacesAPI extends BaseService {
 
   updateLugar = async (lugarId, datos) => {
     try {
-      const result = await this.fetch(`/api/lugares/${lugarId}`, {
+      const result = await this.fetch(`/lugares/${lugarId}`, {
         method: 'PUT',
         body: JSON.stringify({
           nombre: datos.nombre,
@@ -94,7 +94,7 @@ class PlacesAPI extends BaseService {
 
   deleteLugar = async (lugarId) => {
     try {
-      const result = await this.fetch(`/api/lugares/${lugarId}`, {
+      const result = await this.fetch(`/lugares/${lugarId}`, {
         method: 'DELETE'
       });
 

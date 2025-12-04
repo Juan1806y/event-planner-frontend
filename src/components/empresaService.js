@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:3000/api';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
 
 const getAuthToken = () => {
@@ -47,7 +47,7 @@ const handleResponse = async (response) => {
 const empresaService = {
     obtenerEmpresaGerente: async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/empresas`, {
+            const response = await fetch(`${API_URL}/empresas`, {
                 method: 'GET',
                 headers: getHeaders()
             });
@@ -60,7 +60,7 @@ const empresaService = {
 
     obtenerTodasCiudades: async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/ciudades`, {
+            const response = await fetch(`${API_URL}/ciudades`, {
                 method: 'GET',
                 headers: getHeaders()
             });
@@ -73,7 +73,7 @@ const empresaService = {
 
     obtenerEmpresaPorId: async (id) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/empresas/${id}`, {
+            const response = await fetch(`${API_URL}/empresas/${id}`, {
                 method: 'GET',
                 headers: getHeaders()
             });
@@ -86,7 +86,7 @@ const empresaService = {
 
     actualizarEmpresa: async (id, datos) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/empresas/${id}`, {
+            const response = await fetch(`${API_URL}/empresas/${id}`, {
                 method: 'PUT',
                 headers: getHeaders(),
                 body: JSON.stringify(datos)
@@ -100,7 +100,7 @@ const empresaService = {
 
     obtenerCiudadPorId: async (idCiudad) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/ciudades/${idCiudad}`, {
+            const response = await fetch(`${API_URL}/ciudades/${idCiudad}`, {
                 method: 'GET',
                 headers: getHeaders()
             });
@@ -113,7 +113,7 @@ const empresaService = {
 
     obtenerPaisPorId: async (idPais) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/paises/${idPais}`, {
+            const response = await fetch(`${API_URL}/paises/${idPais}`, {
                 method: 'GET',
                 headers: getHeaders()
             });

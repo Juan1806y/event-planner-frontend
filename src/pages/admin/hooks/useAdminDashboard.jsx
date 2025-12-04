@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 
 export const useAdminDashboard = () => {
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+
   const [dashboardData, setDashboardData] = useState({
     afiliaciones: {
       pendientes: 0,
@@ -61,7 +63,7 @@ export const useAdminDashboard = () => {
   }, []);
 
   const fetchAfiliacionesData = useCallback(async () => {
-    const result = await fetchWithErrorHandling('http://localhost:3000/api/empresas?incluir_pendientes=true');
+    const result = await fetchWithErrorHandling(`${API_URL}empresas?incluir_pendientes=true`);
 
     if (result.success && result.data) {
       let empresasData = [];
@@ -93,7 +95,7 @@ export const useAdminDashboard = () => {
   }, [fetchWithErrorHandling]);
 
   const fetchAuditoriaData = useCallback(async () => {
-    const result = await fetchWithErrorHandling('http://localhost:3000/api/auditoria');
+    const result = await fetchWithErrorHandling(`${API_URL}/auditoria`);
 
     if (result.success && result.data) {
       let auditoriaData = [];

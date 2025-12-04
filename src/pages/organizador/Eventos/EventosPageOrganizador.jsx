@@ -97,6 +97,12 @@ const EventosPageOrganizador = () => {
         evento.titulo.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    // Agregar función para parsear fechas correctamente
+    const parsearFecha = (fechaString) => {
+        const [year, month, day] = fechaString.split('T')[0].split('-');
+        return new Date(year, month - 1, day);
+    };
+
     return (
         <div className="eventos-page">
             <Sidebar />
@@ -105,7 +111,9 @@ const EventosPageOrganizador = () => {
                 <div className="page-header">
                     <div className="header-content">
                         <div className="header-left">
-                            <Calendar size={24} className="header-icon" />
+                            <div className="header-icon">
+                                <Calendar size={24} />
+                            </div>
                             <h1 className="page-title">Gestionar Eventos</h1>
                         </div>
                     </div>
@@ -163,8 +171,8 @@ const EventosPageOrganizador = () => {
                                 eventosVisibles.map((evento) => (
                                     <tr key={evento.id}>
                                         <td className="evento-nombre">{evento.titulo}</td>
-                                        <td>{new Date(evento.fecha_inicio).toLocaleDateString('es-ES')}</td>
-                                        <td>{new Date(evento.fecha_fin).toLocaleDateString('es-ES')}</td>
+                                        <td>{parsearFecha(evento.fecha_inicio).toLocaleDateString('es-ES')}</td>
+                                        <td>{parsearFecha(evento.fecha_fin).toLocaleDateString('es-ES')}</td>
                                         <td>{evento.modalidad}</td>
                                         <td>
                                             <span className="inscritos-badge">0/{evento.cupos}</span>
@@ -272,7 +280,7 @@ const EventosPageOrganizador = () => {
                                     <div className="info-box">
                                         <span className="info-label">Inicio</span>
                                         <span className="info-value">
-                                            {new Date(eventoAVer.fecha_inicio).toLocaleDateString('es-ES', {
+                                            {parsearFecha(eventoAVer.fecha_inicio).toLocaleDateString('es-ES', {
                                                 day: 'numeric',
                                                 month: 'long',
                                                 year: 'numeric'
@@ -283,7 +291,7 @@ const EventosPageOrganizador = () => {
                                     <div className="info-box">
                                         <span className="info-label">Fin</span>
                                         <span className="info-value">
-                                            {new Date(eventoAVer.fecha_fin).toLocaleDateString('es-ES', {
+                                            {parsearFecha(eventoAVer.fecha_fin).toLocaleDateString('es-ES', {
                                                 day: 'numeric',
                                                 month: 'long',
                                                 year: 'numeric'

@@ -1,12 +1,13 @@
-// ListaEncuestas.jsx
 import React from 'react';
 
 const ListaEncuestas = ({
     encuestas,
     onVerResultados,
+    onVerEstadisticas, // Nueva prop
     onEditar,
     onActivar,
     onEliminar,
+    onEnviar,
     onCrearPrimera
 }) => {
     if (encuestas.length === 0) {
@@ -41,16 +42,26 @@ const ListaEncuestas = ({
                                                 encuesta.tipo_encuesta === 'satisfaccion_evento' ? 'Satisfacción de Evento' :
                                                     'General'}
                                 </span>
-
                             </div>
                             <div className="encuesta-detalles">
                                 {encuesta.actividad_nombre && (
                                     <span>🎯 Actividad: {encuesta.actividad_nombre}</span>
                                 )}
                                 <span>
-                                    ⏰ {encuesta.momento === 'antes' ? 'Antes' :
+                                    Tipo: {encuesta.momento === 'antes' ? 'Antes' :
                                         encuesta.momento === 'durante' ? 'Durante' : 'Después'} del evento
                                 </span>
+                                <span>
+                                    Fecha inicio: {encuesta.fecha_inicio}
+                                </span>
+                                <span>
+                                    Fecha fin: {encuesta.fecha_fin}
+                                </span>
+                                {encuesta.descripcion && (
+                                    <span>
+                                        Descripción: {encuesta.descripcion}
+                                    </span>
+                                )}
                             </div>
                         </div>
                         <div className="encuesta-acciones">
@@ -59,12 +70,32 @@ const ListaEncuestas = ({
                                 <span className="stat-number">{encuesta.respuestas_count || 0}</span>
                                 <span className="stat-label">respuestas</span>
                             </div>
+
+                            {/* NUEVO: Botón de estadísticas detalladas */}
+                            <button
+                                className="btn-icon btn-estadisticas-icon"
+                                onClick={() => onVerEstadisticas(encuesta)}
+                                title="Ver Estadísticas Detalladas"
+                            >
+                                📈
+                            </button>
+
+                            {/* Botón para enviar encuesta */}
+                            <button
+                                className="btn-icon btn-enviar-icon"
+                                onClick={() => onEnviar(encuesta)}
+                                title="Enviar a Asistentes"
+                                disabled={encuesta.estado === 'cerrada'}
+                            >
+                                📧
+                            </button>
+
                             <button
                                 className="btn-icon"
                                 onClick={() => onVerResultados(encuesta)}
-                                title="Ver Estadísticas"
+                                title="Ver Resumen Rápido"
                             >
-                                📊
+                                👁️
                             </button>
                             <button
                                 className="btn-icon"
@@ -73,15 +104,6 @@ const ListaEncuestas = ({
                             >
                                 ✏️
                             </button>
-                            {encuesta.estado === 'borrador' && (
-                                <button
-                                    className="btn-icon btn-activar"
-                                    onClick={() => onActivar(encuesta.id)}
-                                    title="Activar"
-                                >
-                                    ▶️
-                                </button>
-                            )}
                             <button
                                 className="btn-icon btn-eliminar"
                                 onClick={() => onEliminar(encuesta.id)}

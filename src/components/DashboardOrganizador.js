@@ -1,12 +1,13 @@
 // components/DashboardOrganizador.js
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Users, FileText, Settings, CalendarCheck } from 'lucide-react';
+import { Calendar, Users, Settings, CalendarCheck } from 'lucide-react';
 import { obtenerPerfil, obtenerEventos } from './eventosService';
 
 export const useOrganizerDashboard = () => {
     const navigate = useNavigate();
 
+    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
     const [activeSection, setActiveSection] = useState('inicio');
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [user, setUser] = useState(null);
@@ -159,7 +160,7 @@ export const useOrganizerDashboard = () => {
         setIsLoading(true);
 
         try {
-            const response = await fetch('http://localhost:3000/api/auth/cambiar-contrasena', {
+            const response = await fetch(`${API_URL}/auth/cambiar-contrasena`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

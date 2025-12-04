@@ -24,6 +24,8 @@ import Sidebar from '../Sidebar';
 import axios from "axios";
 
 const CrearActividadPage = () => {
+    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+
     const navigate = useNavigate();
     const { eventoId } = useParams();
 
@@ -212,7 +214,7 @@ const CrearActividadPage = () => {
 
             if (formData.ponente && idActividadCreada) {
                 await axios.post(
-                    "http://localhost:3000/api/ponente-actividad",
+                    `${API_URL}/ponente-actividad`,
                     {
                         id_ponente: formData.ponente,
                         id_actividad: idActividadCreada,

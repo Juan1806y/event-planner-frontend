@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
 const UsuarioRoute = () => {
   const [usuarios, setUsuarios] = useState([]);
@@ -18,11 +18,11 @@ const UsuarioRoute = () => {
     const headers = {
       'Content-Type': 'application/json',
     };
-    
+
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
-    
+
     return headers;
   };
 
@@ -33,7 +33,7 @@ const UsuarioRoute = () => {
         sessionStorage.removeItem('access_token');
         throw new Error('Sesión expirada. Por favor inicia sesión nuevamente.');
       }
-      
+
       try {
         const errorData = await response.json();
         throw new Error(errorData.message || `Error ${response.status}`);
@@ -42,7 +42,7 @@ const UsuarioRoute = () => {
         throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
     }
-    
+
     return response.json();
   };
 
@@ -50,8 +50,8 @@ const UsuarioRoute = () => {
     try {
       setLoading(true);
       setError(null);
-      
-      const response = await fetch(`${API_URL}/api/gestion-usuarios`, {
+
+      const response = await fetch(`${API_URL}/gestion-usuarios`, {
         method: 'GET',
         headers: getHeaders(),
       });
@@ -59,11 +59,11 @@ const UsuarioRoute = () => {
       const result = await handleResponse(response);
 
       let usuariosData = [];
-      
+
       if (result) {
         if (result.data && Array.isArray(result.data)) {
           usuariosData = result.data;
-        } 
+        }
         else if (Array.isArray(result)) {
           usuariosData = result;
         }
@@ -71,7 +71,7 @@ const UsuarioRoute = () => {
           usuariosData = result.usuarios;
         }
       }
-      
+
       const usuariosMapeados = usuariosData.map(usuario => ({
         id: usuario.id,
         nombre: usuario.nombre || '',
@@ -84,9 +84,9 @@ const UsuarioRoute = () => {
         rol_id: usuario.rol_id,
         rol_data: usuario.rol_data
       }));
-      
+
       console.log('Usuarios procesados:', usuariosMapeados);
-      
+
       setUsuarios(usuariosMapeados);
       setFilteredUsuarios(usuariosMapeados);
     } catch (err) {
@@ -116,8 +116,8 @@ const UsuarioRoute = () => {
       if (usuarioData.rol === 'ponente' && usuarioData.especialidad) {
         dataParaBackend.especialidad = usuarioData.especialidad;
       }
-      
-      const response = await fetch(`${API_URL}/api/auth/crear-usuario`, {
+
+      const response = await fetch(`${API_URL}/auth/crear-usuario`, {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify(dataParaBackend),
@@ -125,23 +125,23 @@ const UsuarioRoute = () => {
 
       const result = await handleResponse(response);
       await fetchUsuarios();
-      
-      return { 
-        success: true, 
-        data: result.data || result 
+
+      return {
+        success: true,
+        data: result.data || result
       };
     } catch (err) {
       console.error('Error al crear usuario:', err);
-      return { 
-        success: false, 
-        error: err.message || 'Error al crear usuario' 
+      return {
+        success: false,
+        error: err.message || 'Error al crear usuario'
       };
     }
   };
 
   const updateUsuario = async (id, usuarioData) => {
     try {
-      const response = await fetch(`${API_URL}/api/gestion-usuarios/${id}/profile`, {
+      const response = await fetch(`${API_URL}/gestion-usuarios/${id}/profile`, {
         method: 'PUT',
         headers: getHeaders(),
         body: JSON.stringify(usuarioData),
@@ -152,16 +152,16 @@ const UsuarioRoute = () => {
       return { success: true, data };
     } catch (err) {
       console.error('Error al actualizar usuario:', err);
-      return { 
-        success: false, 
-        error: err.message || 'Error al actualizar usuario' 
+      return {
+        success: false,
+        error: err.message || 'Error al actualizar usuario'
       };
     }
   };
 
   const deleteUsuario = async (id) => {
     try {
-      const response = await fetch(`${API_URL}/api/gestion-usuarios/${id}/status`, {
+      const response = await fetch(`${API_URL}/gestion-usuarios/${id}/status`, {
         method: 'PATCH',
         headers: getHeaders(),
       });
@@ -171,16 +171,16 @@ const UsuarioRoute = () => {
       return { success: true };
     } catch (err) {
       console.error('Error al desactivar usuario:', err);
-      return { 
-        success: false, 
-        error: err.message || 'Error al desactivar usuario' 
+      return {
+        success: false,
+        error: err.message || 'Error al desactivar usuario'
       };
     }
   };
 
   const getUsuarioById = async (id) => {
     try {
-      const response = await fetch(`${API_URL}/api/gestion-usuarios/${id}`, {
+      const response = await fetch(`${API_URL}/gestion-usuarios/${id}`, {
         method: 'GET',
         headers: getHeaders(),
       });
@@ -189,24 +189,24 @@ const UsuarioRoute = () => {
       return { success: true, data };
     } catch (err) {
       console.error('Error al obtener usuario:', err);
-      return { 
-        success: false, 
-        error: err.message || 'Error al obtener usuario' 
+      return {
+        success: false,
+        error: err.message || 'Error al obtener usuario'
       };
     }
   };
-  
+
   const handleSearch = (term) => {
     setSearchTerm(term);
-    
+
     const usuariosArray = Array.isArray(usuarios) ? usuarios : [];
-    
+
     if (!term.trim()) {
       setFilteredUsuarios(usuariosArray);
       return;
     }
 
-    const filtered = usuariosArray.filter(usuario => 
+    const filtered = usuariosArray.filter(usuario =>
       usuario.nombre?.toLowerCase().includes(term.toLowerCase()) ||
       usuario.email?.toLowerCase().includes(term.toLowerCase()) ||
       usuario.correo?.toLowerCase().includes(term.toLowerCase()) ||

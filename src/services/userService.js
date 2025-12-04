@@ -1,4 +1,4 @@
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
 const getToken = () => {
   return localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
@@ -10,11 +10,11 @@ const getHeaders = (customHeaders = {}) => {
     'Content-Type': 'application/json',
     ...customHeaders,
   };
-  
+
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   }
-  
+
   return headers;
 };
 
@@ -26,7 +26,7 @@ const handleResponse = async (response) => {
       window.location.href = '/login';
       throw new Error('Sesión expirada. Por favor inicia sesión nuevamente.');
     }
-    
+
     try {
       const errorData = await response.json();
       throw new Error(errorData.message || errorData.detail || `Error ${response.status}`);
@@ -37,11 +37,11 @@ const handleResponse = async (response) => {
       throw new Error(`Error ${response.status}: ${response.statusText}`);
     }
   }
-  
+
   if (response.status === 204) {
     return null;
   }
-  
+
   return response.json();
 };
 
@@ -51,7 +51,7 @@ const apiRequest = async (endpoint, options = {}) => {
     ...options,
     headers: getHeaders(options.headers),
   };
-  
+
   try {
     const response = await fetch(url, config);
     return await handleResponse(response);
@@ -67,40 +67,40 @@ export const usuariosService = {
       method: 'GET',
     });
   },
-  
+
   getById: async (id) => {
     return await apiRequest(`/api/gestion-usuarios/users/${id}`, {
       method: 'GET',
     });
   },
-  
+
   create: async (data) => {
     return await apiRequest('/api/gestion-usuarios/users', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   },
-  
+
   update: async (id, data) => {
     return await apiRequest(`/api/gestion-usuarios/users/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     });
   },
-  
+
   patch: async (id, data) => {
     return await apiRequest(`/api/gestion-usuarios/users/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(data),
     });
   },
-  
+
   delete: async (id) => {
     return await apiRequest(`/api/gestion-usuarios/users/${id}`, {
       method: 'DELETE',
     });
   },
-  
+
   search: async (query) => {
     return await apiRequest(`/api/gestion-usuarios/users/search?q=${encodeURIComponent(query)}`, {
       method: 'GET',
@@ -116,13 +116,13 @@ export const authService = {
       body: JSON.stringify(credentials),
     });
   },
-  
+
   loginFormData: async (username, password) => {
     const formData = new URLSearchParams();
     formData.append('username', username);
     formData.append('password', password);
-    
-    return await fetch(`${API_URL}/api/auth/login`, {
+
+    return await fetch(`${API_URL}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -130,7 +130,7 @@ export const authService = {
       body: formData,
     }).then(handleResponse);
   },
-  
+
   logout: async () => {
     try {
       await apiRequest('/api/auth/logout', {
@@ -142,19 +142,19 @@ export const authService = {
       sessionStorage.removeItem('access_token');
     }
   },
-  
+
   verifyToken: async () => {
     return await apiRequest('/api/auth/verify', {
       method: 'GET',
     });
   },
-  
+
   refreshToken: async () => {
     return await apiRequest('/api/auth/refresh', {
       method: 'POST',
     });
   },
-  
+
   getCurrentUser: async () => {
     return await apiRequest('/api/auth/me', {
       method: 'GET',
@@ -170,27 +170,27 @@ export const eventosService = {
       method: 'GET',
     });
   },
-  
+
   getById: async (id) => {
     return await apiRequest(`/api/eventos/${id}`, {
       method: 'GET',
     });
   },
-  
+
   create: async (data) => {
     return await apiRequest('/api/eventos', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   },
-  
+
   update: async (id, data) => {
     return await apiRequest(`/api/eventos/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     });
   },
-  
+
   delete: async (id) => {
     return await apiRequest(`/api/eventos/${id}`, {
       method: 'DELETE',
@@ -202,25 +202,25 @@ export const ponentesService = {
   getAll: async () => {
     return await apiRequest('/api/ponentes', { method: 'GET' });
   },
-  
+
   getById: async (id) => {
     return await apiRequest(`/api/ponentes/${id}`, { method: 'GET' });
   },
-  
+
   create: async (data) => {
     return await apiRequest('/api/ponentes', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   },
-  
+
   update: async (id, data) => {
     return await apiRequest(`/api/ponentes/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     });
   },
-  
+
   delete: async (id) => {
     return await apiRequest(`/api/ponentes/${id}`, { method: 'DELETE' });
   },

@@ -4,7 +4,7 @@ const ROLE_MAPPING = {
   'asistente': ['asistente'],
   'gerente': ['gerente'],
   'ponente': ['ponente'],
-  'organizador': ['organizador','organization'],
+  'organizador': ['organizador', 'organization'],
   'admin': ['admin', 'administrador']
 };
 
@@ -18,9 +18,9 @@ export class AuthService extends BaseService {
   // Intenta parsear la respuesta: JSON cuando corresponda, si no retorna texto crudo
   async login(email, password, selectedRole) {
     try {
-      const payload = { correo: email, contraseña: password};
-      
-      const response = await fetch(`${this.baseURL}/api/auth/login`, {
+      const payload = { correo: email, contraseña: password };
+
+      const response = await fetch(`${this.baseURL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -73,7 +73,7 @@ export class AuthService extends BaseService {
 
   async register(userData) {
     try {
-      const response = await fetch(`${this.baseURL}/api/auth/register`, {
+      const response = await fetch(`${this.baseURL}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -108,7 +108,7 @@ export class AuthService extends BaseService {
       const token = localStorage.getItem('access_token');
       console.debug('authService.promoverGerente called with', { id_usuario, id_empresa, tokenExists: !!token });
 
-      const response = await fetch(`${this.baseURL}/api/auth/promover-gerente`, {
+      const response = await fetch(`${this.baseURL}/auth/promover-gerente`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

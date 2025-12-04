@@ -1,122 +1,115 @@
 import { useEffect, useState } from 'react';
 import styles from '../styles/EventModal.module.css';
 
-const ActividadDetallesModal = ({ actividadSeleccionada, onClose }) => {
-    const [loading, setLoading] = useState(false);
+const ActividadDetallesModal = ({ actividadId, eventoId, onClose }) => {
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [detalleEvento, setDetalleEvento] = useState(null);
-    const [actividadInfo, setActividadInfo] = useState(null);
+    const [detalle, setDetalle] = useState(null);
+    const [eventoData, setEventoData] = useState(null);
+    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
     useEffect(() => {
-        const cargarDetalles = async () => {
-            if (!actividadSeleccionada) return;
-
+        const fetchDetalle = async () => {
             try {
                 setLoading(true);
                 setError(null);
-
-                // Obtener el token y el ponenteId
                 const token = localStorage.getItem('access_token');
-                const API_BASE = (window.__env && window.__env.REACT_APP_API_URL) || 'http://localhost:3000';
+                //const API_BASE = (window.__env && window.__env.REACT_APP_API_URL) || 'http://localhost:3000';
 
-                // Extraer el ponenteId del usuario
-                const userStr = localStorage.getItem('user');
-                let ponenteId = null;
+                console.log('Buscando detalles para:', { actividadId, eventoId });
 
-                if (userStr) {
-                    try {
-                        const user = JSON.parse(userStr);
-                        ponenteId = user?.rolData?.id_ponente || user?.id_ponente;
-                    } catch (e) {
-                        console.error('Error parsing user:', e);
+                let eventoIdFinal = eventoId;
+
+                if (!eventoIdFinal) {
+                    console.log('No hay eventoId, intentando obtener actividad directamente...');
+                    const actividadDirectaRes = await fetch(`${API_URL}/actividades/${actividadId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (actividadDirectaRes.ok) {
+                        const actividadDirectaJson = await actividadDirectaRes.json();
+                        if (actividadDirectaJson.success) {
+                            eventoIdFinal = actividadDirectaJson.data?.id_evento;
+                            console.log('Evento ID obtenido de actividad directa:', eventoIdFinal);
+                        }
                     }
                 }
 
-                if (!ponenteId) {
-                    throw new Error('No se pudo identificar al ponente');
+                if (!eventoIdFinal) {
+                    throw new Error('No se pudo identificar el evento de la actividad');
                 }
 
-                console.log('Actividad seleccionada:', actividadSeleccionada);
-                console.log('Ponente ID:', ponenteId);
-
-                // OPCIÓN 1: Si la actividad ya tiene datos del evento
-                if (actividadSeleccionada.evento) {
-                    console.log('Usando datos existentes del evento:', actividadSeleccionada.evento);
-                    setDetalleEvento(actividadSeleccionada.evento);
-                    setActividadInfo(actividadSeleccionada.actividad || actividadSeleccionada);
-                    setLoading(false);
-                    return;
-                }
-
-                // OPCIÓN 2: Si necesitamos buscar el evento por separado
-                // Primero, obtener todas las asignaciones del ponente
-                console.log('Buscando detalles del evento para la actividad...');
-                const response = await fetch(`${API_BASE}/api/ponente-actividad/ponente/${ponenteId}`, {
+                console.log('Obteniendo datos del evento:', eventoIdFinal);
+                const eventoRes = await fetch(`${API_URL}/eventos/${eventoIdFinal}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     }
                 });
 
-                if (!response.ok) {
-                    throw new Error(`Error ${response.status} al obtener asignaciones`);
+                if (!eventoRes.ok) {
+                    throw new Error(`Error ${eventoRes.status} al obtener datos del evento`);
                 }
 
-                const result = await response.json();
+                const eventoJson = await eventoRes.json();
 
-                if (!result.success || !Array.isArray(result.data)) {
-                    throw new Error('Formato de respuesta inválido');
+                if (!eventoJson.success || !eventoJson.data) {
+                    throw new Error('No se pudo obtener la información del evento');
                 }
 
-                // Buscar la asignación que corresponde a la actividad seleccionada
-                // IMPORTANTE: Dependiendo de cómo se estructura actividadSeleccionada
-                const actividadId = actividadSeleccionada.id_actividad || actividadSeleccionada.id;
+                setEventoData(eventoJson.data);
+                console.log('Datos del evento obtenidos:', eventoJson.data);
 
-                console.log('Buscando actividad con ID:', actividadId);
-                console.log('Total de asignaciones:', result.data.length);
-
-                const asignacionEncontrada = result.data.find(asignacion => {
-                    // Verificar diferentes formas en que podría venir el ID
-                    const idActividadAsignacion = asignacion.id_actividad ||
-                        asignacion.actividad?.id_actividad ||
-                        asignacion.actividad?.id;
-
-                    console.log('Comparando:', {
-                        buscado: actividadId,
-                        encontrado: idActividadAsignacion,
-                        asignacion: asignacion
-                    });
-
-                    return idActividadAsignacion && parseInt(idActividadAsignacion) === parseInt(actividadId);
+                console.log('Obteniendo actividades del evento...');
+                const actividadesRes = await fetch(`${API_URL}/eventos/${eventoIdFinal}/actividades`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
                 });
 
-                console.log('Asignación encontrada:', asignacionEncontrada);
-
-                if (asignacionEncontrada) {
-                    // Extraer información del evento
-                    if (asignacionEncontrada.actividad?.evento) {
-                        setDetalleEvento(asignacionEncontrada.actividad.evento);
-                        setActividadInfo(asignacionEncontrada.actividad);
-                    } else if (asignacionEncontrada.evento) {
-                        setDetalleEvento(asignacionEncontrada.evento);
-                        setActividadInfo(asignacionEncontrada.actividad || asignacionEncontrada);
-                    } else {
-                        throw new Error('No se encontró información del evento para esta actividad');
-                    }
-                } else {
-                    throw new Error('No se encontró la asignación para esta actividad');
+                if (!actividadesRes.ok) {
+                    const errorText = await actividadesRes.text();
+                    console.error('Error en respuesta de actividades:', errorText);
+                    throw new Error(`Error ${actividadesRes.status} al obtener actividades`);
                 }
 
+                const actividadesJson = await actividadesRes.json();
+                console.log('Respuesta de actividades:', actividadesJson);
+
+                if (actividadesJson.success && actividadesJson.data) {
+                    const actividadEncontrada = actividadesJson.data.find(actividad =>
+                        actividad.id_actividad === parseInt(actividadId)
+                    );
+
+                    console.log('Actividad encontrada:', actividadEncontrada);
+
+                    if (actividadEncontrada) {
+                        setDetalle(actividadEncontrada);
+                    } else {
+                        throw new Error(`No se encontró la actividad con ID: ${actividadId}`);
+                    }
+                } else {
+                    throw new Error('No se pudo obtener la información de las actividades');
+                }
             } catch (err) {
-                console.error('Error cargando detalles del evento:', err);
-                setError(err.message || 'Error cargando detalles del evento');
+                console.error('Error cargando detalle de actividad:', err);
+                setError(err.message || 'Error cargando detalle');
             } finally {
                 setLoading(false);
             }
         };
 
-        cargarDetalles();
-    }, [actividadSeleccionada]);
+        if (actividadId) {
+            fetchDetalle();
+        } else {
+            setError('No se proporcionó ID de actividad');
+            setLoading(false);
+        }
+    }, [actividadId, eventoId]);
 
     const formatFecha = (fechaString) => {
         if (!fechaString) return 'No definida';
@@ -129,61 +122,56 @@ const ActividadDetallesModal = ({ actividadSeleccionada, onClose }) => {
                 day: 'numeric'
             });
         } catch (e) {
-            return fechaString || 'Fecha inválida';
+            return 'Fecha inválida';
         }
     };
 
     const formatHora = (horaString) => {
         if (!horaString) return '';
-        if (horaString.includes(':')) {
-            return horaString.substring(0, 5);
+        return horaString.substring(0, 5);
+    };
+
+    const calcularDuracion = (horaInicio, horaFin) => {
+        if (!horaInicio || !horaFin) return 'No disponible';
+
+        try {
+            const inicio = new Date(`2000-01-01T${horaInicio}`);
+            const fin = new Date(`2000-01-01T${horaFin}`);
+            const diffMs = fin - inicio;
+            const diffMins = Math.floor(diffMs / 60000);
+            const hours = Math.floor(diffMins / 60);
+            const minutes = diffMins % 60;
+
+            if (hours > 0) {
+                return `${hours}h ${minutes > 0 ? `${minutes}m` : ''}`;
+            }
+            return `${minutes} minutos`;
+        } catch (e) {
+            return 'No disponible';
         }
-        return horaString;
     };
 
     const handleRetry = () => {
+        setLoading(true);
         setError(null);
-        // Recargar los datos
-        const cargarDetalles = async () => {
-            // Misma lógica del useEffect...
-        };
     };
-
-    if (!actividadSeleccionada && !loading && !error) {
-        return (
-            <div className={styles.modalOverlay}>
-                <div className={styles.modal}>
-                    <div className={styles.modalHeader}>
-                        <h2>Detalles del Evento</h2>
-                        <button className={styles.closeButton} onClick={onClose}>×</button>
-                    </div>
-                    <div className={styles.modalBody}>
-                        <p>No hay actividad seleccionada.</p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className={styles.modalOverlay}>
             <div className={styles.modal}>
                 <div className={styles.modalHeader}>
                     <div>
-                        <h2>Información del Evento</h2>
-                        {actividadInfo && (
-                            <p className={styles.subtitulo}>
-                                Actividad: <strong>{actividadInfo.titulo || 'Sin título'}</strong>
-                            </p>
-                        )}
+                        <h2>Detalles de la Actividad</h2>
                     </div>
-                    <button className={styles.closeButton} onClick={onClose}>×</button>
+                    <button className={styles.closeButton} onClick={onClose}>
+                        ×
+                    </button>
                 </div>
 
                 <div className={styles.modalBody}>
                     {loading && (
                         <div className={styles.loadingContainer}>
-                            <p>Cargando información del evento...</p>
+                            <p>Cargando detalles de la actividad...</p>
                             <div className={styles.loadingSpinner}></div>
                         </div>
                     )}
@@ -203,117 +191,96 @@ const ActividadDetallesModal = ({ actividadSeleccionada, onClose }) => {
                         </div>
                     )}
 
-                    {detalleEvento && !loading && !error && (
+                    {detalle && eventoData && !loading && !error && (
                         <div className={styles.eventInfoGrid}>
-                            {/* Información Principal del Evento */}
+                            {/* Información del Evento */}
                             <div className={styles.infoSection}>
-                                <h3>{detalleEvento.titulo || 'Evento sin título'}</h3>
+                                <h4>Información del Evento</h4>
                                 <div className={styles.infoItem}>
-                                    <label>Descripción</label>
-                                    <p className={styles.eventoDescripcion}>
-                                        {detalleEvento.descripcion || 'No hay descripción disponible'}
+                                    <label>Empresa</label>
+                                    <span className={styles.empresaBadge}>
+                                        {eventoData.empresa?.nombre || 'No especificada'}
+                                    </span>
+                                </div>
+                                <div className={styles.infoItem}>
+                                    <label>Creador del Evento</label>
+                                    <div className={styles.creadorInfo}>
+                                        <div className={styles.creadorNombre}>
+                                            {eventoData.creador?.nombre || 'No especificado'}
+                                        </div>
+                                        <div className={styles.creadorCorreo}>
+                                            {eventoData.creador?.correo || 'Sin correo'}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className={styles.infoItem}>
+                                    <label>Nombre del Evento</label>
+                                    <p className={styles.eventoTitulo}>
+                                        {eventoData.titulo || 'Sin título'}
                                     </p>
                                 </div>
+                                <div className={styles.infoItem}>
+                                    <label>Descripción del Evento</label>
+                                    <p className={styles.eventoDescripcion}>
+                                        {eventoData.descripcion || 'No hay descripción disponible'}
+                                    </p>
+                                </div>
+                                <div className={styles.infoItem}>
+                                    <label>Cupos del Evento</label>
+                                    <span className={styles.cuposBadge}>
+                                        {eventoData.cupos || 0} cupos disponibles
+                                    </span>
+                                </div>
                             </div>
 
-                            {/* Fechas del Evento */}
+                            {/* Fechas y Horarios */}
                             <div className={styles.infoSection}>
-                                <h4>Fechas del Evento</h4>
+                                <h4>Fechas y Horarios</h4>
                                 <div className={styles.infoItem}>
-                                    <label>Inicio</label>
+                                    <label>Fecha de la Actividad</label>
                                     <span className={styles.fechaTexto}>
-                                        {formatFecha(detalleEvento.fecha_inicio)}
+                                        {formatFecha(detalle.fecha_actividad)}
                                     </span>
                                 </div>
                                 <div className={styles.infoItem}>
-                                    <label>Fin</label>
-                                    <span className={styles.fechaTexto}>
-                                        {formatFecha(detalleEvento.fecha_fin)}
+                                    <label>Horario</label>
+                                    <span className={styles.horarioTexto}>
+                                        {detalle.hora_inicio && detalle.hora_fin
+                                            ? `${formatHora(detalle.hora_inicio)} - ${formatHora(detalle.hora_fin)}`
+                                            : 'No definido'
+                                        }
                                     </span>
                                 </div>
                                 <div className={styles.infoItem}>
-                                    <label>Duración Total</label>
-                                    <span className={styles.duracionEvento}>
-                                        {detalleEvento.fecha_inicio && detalleEvento.fecha_fin ?
-                                            calcularDiasDuracion(detalleEvento.fecha_inicio, detalleEvento.fecha_fin) :
-                                            'No definida'}
+                                    <label>Duración</label>
+                                    <span className={styles.duracionBadge}>
+                                        {calcularDuracion(detalle.hora_inicio, detalle.hora_fin)}
                                     </span>
                                 </div>
                             </div>
 
-                            {/* Información de la Actividad */}
-                            {actividadInfo && (
-                                <div className={styles.infoSection}>
-                                    <h4>Información de tu Actividad</h4>
-                                    <div className={styles.infoItem}>
-                                        <label>Título de la Actividad</label>
-                                        <p className={styles.actividadTitulo}>
-                                            {actividadInfo.titulo || 'Sin título'}
-                                        </p>
-                                    </div>
-                                    {actividadInfo.descripcion && (
-                                        <div className={styles.infoItem}>
-                                            <label>Descripción</label>
-                                            <p className={styles.actividadDescripcion}>
-                                                {actividadInfo.descripcion}
-                                            </p>
-                                        </div>
-                                    )}
-                                    {actividadInfo.fecha_actividad && (
-                                        <div className={styles.infoItem}>
-                                            <label>Fecha de la Actividad</label>
-                                            <span>{formatFecha(actividadInfo.fecha_actividad)}</span>
-                                        </div>
-                                    )}
-                                    {actividadInfo.hora_inicio && actividadInfo.hora_fin && (
-                                        <div className={styles.infoItem}>
-                                            <label>Horario</label>
-                                            <span className={styles.horarioTexto}>
-                                                {formatHora(actividadInfo.hora_inicio)} - {formatHora(actividadInfo.hora_fin)}
-                                            </span>
-                                        </div>
-                                    )}
-                                    {actividadInfo.url && (
-                                        <div className={styles.infoItem}>
-                                            <label>URL de la Actividad</label>
+                            {/* Información Adicional */}
+                            <div className={styles.infoSection}>
+                                <h4>Información Adicional</h4>
+                                <div className={styles.infoItem}>
+                                    <label>URL de Recursos</label>
+                                    <span>
+                                        {detalle.url ? (
                                             <a
-                                                href={actividadInfo.url}
+                                                href={detalle.url}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className={styles.urlLink}
                                             >
-                                                {actividadInfo.url}
+                                                {detalle.url}
                                             </a>
-                                        </div>
-                                    )}
+                                        ) : (
+                                            <span className={styles.sinUrl}>
+                                                No hay URL disponible
+                                            </span>
+                                        )}
+                                    </span>
                                 </div>
-                            )}
-
-                            {/* Información Adicional del Evento */}
-                            <div className={styles.infoSection}>
-                                <h4>Información Adicional</h4>
-                                {detalleEvento.modalidad && (
-                                    <div className={styles.infoItem}>
-                                        <label>Modalidad</label>
-                                        <span className={styles.modalidadBadge}>
-                                            {detalleEvento.modalidad}
-                                        </span>
-                                    </div>
-                                )}
-                                {detalleEvento.estado && (
-                                    <div className={styles.infoItem}>
-                                        <label>Estado del Evento</label>
-                                        <span className={styles.estadoBadge}>
-                                            {detalleEvento.estado}
-                                        </span>
-                                    </div>
-                                )}
-                                {detalleEvento.ubicacion && (
-                                    <div className={styles.infoItem}>
-                                        <label>Ubicación</label>
-                                        <span>{detalleEvento.ubicacion}</span>
-                                    </div>
-                                )}
                             </div>
                         </div>
                     )}
@@ -321,20 +288,6 @@ const ActividadDetallesModal = ({ actividadSeleccionada, onClose }) => {
             </div>
         </div>
     );
-};
-
-// Función auxiliar para calcular duración en días
-const calcularDiasDuracion = (fechaInicio, fechaFin) => {
-    try {
-        const inicio = new Date(fechaInicio);
-        const fin = new Date(fechaFin);
-        const diffTime = Math.abs(fin - inicio);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 para incluir el día de inicio
-
-        return diffDays === 1 ? '1 día' : `${diffDays} días`;
-    } catch (e) {
-        return 'No disponible';
-    }
 };
 
 export default ActividadDetallesModal;
