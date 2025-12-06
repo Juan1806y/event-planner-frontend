@@ -35,7 +35,7 @@ export const useEncuestasManager = () => {
     });
 
     const getAuthToken = () => {
-        return localStorage.getItem('access_token');
+        return localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
     };
 
     const getHeaders = () => ({
