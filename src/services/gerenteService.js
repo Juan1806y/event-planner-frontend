@@ -14,7 +14,7 @@ class GerenteService extends BaseService {
   getTeam = async (empresaId) => {
     try {
       console.log(`Obteniendo equipo para empresa ID: ${empresaId}`);
-      const response = await this.fetch(`empresas/${empresaId}/equipo`);
+      const response = await this.fetch(`/empresas/${empresaId}/equipo`);
 
       if (response.success && response.data) {
         return response.data;

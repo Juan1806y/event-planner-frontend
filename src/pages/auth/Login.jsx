@@ -107,7 +107,6 @@ export default function Login() {
         <form className="form" onSubmit={handleSubmit}>
           <label>Correo Electrónico</label>
           <div className="input-group">
-            <i className="icon">@</i>
             <input
               type="email"
               value={email}
@@ -119,7 +118,6 @@ export default function Login() {
 
           <label>Contraseña</label>
           <div className="input-group">
-            <i className="icon">🔒</i>
             <input
               type={showPassword ? 'text' : 'password'}
               value={password}
@@ -133,7 +131,7 @@ export default function Login() {
               onClick={togglePasswordVisibility}
               disabled={loading}
             >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
             </button>
           </div>
 
