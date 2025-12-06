@@ -154,24 +154,6 @@ const GerenteSidebar = ({ onToggle }) => {
                     <img src={calendarEvento} alt="Evento Icon" />
                     {!isCollapsed && <span className="nav-text">Eventos</span>}
                 </button>
-
-                <button
-                    className={`nav-item ${isActive('/gerente/solicitudes') ? 'active' : ''}`}
-                    onClick={() => navigate('/gerente/solicitudes')}
-                    title={isCollapsed ? 'Mis solicitudes' : ''}
-                >
-                    <img src={campana} alt="Solicitudes Icon" />
-                    {!isCollapsed && <span className="nav-text">Mis solicitudes</span>}
-                </button>
-
-                <button
-                    className={`nav-item ${isActive('/gerente/configuracion') ? 'active' : ''}`}
-                    onClick={() => navigate('/gerente/configuracion')}
-                    title={isCollapsed ? 'Configuración' : ''}
-                >
-                    <img src={settings} alt="Configuración Icon" />
-                    {!isCollapsed && <span className="nav-text">Configuración</span>}
-                </button>
             </nav>
 
             <div className="sidebar-footer">

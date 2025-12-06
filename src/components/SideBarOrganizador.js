@@ -32,8 +32,7 @@ export const useSidebar = () => {
         { id: 'actividades', label: 'Agenda', icon: CalendarCheck, path: '/organizador/agenda' },
         { id: 'reportes', label: 'Reportes', icon: Book, path: '/organizador/reportes' },
         { id: 'notificaciones', label: 'Notificaciones', icon: Book, path: '/organizador/notificaciones' },
-        { id: 'encuestas', label: 'Encuestas', icon: FileText, path: '/organizador/encuestas' },
-        { id: 'configuracion', label: 'Configuración', icon: Settings, path: '/organizador/configuracion' }
+        { id: 'encuestas', label: 'Encuestas', icon: FileText, path: '/organizador/encuestas' }
     ];
 
     useEffect(() => {
