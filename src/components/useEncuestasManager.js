@@ -239,6 +239,7 @@ export const useEncuestasManager = () => {
 
         try {
             setCargando(true);
+            console.log('Datos enviados en formData:', formData);
 
             const metodo = modoEdicion ? 'PUT' : 'POST';
             const url = modoEdicion
