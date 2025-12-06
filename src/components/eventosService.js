@@ -76,11 +76,10 @@ export const obtenerPerfil = async () => {
 /**
  * Obtener ubicaciones
  */
-export const obtenerUbicaciones = async () => {
-  const res = await api.get(`/ubicaciones`);
-  return res.data;
+export const obtenerUbicaciones = async (empresaId) => {
+  const res = await api.get(`/empresas/${empresaId}/ubicaciones`);
+  return res. data;
 };
-
 /**
  * Obtener lugares. Si se pasa ubicacionId se usa ruta por ubicación; si no, devuelve todos los lugares.
  * @param {number|string} [ubicacionId]
