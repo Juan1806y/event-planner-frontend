@@ -59,7 +59,6 @@ export default function AdminLogin() {
           <div className="form-group">
             <label>Correo Electrónico</label>
             <div className="input-group">
-              <i className="icon">@</i>
               <input
                 type="email"
                 value={adminEmail}
@@ -74,7 +73,6 @@ export default function AdminLogin() {
           <div className="form-group">
             <label>Contraseña</label>
             <div className="input-group">
-              <i className="icon">🔒</i>
               <input
                 type={showAdminPassword ? 'text' : 'password'}
                 value={adminPassword}
@@ -90,7 +88,7 @@ export default function AdminLogin() {
                 disabled={adminLoading}
                 aria-label="Mostrar contraseña"
               >
-                {showAdminPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showAdminPassword ? <Eye size={18} /> : <EyeOff size={18} />}
               </button>
             </div>
           </div>

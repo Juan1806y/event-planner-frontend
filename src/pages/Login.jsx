@@ -107,7 +107,6 @@ export default function Login() {
         <form className="form" onSubmit={handleSubmit}>
           <label>Correo Electrónico</label>
           <div className="input-group">
-            <i className="icon">@</i>
             <input
               type="email"
               value={email}
@@ -119,7 +118,6 @@ export default function Login() {
 
           <label>Contraseña</label>
           <div className="input-group">
-            <i className="icon">🔒</i>
             <input
               type={showPassword ? 'text' : 'password'}
               value={password}

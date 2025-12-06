@@ -269,7 +269,7 @@ export default function Register() {
                 onClick={() => setShowPassword(!showPassword)}
                 className="password-toggle"
               >
-                {showPassword ? <EyeOff /> : <Eye />}
+                {showPassword ? <Eye /> : <EyeOff />}
               </button>
             </div>
           </div>
@@ -290,7 +290,7 @@ export default function Register() {
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="password-toggle"
               >
-                {showConfirmPassword ? <EyeOff /> : <Eye />}
+                {showConfirmPassword ? <Eye /> : <EyeOff />}
               </button>
             </div>
           </div>
