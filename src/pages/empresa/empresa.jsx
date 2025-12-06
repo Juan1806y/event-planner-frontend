@@ -40,18 +40,31 @@ const Empresa = () => {
       const token = localStorage.getItem('access_token');
 
       if (!token) {
+        console.warn('⚠️ No hay token en localStorage');
         setError('No hay sesión activa');
         navigate('/login');
         return;
       }
 
+      console.log('🌍 URL de API:', `${API_URL}/paises`);
+      console.log('🔑 Token (primeros 20 chars):', token.substring(0, 20) + '...');
+
       const response = await fetch(`${API_URL}/paises`, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       });
 
+      console.log('📊 Status de respuesta:', response.status);
+      console.log('📊 Status text:', response.statusText);
+
+      // Verificar si la respuesta es JSON
+      const contentType = response.headers.get('content-type');
+      console.log('📄 Content-Type:', contentType);
+
       if (response.status === 401) {
+        console.error('🔒 Error 401: Token inválido o expirado');
         setError('Sesión expirada. Por favor inicia sesión nuevamente.');
         localStorage.removeItem('access_token');
         localStorage.removeItem('user');
@@ -59,17 +72,68 @@ const Empresa = () => {
         return;
       }
 
-      if (response.ok) {
-        const result = await response.json();
-        if (result.success && result.data) {
-          setPaises(result.data);
-        } else {
-          setPaises([]);
+      if (!response.ok) {
+        console.error('❌ Error HTTP:', response.status);
+        const errorText = await response.text();
+        console.error('❌ Cuerpo del error:', errorText);
+        setError(`Error ${response.status} al cargar países`);
+        setPaises([]);
+        return;
+      }
+
+      // Obtener y parsear la respuesta
+      const responseText = await response.text();
+      console.log('📦 Respuesta cruda:', responseText);
+
+      let result;
+      try {
+        result = JSON.parse(responseText);
+        console.log('✅ JSON parseado correctamente:', result);
+      } catch (parseError) {
+        console.error('❌ Error parseando JSON:', parseError);
+        console.error('Texto que falló:', responseText);
+        setError('Error en el formato de la respuesta del servidor');
+        setPaises([]);
+        return;
+      }
+
+      // Verificar estructura de la respuesta
+      console.log('🔍 Estructura de result:', {
+        tieneSuccess: 'success' in result,
+        successValue: result.success,
+        tieneData: 'data' in result,
+        dataType: Array.isArray(result.data) ? 'array' : typeof result.data,
+        dataLength: Array.isArray(result.data) ? result.data.length : 'N/A',
+        mensaje: result.message
+      });
+
+      // Manejar diferentes estructuras posibles
+      if (result.success === true && Array.isArray(result.data)) {
+        console.log('✅ Países obtenidos:', result.data.length, 'registros');
+        setPaises(result.data);
+      }
+      // Por si acaso la API devuelve directamente el array
+      else if (Array.isArray(result)) {
+        console.log('⚠️ API devolvió array directamente:', result.length, 'registros');
+        setPaises(result);
+      }
+      // Por si success es undefined pero data existe
+      else if (result.data && Array.isArray(result.data)) {
+        console.log('⚠️ Success es undefined pero data existe:', result.data.length, 'registros');
+        setPaises(result.data);
+      }
+      else {
+        console.error('❌ Estructura inesperada:', result);
+        setPaises([]);
+        if (result.message) {
+          setError(`Error: ${result.message}`);
         }
       }
+
     } catch (err) {
-      console.error('Error al cargar países:', err);
-      setError('Error al cargar países');
+      console.error('💥 Error en fetchPaises:', err);
+      console.error('💥 Stack:', err.stack);
+      setError('Error de conexión al cargar países');
       setPaises([]);
     }
   };
