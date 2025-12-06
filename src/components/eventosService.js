@@ -35,10 +35,11 @@ export const obtenerEventoPorId = async (eventoId) => {
     return response.data;
 };
 
-export const crearEvento = async () => {
-    const response = await axios.post(`${API_URL}/eventos`, getHeaders());
-    return response.data;
+export const crearEvento = async (data) => {
+    const res = await api.post("/eventos", data);
+    return res.data;
 };
+
 
 export const actualizarEvento = async (eventoId) => {
     try {
@@ -79,10 +80,11 @@ export const obtenerActividadesEvento = async (eventoId) => {
     return res.data;
 };
 
-export const crearActividad = async (eventoId) => {
-    const response = await axios.post(`${API_URL}/eventos/${eventoId}/actividades`, getHeaders());
-    return response.data;
+export const crearActividad = async (eventoId, data) => {
+    const res = await api.post(`/eventos/${eventoId}/actividades`, data);
+    return res.data;
 };
+
 
 export const actualizarActividad = async (actividadId, datosActualizados) => {
     const res = await api.put(`/actividades/${actividadId}`, datosActualizados);
