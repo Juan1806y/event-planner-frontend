@@ -9,6 +9,7 @@ import ActivitiesCard from '../../gerente/components/dashboard/ActivitiesCard';
 import LoadingState from '../../gerente/components/shared/LoadingState';
 import ErrorState from '../../gerente/components/shared/ErrorState';
 import styles from '../styles/GerenteDashboard.module.css';
+import Footer from '../../../layouts/FooterAsistente/footer'
 
 const GerenteDashboard = () => {
   const {
@@ -55,6 +56,7 @@ const GerenteDashboard = () => {
           </div>
         </main>
       </div>
+      <Footer />
     </div>
   );
 };

@@ -343,6 +343,9 @@ const CrearEncuestaModal = ({
                                     {formData.id_actividad && getActividadSeleccionada() && (
                                         <div className={styles.asociacionInfo}>
                                             <span className={styles.infoLabel}>Actividad seleccionada:</span>
+                                            <span className={styles.infoValue}>
+                                                {getActividadSeleccionada().titulo}
+                                            </span>
                                         </div>
                                     )}
                                 </div>
