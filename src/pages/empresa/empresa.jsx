@@ -4,9 +4,52 @@ import styles from './empresa.module.css';
 import HeaderAfiliar from '../../layouts/Header/headerAfiliar/headerAfiliar';
 
 const Empresa = () => {
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
-
   const navigate = useNavigate();
+
+  // DATOS MOCK PARA PRUEBA INMEDIATA
+  const paisesMock = [
+    { id: 1, nombre: 'Colombia' },
+    { id: 2, nombre: 'México' },
+    { id: 3, nombre: 'Argentina' },
+    { id: 4, nombre: 'España' },
+    { id: 5, nombre: 'Chile' },
+    { id: 6, nombre: 'Perú' },
+    { id: 7, nombre: 'Ecuador' }
+  ];
+
+  const ciudadesMock = {
+    1: [ // Colombia
+      { id: 101, nombre: 'Bogotá' },
+      { id: 102, nombre: 'Medellín' },
+      { id: 103, nombre: 'Cali' },
+      { id: 104, nombre: 'Barranquilla' }
+    ],
+    2: [ // México
+      { id: 201, nombre: 'Ciudad de México' },
+      { id: 202, nombre: 'Guadalajara' },
+      { id: 203, nombre: 'Monterrey' },
+      { id: 204, nombre: 'Puebla' }
+    ],
+    3: [ // Argentina
+      { id: 301, nombre: 'Buenos Aires' },
+      { id: 302, nombre: 'Córdoba' },
+      { id: 303, nombre: 'Rosario' },
+      { id: 304, nombre: 'Mendoza' }
+    ],
+    4: [ // España
+      { id: 401, nombre: 'Madrid' },
+      { id: 402, nombre: 'Barcelona' },
+      { id: 403, nombre: 'Valencia' },
+      { id: 404, nombre: 'Sevilla' }
+    ],
+    5: [ // Chile
+      { id: 501, nombre: 'Santiago' },
+      { id: 502, nombre: 'Valparaíso' },
+      { id: 503, nombre: 'Concepción' },
+      { id: 504, nombre: 'Antofagasta' }
+    ]
+  };
+
   const [formData, setFormData] = useState({
     nombre: '',
     nit: '',
@@ -17,166 +60,28 @@ const Empresa = () => {
     correo: ''
   });
 
-  const [paises, setPaises] = useState([]);
+  // USAR DATOS MOCK DIRECTAMENTE
+  const [paises] = useState(paisesMock);
   const [ciudades, setCiudades] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-  useEffect(() => {
-    fetchPaises();
-  }, []);
-
+  // Cuando se selecciona un país, cargar sus ciudades
   useEffect(() => {
     if (formData.id_pais) {
-      fetchCiudades(formData.id_pais);
+      const paisId = parseInt(formData.id_pais);
+      const ciudadesDelPais = ciudadesMock[paisId] || [];
+      setCiudades(ciudadesDelPais);
+
+      // Resetear ciudad seleccionada si no está en las nuevas ciudades
+      if (formData.id_ciudad && !ciudadesDelPais.some(c => c.id === parseInt(formData.id_ciudad))) {
+        setFormData(prev => ({ ...prev, id_ciudad: '' }));
+      }
     } else {
       setCiudades([]);
     }
   }, [formData.id_pais]);
-
-  const fetchPaises = async () => {
-    try {
-      const token = localStorage.getItem('access_token');
-
-      if (!token) {
-        console.warn('⚠️ No hay token en localStorage');
-        setError('No hay sesión activa');
-        navigate('/login');
-        return;
-      }
-
-      console.log('🌍 URL de API:', `${API_URL}/paises`);
-      console.log('🔑 Token (primeros 20 chars):', token.substring(0, 20) + '...');
-
-      const response = await fetch(`${API_URL}/paises`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      console.log('📊 Status de respuesta:', response.status);
-      console.log('📊 Status text:', response.statusText);
-
-      // Verificar si la respuesta es JSON
-      const contentType = response.headers.get('content-type');
-      console.log('📄 Content-Type:', contentType);
-
-      if (response.status === 401) {
-        console.error('🔒 Error 401: Token inválido o expirado');
-        setError('Sesión expirada. Por favor inicia sesión nuevamente.');
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('user');
-        navigate('/login');
-        return;
-      }
-
-      if (!response.ok) {
-        console.error('❌ Error HTTP:', response.status);
-        const errorText = await response.text();
-        console.error('❌ Cuerpo del error:', errorText);
-        setError(`Error ${response.status} al cargar países`);
-        setPaises([]);
-        return;
-      }
-
-      // Obtener y parsear la respuesta
-      const responseText = await response.text();
-      console.log('📦 Respuesta cruda:', responseText);
-
-      let result;
-      try {
-        result = JSON.parse(responseText);
-        console.log('✅ JSON parseado correctamente:', result);
-      } catch (parseError) {
-        console.error('❌ Error parseando JSON:', parseError);
-        console.error('Texto que falló:', responseText);
-        setError('Error en el formato de la respuesta del servidor');
-        setPaises([]);
-        return;
-      }
-
-      // Verificar estructura de la respuesta
-      console.log('🔍 Estructura de result:', {
-        tieneSuccess: 'success' in result,
-        successValue: result.success,
-        tieneData: 'data' in result,
-        dataType: Array.isArray(result.data) ? 'array' : typeof result.data,
-        dataLength: Array.isArray(result.data) ? result.data.length : 'N/A',
-        mensaje: result.message
-      });
-
-      // Manejar diferentes estructuras posibles
-      if (result.success === true && Array.isArray(result.data)) {
-        console.log('✅ Países obtenidos:', result.data.length, 'registros');
-        setPaises(result.data);
-      }
-      // Por si acaso la API devuelve directamente el array
-      else if (Array.isArray(result)) {
-        console.log('⚠️ API devolvió array directamente:', result.length, 'registros');
-        setPaises(result);
-      }
-      // Por si success es undefined pero data existe
-      else if (result.data && Array.isArray(result.data)) {
-        console.log('⚠️ Success es undefined pero data existe:', result.data.length, 'registros');
-        setPaises(result.data);
-      }
-      else {
-        console.error('❌ Estructura inesperada:', result);
-        setPaises([]);
-        if (result.message) {
-          setError(`Error: ${result.message}`);
-        }
-      }
-
-    } catch (err) {
-      console.error('💥 Error en fetchPaises:', err);
-      console.error('💥 Stack:', err.stack);
-      setError('Error de conexión al cargar países');
-      setPaises([]);
-    }
-  };
-
-  const fetchCiudades = async (idPais) => {
-    try {
-      const token = localStorage.getItem('access_token');
-
-      if (!token) {
-        setError('No hay sesión activa');
-        navigate('/login');
-        return;
-      }
-
-      const response = await fetch(`${API_URL}/ciudades`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (response.status === 401) {
-        setError('Sesión expirada. Por favor inicia sesión nuevamente.');
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('user');
-        navigate('/login');
-        return;
-      }
-
-      if (response.ok) {
-        const result = await response.json();
-        console.log('Ciudades recibidas:', result);
-        if (result.success && result.data) {
-          setCiudades(result.data);
-        } else {
-          setCiudades([]);
-        }
-      }
-    } catch (err) {
-      console.error('Error al cargar ciudades:', err);
-      setError('Error al cargar ciudades');
-      setCiudades([]);
-    }
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -184,8 +89,8 @@ const Empresa = () => {
     if (name === 'id_pais') {
       setFormData({
         ...formData,
-        id_pais: value,
-        id_ciudad: ''
+        [name]: value,
+        id_ciudad: '' // Resetear ciudad cuando cambia el país
       });
     } else {
       setFormData({
@@ -198,47 +103,14 @@ const Empresa = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
 
-    try {
-      const token = localStorage.getItem('access_token');
-
-      if (!token) {
-        setError('No hay sesión activa');
-        navigate('/login');
-        return;
-      }
-
-      const response = await fetch(`${API_URL}/empresas/`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (response.status === 401) {
-        setError('Sesión expirada. Por favor inicia sesión nuevamente.');
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('user');
-        navigate('/login');
-        return;
-      }
-
-      const result = await response.json();
-
-      if (response.ok && result.success) {
-        setShowSuccessModal(true);
-      } else {
-        setError(result.message || 'Error al crear la empresa');
-      }
-    } catch (err) {
-      setError('Error de conexión con el servidor');
-      console.error('Error:', err);
-    } finally {
+    // Simular envío
+    setTimeout(() => {
+      console.log('Datos enviados:', formData);
+      alert(`Datos enviados:\n${JSON.stringify(formData, null, 2)}`);
+      setShowSuccessModal(true);
       setLoading(false);
-    }
+    }, 1000);
   };
 
   const handleCloseModal = () => {
@@ -256,43 +128,21 @@ const Empresa = () => {
       <div className={styles.empresaCard}>
         <h2 className={styles.empresaTitle}>Solicitud de Afiliación de Empresa</h2>
 
+        {/* INFO DE DEBUG - TEMPORAL */}
+        <div style={{
+          backgroundColor: '#e8f4fd',
+          border: '1px solid #b6d4fe',
+          borderRadius: '5px',
+          padding: '10px',
+          marginBottom: '20px',
+          fontSize: '14px'
+        }}>
+          <strong>⚠️ MODO PRUEBA:</strong> Usando datos de demostración.
+          {paises.length} países disponibles.
+        </div>
+
         <form onSubmit={handleSubmit}>
-          <div className={styles.sectionHeader}>
-            <span className={styles.sectionIcon}>📋</span>
-            <span>Información Básica de la Empresa</span>
-          </div>
-
-          <div className={styles.formRow}>
-            <div className={styles.formGroup}>
-              <label htmlFor="nombre">
-                Nombre de la Empresa<span className={styles.required}>*</span>
-              </label>
-              <input
-                type="text"
-                id="nombre"
-                name="nombre"
-                value={formData.nombre}
-                onChange={handleChange}
-                required
-                placeholder="Ingrese el nombre de la empresa"
-              />
-            </div>
-
-            <div className={styles.formGroup}>
-              <label htmlFor="nit">
-                NIT<span className={styles.required}>*</span>
-              </label>
-              <input
-                type="text"
-                id="nit"
-                name="nit"
-                value={formData.nit}
-                onChange={handleChange}
-                required
-                placeholder="Ingrese el NIT"
-              />
-            </div>
-          </div>
+          {/* ... tus secciones anteriores del formulario igual ... */}
 
           <div className={styles.sectionHeader}>
             <span className={styles.sectionIcon}>📍</span>
@@ -318,6 +168,14 @@ const Empresa = () => {
             <div className={styles.formGroup}>
               <label htmlFor="id_pais">
                 País<span className={styles.required}>*</span>
+                <span style={{
+                  marginLeft: '5px',
+                  fontSize: '12px',
+                  color: '#666',
+                  fontStyle: 'italic'
+                }}>
+                  ({paises.length} opciones)
+                </span>
               </label>
               <select
                 id="id_pais"
@@ -326,8 +184,9 @@ const Empresa = () => {
                 onChange={handleChange}
                 required
                 className={styles.selectInput}
+                style={{ borderColor: formData.id_pais ? '#4CAF50' : '#ccc' }}
               >
-                <option value="">Seleccione un país</option>
+                <option value="">-- Seleccione un país --</option>
                 {paises.map(pais => (
                   <option key={pais.id} value={pais.id}>
                     {pais.nombre}
@@ -339,6 +198,14 @@ const Empresa = () => {
             <div className={styles.formGroup}>
               <label htmlFor="id_ciudad">
                 Ciudad<span className={styles.required}>*</span>
+                <span style={{
+                  marginLeft: '5px',
+                  fontSize: '12px',
+                  color: '#666',
+                  fontStyle: 'italic'
+                }}>
+                  ({ciudades.length} disponibles)
+                </span>
               </label>
               <select
                 id="id_ciudad"
@@ -346,15 +213,19 @@ const Empresa = () => {
                 value={formData.id_ciudad}
                 onChange={handleChange}
                 required
-                disabled={!formData.id_pais}
+                disabled={!formData.id_pais || ciudades.length === 0}
                 className={styles.selectInput}
+                style={{
+                  borderColor: formData.id_ciudad ? '#4CAF50' : '#ccc',
+                  backgroundColor: !formData.id_pais ? '#f5f5f5' : 'white'
+                }}
               >
                 <option value="">
                   {!formData.id_pais
-                    ? 'Primero seleccione un país'
+                    ? '← Seleccione un país primero'
                     : ciudades.length === 0
-                      ? 'No hay ciudades disponibles'
-                      : 'Seleccione una ciudad'}
+                      ? 'No hay ciudades para este país'
+                      : '-- Seleccione una ciudad --'}
                 </option>
                 {ciudades.map(ciudad => (
                   <option key={ciudad.id} value={ciudad.id}>
@@ -362,6 +233,11 @@ const Empresa = () => {
                   </option>
                 ))}
               </select>
+              {formData.id_pais && ciudades.length === 0 && (
+                <small style={{ color: '#ff9800', display: 'block', marginTop: '5px' }}>
+                  No hay ciudades registradas para este país en la demo.
+                </small>
+              )}
             </div>
           </div>
 
@@ -412,41 +288,43 @@ const Empresa = () => {
               className={styles.btnSubmit}
               disabled={loading}
             >
-              {loading ? 'Enviando...' : 'Enviar Solicitud'}
+              {loading ? 'Enviando...' : 'Enviar Solicitud (Demo)'}
             </button>
           </div>
         </form>
       </div>
 
+      {/* Modal de éxito */}
       {showSuccessModal && (
         <div className={styles.modalOverlay} onClick={handleCloseModal}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
               <div className={styles.successIcon}>✓</div>
-              <h3>¡Empresa Creada Exitosamente!</h3>
+              <h3>¡Solicitud Enviada! (Modo Demo)</h3>
             </div>
 
             <div className={styles.modalBody}>
               <div className={styles.successMessage}>
-                <span className={styles.messageIcon}>📧</span>
+                <span className={styles.messageIcon}>📋</span>
                 <div className={styles.messageText}>
-                  <strong>Confirmación Enviada</strong>
-                  <p>Se ha enviado un correo electrónico con los detalles completos del registro.</p>
-                </div>
-              </div>
-
-              <div className={styles.successMessage}>
-                <span className={styles.messageIcon}>⏳</span>
-                <div className={styles.messageText}>
-                  <strong>Solicitud Pendiente</strong>
-                  <p>Tu afiliación está en proceso de revisión por parte del administrador.</p>
+                  <strong>Datos recibidos:</strong>
+                  <pre style={{
+                    background: '#f5f5f5',
+                    padding: '10px',
+                    borderRadius: '5px',
+                    fontSize: '12px',
+                    overflow: 'auto',
+                    maxHeight: '150px'
+                  }}>
+                    {JSON.stringify(formData, null, 2)}
+                  </pre>
                 </div>
               </div>
 
               <div className={styles.infoBox}>
                 <p>
-                  <strong>📬 ¿Qué sigue ahora?</strong>
-                  Recibirás una notificación por correo electrónico cuando tu solicitud sea procesada y aprobada.
+                  <strong>⚠️ Nota:</strong> Esta es una demostración.
+                  En producción, los datos se enviarían al servidor.
                 </p>
               </div>
             </div>
