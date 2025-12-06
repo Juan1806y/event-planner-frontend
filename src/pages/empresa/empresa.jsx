@@ -267,7 +267,7 @@ const Empresa = () => {
     <div className={styles.empresaContainer}>
       <HeaderAfiliar />
       <div className={styles.empresaCard}>
-        <h2 className={styles.empresaTitle}>Solicitud de Afiliación de Empresa</h2>
+        <h2 className={styles.empresaTitle}>Solicitud de Afiliación de Empresa reflejarse *</h2>
 
         <form onSubmit={handleSubmit}>
           <div className={styles.sectionHeader}>
