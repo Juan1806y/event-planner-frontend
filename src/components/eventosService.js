@@ -69,7 +69,7 @@ export const crearActividad = async (eventoId, actividadData) => {
  */
 export const obtenerPerfil = async () => {
   // endpoint común para perfil; ajustar si en tu API es otro path
-  const res = await api.get(`/perfil`);
+  const res = await api.get(`/auth/profile`);
   return res.data;
 };
 
