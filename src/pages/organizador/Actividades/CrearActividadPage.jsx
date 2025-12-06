@@ -472,9 +472,9 @@ const CrearActividadPage = () => {
                                                 <div>
                                                     <div style={{ fontWeight: '500' }}>{lugar.nombre}</div>
                                                     <div style={{ fontSize: '0.85em', color: '#666' }}>
-                                                        Capacidad: {lugar.ubicacion?.capacidad || 'N/A'}
-                                                        {lugar.descripcion && ` - ${lugar.descripcion}`}
-                                                    </div>
+                                                        Capacidad: {lugar.capacidad || 'N/A'}
+                                                        {lugar.descripcion && ` - ${lugar. descripcion}`}
+                                                    </div>    
                                                 </div>
                                             </label>
                                         ))}
