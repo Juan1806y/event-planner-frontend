@@ -4,6 +4,7 @@ import styles from './empresa.module.css';
 import HeaderAfiliar from '../../layouts/Header/headerAfiliar/headerAfiliar';
 
 const Empresa = () => {
+  console.log('🔵 Componente Empresa cargado - Versión con cambios');
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
   const navigate = useNavigate();
@@ -62,13 +63,22 @@ const Empresa = () => {
       if (response.ok) {
         const result = await response.json();
         console.log('Países recibidos:', result);
-        if (result.success && result.data) {
+        if (result.success && result.data !== undefined) {
           // Asegurarse de que result.data es un array
           const paisesData = Array.isArray(result.data) ? result.data : [];
           setPaises(paisesData);
+          
+          // Mostrar advertencia si no hay países
+          if (paisesData.length === 0) {
+            console.warn('⚠️ No hay países disponibles en la base de datos');
+            setError('No hay países disponibles. Por favor, contacte al administrador.');
+          } else {
+            setError(''); // Limpiar error si hay países
+          }
         } else {
           console.warn('Respuesta de países sin formato esperado:', result);
           setPaises([]);
+          setError('Error en el formato de respuesta de países');
         }
       } else {
         const errorData = await response.json().catch(() => ({}));
@@ -267,7 +277,7 @@ const Empresa = () => {
     <div className={styles.empresaContainer}>
       <HeaderAfiliar />
       <div className={styles.empresaCard}>
-        <h2 className={styles.empresaTitle}>Solicitud de Afiliación de Empresa reflejarse *</h2>
+        <h2 className={styles.empresaTitle}>Solicitud de Afiliación de Empresa</h2>
 
         <form onSubmit={handleSubmit}>
           <div className={styles.sectionHeader}>
@@ -339,8 +349,13 @@ const Empresa = () => {
                 onChange={handleChange}
                 required
                 className={styles.selectInput}
+                disabled={paises.length === 0}
               >
-                <option value="">Seleccione un país</option>
+                <option value="">
+                  {paises.length === 0 
+                    ? 'No hay países disponibles' 
+                    : 'Seleccione un país'}
+                </option>
                 {paises.map(pais => (
                   <option key={pais.id} value={pais.id}>
                     {pais.nombre}
