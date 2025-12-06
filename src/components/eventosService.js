@@ -19,19 +19,19 @@ export const obtenerEventos = async (filtros = {}) => {
     return response.data;
 };
 
-export const obtenerEventoPorId = async (id) => {
-    const response = await axios.get(`${API_URL}/${id}`, getHeaders());
+export const obtenerEventoPorId = async (eventoId) => {
+    const response = await axios.get(`${API_URL}/eventos/${eventoId}`, getHeaders());
     return response.data;
 };
 
-export const crearEvento = async (nuevoEvento) => {
-    const response = await axios.post(API_URL, nuevoEvento, getHeaders());
+export const crearEvento = async () => {
+    const response = await axios.post(`${API_URL}/eventos`, getHeaders());
     return response.data;
 };
 
-export const actualizarEvento = async (id, datosActualizados) => {
+export const actualizarEvento = async (eventoId) => {
     try {
-        const response = await axios.put(`${API_URL}/${id}`, datosActualizados, getHeaders());
+        const response = await axios.put(`${API_URL}/eventos/${eventoId}`, getHeaders());
         return response.data;
     } catch (error) {
         console.error('Error en actualizarEvento PUT', error.response?.status, error.response?.data);
@@ -41,8 +41,8 @@ export const actualizarEvento = async (id, datosActualizados) => {
     }
 };
 
-export const eliminarEvento = async (id) => {
-    const response = await axios.delete(`${API_URL}/${id}`, getHeaders());
+export const eliminarEvento = async (eventoId) => {
+    const response = await axios.delete(`${API_URL}/eventos/${eventoId}`, getHeaders());
     return response.data;
 };
 
@@ -77,8 +77,8 @@ export const obtenerActividadesEvento = async (eventoId) => {
     return response.data;
 };
 
-export const crearActividad = async (eventoId, actividadData) => {
-    const response = await axios.post(`${API_URL}/${eventoId}/actividades`, actividadData, getHeaders());
+export const crearActividad = async (eventoId) => {
+    const response = await axios.post(`${API_URL}/eventos/${eventoId}/actividades`, getHeaders());
     return response.data;
 };
 
