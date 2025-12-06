@@ -45,7 +45,7 @@ const Empresa = () => {
         return;
       }
 
-      const response = await fetch(`${API_URL}/paises/`, {
+      const response = await fetch(`${API_URL}/paises`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
