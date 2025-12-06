@@ -57,7 +57,7 @@ export const useForgotPassword = () => {
 
       const payload = { correo: email.trim(), contraseña: newPassword.trim() };
 
-      const response = await fetch(`${API_URL}/recuperar-contrasena`, {
+      const response = await fetch(`${API_URL}/auth/recuperar-contrasena`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

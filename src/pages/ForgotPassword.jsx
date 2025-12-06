@@ -92,7 +92,7 @@ const ForgotPassword = () => {
                 disabled={loading || success}
                 aria-label="Mostrar/Ocultar contraseña"
               >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
               </button>
             </div>
           </div>
@@ -118,7 +118,7 @@ const ForgotPassword = () => {
                 disabled={loading || success}
                 aria-label="Mostrar/Ocultar contraseña"
               >
-                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                {showConfirmPassword ? <Eye size={20} /> : <EyeOff size={20} />}
               </button>
             </div>
           </div>
