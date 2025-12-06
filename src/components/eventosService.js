@@ -76,25 +76,25 @@ export const obtenerPerfil = async () => {
 /**
  * Obtener ubicaciones
  */
-export const obtenerUbicaciones = async () => {
-  const res = await api.get(`/ubicaciones`);
-  return res.data;
+export const obtenerUbicaciones = async (empresaId) => {
+  const res = await api.get(`/empresas/${empresaId}/ubicaciones`);
+  return res. data;
 };
-
 /**
  * Obtener lugares. Si se pasa ubicacionId se usa ruta por ubicación; si no, devuelve todos los lugares.
  * @param {number|string} [ubicacionId]
  */
-export const obtenerLugares = async (ubicacionId) => {
-  if (ubicacionId) {
-    const res = await api.get(`/ubicaciones/${ubicacionId}/lugares`);
-    return res.data;
-  } else {
-    const res = await api.get(`/lugares`);
-    return res.data;
+export const obtenerLugares = async (empresaId, ubicacionId) => {
+  const res = await api.get(`/empresas/${empresaId}/lugares`);
+  // Si se pasa ubicacionId, filtramos los resultados en el frontend
+  if (ubicacionId && res.data?. data) {
+    const filtrados = Array.isArray(res.data.data)
+      ? res. data.data.filter(l => String(l.id_ubicacion) === String(ubicacionId))
+      : [];
+    return { ... res.data, data: filtrados };
   }
+  return res.data;
 };
-
 /**
  * Obtener ponentes disponibles
  */
