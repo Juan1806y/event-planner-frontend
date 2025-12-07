@@ -120,7 +120,7 @@ const CrearEncuestaModal = ({
 
     // Validar URL de Google Forms
     const validarGoogleFormURL = (url) => {
-        const pattern = /^https:\/\/docs\.google\.com\/forms\/d\/e\/[A-Za-z0-9_-]+\/viewform$/;
+        const pattern = /^https:\/\/docs\.google\.com\/forms\/d\/e\/[A-Za-z0-9_-]+\/viewform(\?.*)?$/;
         return pattern.test(url);
     };
 
