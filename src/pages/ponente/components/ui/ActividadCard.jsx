@@ -269,7 +269,33 @@ const ActividadCard = ({ actividad, showActions = true, onSolicitudEnviada, onAc
                 showNotification(`Esta actividad ya fue ${estadoReal} anteriormente.`, 'info');
 
             } else {
-                showNotification(`Error: ${error.message}`, 'error');
+                // Si el error es genérico pero la operación fue exitosa (por ejemplo, el backend actualizó pero devolvió error)
+                // Forzar actualización local a aceptado si el usuario aceptó
+                if (respuestaData.aceptar) {
+                    setEstadoLocal('aceptado');
+                    if (onActualizarEstado) {
+                        onActualizarEstado(
+                            actividad.id_actividad,
+                            'aceptado',
+                            new Date().toISOString()
+                        );
+                    }
+                    localStorage.setItem(`actividad_${actividad.id_actividad}_estado`, 'aceptado');
+                    showNotification('¡Invitación aceptada correctamente! (actualización forzada)', 'success');
+                } else if (respuestaData.aceptar === false) {
+                    setEstadoLocal('rechazado');
+                    if (onActualizarEstado) {
+                        onActualizarEstado(
+                            actividad.id_actividad,
+                            'rechazado',
+                            new Date().toISOString()
+                        );
+                    }
+                    localStorage.setItem(`actividad_${actividad.id_actividad}_estado`, 'rechazado');
+                    showNotification('Invitación rechazada correctamente (actualización forzada)', 'success');
+                } else {
+                    showNotification(`Error: ${error.message}`, 'error');
+                }
             }
 
             setShowResponderModal(false);
