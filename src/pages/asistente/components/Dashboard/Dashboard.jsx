@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Footer from '../../../../layouts/FooterAsistente/footer';
 import styles from './Dashboard.module.css';
 import Calendar from '../../../../assets/calendar.png';
 import Users from '../../../../assets/person.png';
@@ -157,6 +158,7 @@ const Dashboard = () => {
     }
 
     return (
+        <>
         <div className={styles.dashboardContainer}>
             {/* Header */}
             <div className={styles.headerSection}>
@@ -366,6 +368,8 @@ const Dashboard = () => {
                 </div>
             </div>
         </div>
+        <Footer />
+        </>
     );
 };
 

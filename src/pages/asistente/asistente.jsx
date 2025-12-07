@@ -9,6 +9,8 @@ import Lugar from '../../assets/lugar.png';
 import Codigo from '../../assets/codigo.png';
 import Footer from '../../layouts/FooterAsistente/footer';
 
+import Footer from '../../layouts/FooterAsistente/footer';
+
 const Asistente = () => {
 	const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
@@ -546,7 +548,8 @@ const Asistente = () => {
 			<div className={styles.loadingContainer}>
 				<div className={styles.spinner}></div>
 				<p>Cargando eventos disponibles...</p>
-			</div>
+			{/* ...existing code... */}
+			<Footer />
 		);
 	}
 
